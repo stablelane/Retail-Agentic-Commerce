@@ -1,0 +1,9 @@
+# Build output
+.next/
+coverage/
+
+# Package manager
+pnpm-lock.yaml
+
+# Static assets
+public/

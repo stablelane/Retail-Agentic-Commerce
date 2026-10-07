@@ -30,6 +30,7 @@ from starlette.responses import Response
 from src.merchant.api.dependencies import verify_api_key
 from src.merchant.api.routes.health import router as health_router
 from src.merchant.api.routes.metrics import router as metrics_router
+from src.merchant.api.routes.orders import router as orders_router
 from src.merchant.api.routes.products import router as products_router
 from src.merchant.config import get_settings
 from src.merchant.db import init_and_seed_db
@@ -104,6 +105,7 @@ app.add_middleware(RequestLoggingMiddleware)
 app.include_router(health_router)
 app.include_router(checkout_router)
 app.include_router(metrics_router)
+app.include_router(orders_router)
 app.include_router(products_router)
 app.include_router(ucp_discovery_router)
 

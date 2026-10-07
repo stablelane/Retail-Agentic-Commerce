@@ -57,9 +57,14 @@ services:
       - RECOMMENDATION_AGENT_URL=http://recommendation-agent:8004
       # Webhook delivery to client agent (Docker-internal URL by default).
       # Uses a dedicated env var so local WEBHOOK_URL (localhost) does not break container routing.
-      - WEBHOOK_URL=${WEBHOOK_URL_DOCKER:-http://ui:3000/api/webhooks/acp}
+      # Comma-separated list: events fan out to the inspector UI and the storefront.
+      - WEBHOOK_URL=${WEBHOOK_URL_DOCKER:-http://ui:3000/api/webhooks/acp,http://storefront:3002/api/webhooks/acp}
       - UCP_ORDER_WEBHOOK_URL=${UCP_ORDER_WEBHOOK_URL_DOCKER:-http://ui:3000/api/webhooks/ucp}
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-whsec_demo_secret}
+      # Feature 18 — storefront branding and order tracking
+      - BRAND_NAME=${BRAND_NAME:-NVShop}
+      - ORDER_TRACKING_BASE_URL=${ORDER_TRACKING_BASE_URL:-http://localhost:3002/orders}
+      - ORDER_STATUS_STEP_SECONDS=${ORDER_STATUS_STEP_SECONDS:-120}
     volumes:
       - acp-data:/data
     networks:
@@ -126,6 +131,51 @@ services:
     networks:
       - acp-network
       - acp-infra-network
+    restart: unless-stopped
+
+  # Matter Storefront + AI Shopping Chat (Port 3002, Feature 18)
+  # Published directly on the host; nginx (port 80) keeps fronting the inspector UI.
+  storefront:
+    build:
+      context: ./src/storefront
+      dockerfile: Dockerfile
+      args:
+        # Inlined into the client bundle at build time
+        - NEXT_PUBLIC_API_VERSION=2026-01-16
+        - NEXT_PUBLIC_BRAND_NAME=${BRAND_NAME:-Matter}
+    container_name: storefront
+    ports:
+      - "3002:3002"
+    environment:
+      # Server-side URLs (internal Docker network) - used by proxy routes and the chat agent
+      - MERCHANT_API_URL=http://merchant:8000
+      - PSP_API_URL=http://psp:8001
+      - MCP_SERVER_URL=http://apps-sdk:2091
+      # Server-side API keys (NOT exposed to browser)
+      - MERCHANT_API_KEY=${MERCHANT_API_KEY:-merchant-api-key-12345}
+      - PSP_API_KEY=${PSP_API_KEY:-psp-api-key-12345}
+      # Must match merchant's WEBHOOK_SECRET for signature verification
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-whsec_demo_secret}
+      # Chat LLM: Azure OpenAI Responses API when key + base URL are set, else NIM
+      - AZURE_OPENAI_BASE_URL=${AZURE_OPENAI_BASE_URL:-}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}
+      - AZURE_OPENAI_MODEL=${AZURE_OPENAI_MODEL:-gpt-5.3-codex}
+      - CHAT_LLM_REASONING_EFFORT=${CHAT_LLM_REASONING_EFFORT:-low}
+      - CHAT_LLM_PROVIDER=${CHAT_LLM_PROVIDER:-}
+      # Empty NVIDIA_API_KEY (and no Azure key) forces the deterministic fallback router
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - NIM_LLM_BASE_URL=${NIM_LLM_BASE_URL:-https://integrate.api.nvidia.com/v1}
+      - NIM_LLM_MODEL_NAME=${NIM_LLM_MODEL_NAME:-nvidia/nemotron-3.5-lightning-30b-a3b}
+      - CHAT_MAX_TOOL_STEPS=${CHAT_MAX_TOOL_STEPS:-6}
+      # Empty uses the provider default (60s Azure, 20s NIM)
+      - CHAT_LLM_TIMEOUT_MS=${CHAT_LLM_TIMEOUT_MS:-}
+      - NEXT_PUBLIC_API_VERSION=2026-01-16
+    depends_on:
+      - merchant
+      - psp
+      - apps-sdk
+    networks:
+      - acp-network
     restart: unless-stopped
 
   # =============================================================================

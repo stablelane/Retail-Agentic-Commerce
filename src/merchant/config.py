@@ -42,8 +42,14 @@ class Settings(BaseSettings):
 
     # Webhook Configuration (Merchant → Client Agent)
     # Default to localhost for local development; Docker overrides via environment
+    # webhook_url accepts a comma-separated list of targets (fan-out)
     webhook_url: str = "http://localhost:3000/api/webhooks/acp"
     webhook_secret: str = "whsec_demo_secret"
+
+    # Storefront / order tracking
+    brand_name: str = "NVShop"
+    order_tracking_base_url: str = "https://track.nvshop.demo/orders"
+    order_status_step_seconds: int = 120
 
     # Merchant API Security (for client authentication)
     merchant_api_key: str = ""

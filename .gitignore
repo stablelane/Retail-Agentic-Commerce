@@ -9,6 +9,12 @@ __pycache__
 
 # Distribution / packaging
 .Python
+.npm-cache/
+.run/
+.tools/
+.xdg-cache/
+.xdg-config/
+.xdg-data/
 build/
 develop-eggs/
 dist/

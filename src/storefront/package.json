@@ -1,0 +1,70 @@
+{
+  "name": "matter-storefront",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "build": "next build",
+    "start": "next start --port 3002",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:run": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "next": "^16.3.7",
+    "openai": "^4.104.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.76"
+  },
+  "pnpm": {
+    "overrides": {
+      "ajv": "8.18.0",
+      "eslint>ajv": "6.14.0",
+      "@eslint/eslintrc>ajv": "6.14.0",
+      "fast-uri": "3.1.7",
+      "brace-expansion@1": "1.1.21",
+      "brace-expansion@2": "2.1.4",
+      "brace-expansion@5": "5.0.12",
+      "minimatch@3": "3.1.5",
+      "minimatch@9": "9.0.9",
+      "js-yaml": "4.3.2",
+      "browserslist": "4.28.7",
+      "nanoid@3": "3.3.18",
+      "postcss": "8.5.23",
+      "ws": "8.21.1",
+      "sharp": "0.35.4",
+      "flatted": "3.4.2",
+      "form-data": "4.0.6",
+      "picomatch": "4.0.4",
+      "@humanfs/node": "0.16.8",
+      "esbuild": "0.28.1"
+    }
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "16.3.7",
+    "eslint-config-prettier": "^9.1.0",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.11"
+  }
+}

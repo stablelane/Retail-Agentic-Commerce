@@ -76,12 +76,16 @@ async def send_webhook(
     webhook_secret: str | None = None,
     timeout: float = 10.0,
 ) -> bool:
-    """Send a signed ACP webhook event to the client agent."""
-    settings = get_settings()
-    url = webhook_url or settings.webhook_url
-    secret = webhook_secret or settings.webhook_secret
+    """Send a signed ACP webhook event to each comma-separated target URL.
 
-    if not url:
+    Returns True if at least one target accepted the event with HTTP 200.
+    """
+    settings = get_settings()
+    raw_urls = webhook_url or settings.webhook_url
+    secret = webhook_secret or settings.webhook_secret
+    urls = [url.strip() for url in raw_urls.split(",") if url.strip()]
+
+    if not urls:
         logger.warning("Webhook URL not configured, skipping webhook delivery")
         return False
 
@@ -98,30 +102,40 @@ async def send_webhook(
         "X-Webhook-Signature": signature,
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(url, content=payload, headers=headers)
+    delivered = False
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        for url in urls:
+            if await _post_webhook(client, url, payload, headers, event["type"]):
+                delivered = True
+    return delivered
 
-        if response.status_code == 200:
-            logger.info(
-                "Webhook delivered successfully to %s (event: %s)",
-                url,
-                event["type"],
-            )
-            return True
-        logger.warning(
-            "Webhook delivery failed: %s %s (status: %d)",
-            url,
-            event["type"],
-            response.status_code,
-        )
-        return False
+
+async def _post_webhook(
+    client: httpx.AsyncClient,
+    url: str,
+    payload: str,
+    headers: dict[str, str],
+    event_type: str,
+) -> bool:
+    try:
+        response = await client.post(url, content=payload, headers=headers)
     except httpx.TimeoutException:
         logger.warning("Webhook delivery timed out: %s", url)
         return False
     except httpx.RequestError as exc:
         logger.warning("Webhook delivery error: %s - %s", url, str(exc))
         return False
+
+    if response.status_code == 200:
+        logger.info("Webhook delivered successfully to %s (event: %s)", url, event_type)
+        return True
+    logger.warning(
+        "Webhook delivery failed: %s %s (status: %d)",
+        url,
+        event_type,
+        response.status_code,
+    )
+    return False
 
 
 async def send_shipping_update_webhook(

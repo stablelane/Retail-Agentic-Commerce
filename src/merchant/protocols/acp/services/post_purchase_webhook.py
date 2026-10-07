@@ -17,6 +17,7 @@
 
 import logging
 
+from src.merchant.config import get_settings
 from src.merchant.protocols.acp.services.webhook_delivery import (
     send_shipping_update_webhook,
 )
@@ -51,9 +52,11 @@ async def trigger_post_purchase_flow(
         lang = SupportedLanguage.ENGLISH
         logger.warning("Invalid language '%s', defaulting to English", language)
 
+    settings = get_settings()
+    tracking_url = f"{settings.order_tracking_base_url}/{order_id}"
     request: ShippingMessageRequest = {
         "brand_persona": {
-            "company_name": "NVShop",
+            "company_name": settings.brand_name,
             "tone": "friendly",
             "preferred_language": lang.value,
         },
@@ -61,7 +64,7 @@ async def trigger_post_purchase_flow(
             "order_id": order_id,
             "customer_name": customer_name,
             "items": items,
-            "tracking_url": f"https://track.nvshop.demo/orders/{order_id}",
+            "tracking_url": tracking_url,
             "estimated_delivery": None,
         },
         "status": ShippingStatus.ORDER_CONFIRMED.value,
@@ -87,7 +90,7 @@ async def trigger_post_purchase_flow(
             language=response["language"],
             subject=response["subject"],
             message=response["message"],
-            tracking_url=f"https://track.nvshop.demo/orders/{order_id}",
+            tracking_url=tracking_url,
         )
         if success:
             logger.info("Webhook delivered successfully for order %s", order_id)

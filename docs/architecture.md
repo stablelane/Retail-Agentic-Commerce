@@ -83,6 +83,12 @@ graph TD
         W[Global Webhook Endpoint]
     end
 
+    subgraph "Matter Storefront (Next.js, port 3002)"
+        SF[Storefront Pages + Bag]
+        SF_CHAT[AI Shopping Chat - NIM tool calling]
+        SF_WH[Webhook Receiver]
+    end
+
     A -->|UI resources| J
     A -->|Mode switch| TABS
     TABS -->|Apps SDK| MERCHANT_IFRAME
@@ -102,8 +108,14 @@ graph TD
     P2 -.->|3DS required?| P3
     P3 -->|authentication_result| C
     F -->|Post-purchase events| W
+    SF -->|ACP REST via server proxy| ACP_ROUTER
+    SF -->|delegate payment via server proxy| P1
+    SF_CHAT -->|MCP tools: search, recommendations| E
+    W -.->|WEBHOOK_URL fan-out| SF_WH
 
 ```
+
+**Matter Storefront (Feature 18)**: a third client (`src/storefront`, port 3002) alongside the simulator and the Apps SDK widget. Pages and the chat overlay call ACP checkout and PSP delegation through server-side proxies (keys never reach the browser), use the Apps SDK MCP server for search and recommendations, and receive the same signed post-purchase webhooks as the Demo UI via the merchant's comma-separated `WEBHOOK_URL`. See `docs/features/feature-18-matter-storefront.md`.
 
 **3. Dual Protocol Architecture**
 

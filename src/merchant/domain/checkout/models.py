@@ -554,6 +554,7 @@ class ErrorResponseCodeEnum(StrEnum):
     INVALID_STATUS_TRANSITION = "invalid_status_transition"
     SESSION_NOT_FOUND = "session_not_found"
     PRODUCT_NOT_FOUND = "product_not_found"
+    ORDER_NOT_FOUND = "order_not_found"
     INVALID_PAYMENT = "invalid_payment"
     VALIDATION_ERROR = "validation_error"
     MISSING_API_KEY = "missing_api_key"

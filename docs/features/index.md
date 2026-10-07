@@ -25,6 +25,7 @@ This document breaks down the project requirements into discrete, implementable 
 | 15 | [Multi-Language Post-Purchase Messages](./feature-15-multi-language.md) | P2 | Feature 8 | ✅ Complete |
 | 16 | [Apps SDK Integration (Merchant Iframe)](./feature-16-apps-sdk.md) | P1 | Features 7, 9, 13 |  ✅ Complete |
 | 17 | [UCP Protocol Integration](./feature-17-ucp-integration.md) | P1 | Features 3, 4, 5, 6, 7, 8 |  ✅ Complete |
+| 18 | [Matter Storefront + AI Shopping Chat](./feature-18-matter-storefront.md) | P1 | Features 3, 5, 7, 8, 11, 14, 16 | ✅ Complete |
 
 ---
 
@@ -87,6 +88,20 @@ Add industry-standard UCP alongside existing ACP implementation.
     - Payment handler specifications for UCP
     - **Same client agent flow** - UI unchanged, only backend protocol switches
     - Scope: Discovery + Checkout (A2A only); other capabilities/transports out of scope
+
+### Phase 7: Consumer Storefront (Feature 18)
+Add a first-party, Matter-styled storefront whose primary interaction is an LLM shopping assistant.
+
+18. **Feature 18**: Matter Storefront + AI Shopping Chat
+    - New Next.js app at `src/storefront` (port 3002); design tokens from `docs/design/matter-design-system.md`
+    - Pages: Home, Catalog, Product Detail, Bag, Checkout, Orders, Account, Contact
+    - Chat overlay driven by Nemotron (NIM) with OpenAI-style tool calling and SSE streaming; deterministic fallbacks when no LLM key
+    - Search and recommendations via Apps SDK MCP tools; cart and checkout directly against ACP endpoints through server-side proxies
+    - Client-side cart mirrored to a single ACP checkout session (same pattern as the Apps SDK widget)
+    - Loyalty display for the pre-authenticated mock user; same ACP + PSP payment flow
+    - Post-purchase `shipping_update` webhooks surfaced as chat notifications
+    - Merchant API additions: `GET /products` list + enrichment (`compare_at_price`), `GET /orders/{id}?email=` with deterministic status progression, `WEBHOOK_URL` fan-out
+    - Scope: ACP only; no UCP, real payments, auth, or points redemption
 
 ---
 

@@ -7,11 +7,17 @@ Use this when you want faster iteration outside the full Docker runtime. Service
 The fastest way to get running locally:
 
 ```bash
-./install.sh   # install deps + start all 8 services
+./install.sh   # install deps + start all 9 services
 ./stop.sh      # stop everything
 ```
 
 `install.sh` handles prerequisite checks, dependency installation, environment setup, and launches all services in the background with health checks. Logs are written to `logs/<service>.log`.
+
+`install.sh` (and `start-nodocker.sh`) append `http://localhost:3002/api/webhooks/acp` to the merchant's `WEBHOOK_URL` for the started processes when it is missing, so post-purchase webhooks reach both the Demo UI and the storefront. To run the merchant manually with fan-out, set it in `.env`:
+
+```bash
+WEBHOOK_URL=http://localhost:3000/api/webhooks/acp,http://localhost:3002/api/webhooks/acp
+```
 
 ## Prerequisites
 
@@ -39,6 +45,7 @@ curl http://localhost:8002/health   # promotion
 curl http://localhost:8003/health   # post-purchase
 curl http://localhost:8004/health   # recommendation
 curl http://localhost:8005/health   # search
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3002/   # storefront
 ```
 
 ## Access URLs
@@ -46,6 +53,7 @@ curl http://localhost:8005/health   # search
 | Service | URL |
 |---------|-----|
 | Demo UI | http://localhost:3000 |
+| Storefront | http://localhost:3002 |
 | Merchant API | http://localhost:8000/docs |
 | PSP | http://localhost:8001/docs |
 | Apps SDK MCP | http://localhost:2091/docs |
@@ -144,5 +152,16 @@ cd src/apps_sdk/web
 pnpm install
 pnpm dev
 ```
+
+### 5. Run Storefront
+
+```bash
+cd src/storefront
+cp env.example .env.local   # keys/secret must match the merchant, PSP, and NIM settings
+pnpm install
+pnpm dev                    # port 3002
+```
+
+Server-side env: `MERCHANT_API_URL`, `MERCHANT_API_KEY`, `PSP_API_URL`, `PSP_API_KEY`, `MCP_SERVER_URL`, `WEBHOOK_SECRET`, `NVIDIA_API_KEY`, `NIM_LLM_BASE_URL`, `NIM_LLM_MODEL_NAME`, `CHAT_MAX_TOOL_STEPS`, `CHAT_LLM_TIMEOUT_MS` (see `src/storefront/env.example`).
 
 </details>

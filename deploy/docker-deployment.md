@@ -49,6 +49,7 @@ docker compose -f docker-compose.infra.yml -f docker-compose.yml up --build -d
 curl http://localhost/api/health
 curl http://localhost/psp/health
 curl http://localhost/apps-sdk/health
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3002/   # storefront, expect 200
 ```
 
 Agent services also expose `/health`, but in full Docker deployment they are internal-only (not published on `localhost`).
@@ -56,8 +57,23 @@ Agent services also expose `/health`, but in full Docker deployment they are int
 ## 5. Open the Application
 
 - Demo UI: http://localhost
+- Storefront: http://localhost:3002 (published directly; nginx keeps fronting the Demo UI)
 - Phoenix traces: http://localhost:6006
 - MinIO console: http://localhost:9001
+
+### Storefront Configuration
+
+The `storefront` service (`src/storefront/Dockerfile`, build context `src/storefront`) reaches `merchant`, `psp`, and `apps-sdk` over the Docker network and reuses `MERCHANT_API_KEY`, `PSP_API_KEY`, `WEBHOOK_SECRET`, `NVIDIA_API_KEY`, `NIM_LLM_BASE_URL`, and `NIM_LLM_MODEL_NAME` from `.env`. Without `NVIDIA_API_KEY` the chat answers through its deterministic fallback router.
+
+Post-purchase webhooks fan out to both clients. The merchant uses `WEBHOOK_URL_DOCKER` (comma-separated), which defaults to:
+
+```bash
+WEBHOOK_URL_DOCKER=http://ui:3000/api/webhooks/acp,http://storefront:3002/api/webhooks/acp
+```
+
+If your `.env` sets `WEBHOOK_URL_DOCKER` to the UI only, add the storefront URL or the storefront will not receive notifications.
+
+`NEXT_PUBLIC_BRAND_NAME` is baked in at build time from `BRAND_NAME` (default `Matter`); rebuild the image after changing it.
 
 ## Common Operations
 
@@ -67,6 +83,7 @@ Agent services also expose `/health`, but in full Docker deployment they are int
 docker compose -f docker-compose.infra.yml -f docker-compose.yml ps
 docker compose -f docker-compose.infra.yml -f docker-compose.yml logs -f merchant
 docker compose -f docker-compose.infra.yml -f docker-compose.yml logs -f nginx
+docker compose -f docker-compose.infra.yml -f docker-compose.yml logs -f storefront
 ```
 
 ### Agent Health (Troubleshooting)

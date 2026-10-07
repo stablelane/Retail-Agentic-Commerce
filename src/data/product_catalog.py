@@ -24,9 +24,11 @@ Fields:
 - Core: id, sku, name, price_cents, stock_count
 - SQLite-specific: min_margin, image_url
 - Milvus-specific: category, subcategory, description, attributes
+- Storefront-specific (optional): compare_at_price_cents (original price when
+  the product is on sale; rendered as a strikethrough in the storefront)
 """
 
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 
 class ProductData(TypedDict):
@@ -45,6 +47,7 @@ class ProductData(TypedDict):
     attributes: list[str]
     lifecycle: str
     demand_velocity: str
+    compare_at_price_cents: NotRequired[int | None]
 
 
 PRODUCTS: list[ProductData] = [
@@ -104,6 +107,7 @@ PRODUCTS: list[ProductData] = [
         "sku": "TS-003",
         "name": "Graphic Tee",
         "price_cents": 3200,
+        "compare_at_price_cents": 4000,
         "stock_count": 200,
         "min_margin": 0.18,
         "image_url": "/prod_3.jpeg",
@@ -233,6 +237,7 @@ PRODUCTS: list[ProductData] = [
         "sku": "BT-004",
         "name": "Athletic Joggers",
         "price_cents": 4200,
+        "compare_at_price_cents": 5200,
         "stock_count": 45,
         "min_margin": 0.15,
         "image_url": "/prod_8.jpeg",
@@ -261,6 +266,7 @@ PRODUCTS: list[ProductData] = [
         "sku": "OW-001",
         "name": "Denim Jacket",
         "price_cents": 7500,
+        "compare_at_price_cents": 9500,
         "stock_count": 30,
         "min_margin": 0.18,
         "image_url": "/prod_9.jpeg",
@@ -365,6 +371,7 @@ PRODUCTS: list[ProductData] = [
         "sku": "AC-002",
         "name": "Classic Sunglasses",
         "price_cents": 2200,
+        "compare_at_price_cents": 2800,
         "stock_count": 80,
         "min_margin": 0.15,
         "image_url": "/prod_13.jpeg",
@@ -418,6 +425,7 @@ PRODUCTS: list[ProductData] = [
         "sku": "FW-001",
         "name": "Canvas Sneakers",
         "price_cents": 4900,
+        "compare_at_price_cents": 6000,
         "stock_count": 65,
         "min_margin": 0.15,
         "image_url": "/prod_15.jpeg",

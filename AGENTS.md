@@ -35,6 +35,7 @@ This project implements ACP/UCP flows with strict architecture contracts. Do not
 | Agent integration details | `src/agents/README.md` |
 | System architecture and data flow | `docs/architecture.md` |
 | Feature-specific behavior | `docs/features/index.md` and `docs/features/feature-XX-*.md` |
+| Storefront, chat agent, order tracking | `docs/features/feature-18-matter-storefront.md` |
 | Docker deployment, common operations | `deploy/docker-deployment.md` |
 | Local development, `install.sh`/`stop.sh` | `deploy/local-development.md` |
 
@@ -125,6 +126,7 @@ Trigger: dependency vulnerability, CVE, BDSA, GHSA, OSV, Dependabot, Black Duck,
 Agentic Commerce Protocol (ACP) reference implementation:
 - Backend: Python 3.12+, FastAPI, SQLModel
 - Frontend: Next.js 15+, React 19, Tailwind, Kaizen UI
+- Storefront (`src/storefront`, port 3002): Next.js 16, Tailwind v4 `@theme` tokens, NIM chat agent
 
 Core docs:
 - `docs/features.md` for feature status and acceptance criteria
@@ -156,6 +158,12 @@ Frontend:
 - Protocol logs: `src/ui/hooks/useACPLog.tsx`, `src/ui/hooks/useAgentActivityLog.tsx`
 - API client: `src/ui/lib/api-client.ts`
 
+Storefront:
+- Chat agent route (SSE): `src/storefront/app/api/chat/route.ts`, agent loop in `src/storefront/lib/agent/`
+- Cart mirrored to one ACP session: `src/storefront/lib/commerce/cart-store.ts`, `src/storefront/lib/commerce/session-sync.ts`
+- Proxies and webhook receiver: `src/storefront/app/api/proxy/`, `src/storefront/app/api/webhooks/acp/route.ts`
+- Server env: `src/storefront/lib/env.ts`
+
 Agent configs:
 - `src/agents/configs/promotion.yml`
 - `src/agents/configs/post-purchase.yml`
@@ -182,6 +190,15 @@ uvicorn src.apps_sdk.main:app --reload --port 2091
 cd src/ui
 pnpm install
 pnpm run dev
+```
+
+### Storefront
+```bash
+# Matter storefront (port 3002)
+cd src/storefront
+cp env.example .env.local   # first run only
+pnpm install
+pnpm dev
 ```
 
 ### Apps SDK widget
@@ -216,6 +233,9 @@ curl http://localhost:8000/health
 curl http://localhost:8001/health
 curl http://localhost:2091/health
 
+# Storefront (expect 200)
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3002/
+
 # NAT agents (when running locally)
 curl http://localhost:8002/health
 curl http://localhost:8003/health
@@ -241,7 +261,7 @@ docker compose -f docker-compose.infra.yml -f docker-compose.yml logs --tail 200
 
 ## Quality Gates (Canonical)
 
-Frontend (`src/ui/`):
+Frontend (`src/ui/` and `src/storefront/`, run in each directory):
 ```bash
 pnpm test:run
 pnpm lint

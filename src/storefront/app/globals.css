@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-text-secondary: #666666;
+  --color-border: #f7f7f7;
+  --color-surface: #f7f7f7;
+  --color-surface-strong: #efefef;
+  --color-primary: #312e81;
+  --color-primary-soft: #d0cbff;
+  --color-primary-tint: #d9d4ff;
+  --color-line: #e5e5e5; /* chat form borders (reference) */
+  --color-deal-bg: #e3f3e8; /* NN% OFF chip, chat carousel only (reference) */
+  --color-deal-text: #178a3c;
+  --color-badge-dark: rgba(0, 0, 0, 0.65); /* "1 message" tooltip */
+  --color-glass: rgba(255, 255, 255, 0.18); /* chips over the blurred backdrop */
+  --color-scrim: rgba(0, 0, 0, 0.2);
+
+  /* Typography */
+  --text-hero: 44px;
+  --text-hero--line-height: 1.1;
+  --text-eyebrow: 24px;
+  --text-h2: 32px;
+  --text-title: 17px; /* section titles, chat greeting, card title */
+  --text-body-l: 18px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-caption: 13px;
+  --text-micro: 12px;
+
+  /* Radii */
+  --radius-badge: 4px;
+  --radius-sale: 6px;
+  --radius-input: 8px;
+  --radius-tile: 8px;
+  --radius-card: 10px;
+  --radius-panel: 16px;
+  --radius-pill: 100px;
+
+  /* Shadows */
+  --shadow-float: rgba(0, 0, 0, 0.15) 0px 4px 20px 0px;
+  --shadow-deep: rgba(0, 0, 0, 0.15) 0px 5px 30px 0px;
+
+  /* Motion */
+  --ease-hover: ease-out;
+  --duration-hover: 0.25s;
+  --duration-surface: 0.3s;
+  --hover-lift: 4px;
+  --hover-scale: 1.03;
+  --blur-overlay: 28px;
+
+  /* Layout */
+  --spacing: 4px; /* 16px = 4 units, grid gap 8px = 2 units */
+  --nav-height: 56px;
+  --container-page: 120rem;
+  --container-content: 42rem;
+  --chat-card-width: 640px;
+  --chat-composer-width: 353px;
+
+  /* Animations */
+  --animate-orb: orb-breathe 6s ease-in-out infinite;
+
+  @keyframes orb-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: scale(1.08);
+      filter: brightness(1.15);
+    }
+  }
+}
+
+/* next/font exposes the families as CSS variables on <html>. */
+@theme inline {
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    line-height: 1.4;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-primary);
+    color: #ffffff;
+    padding: 12px 24px;
+    font-size: var(--text-small);
+    font-weight: 600;
+    transition: opacity var(--duration-hover) var(--ease-hover);
+  }
+
+  .btn-pill:hover {
+    opacity: 0.9;
+  }
+
+  .btn-pill:disabled,
+  .btn-pill[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface-strong);
+    color: var(--color-text);
+    padding: 12px 24px;
+    font-size: var(--text-small);
+  }
+
+  .btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    border: 1.6px solid rgba(0, 0, 0, 0.15);
+    color: var(--color-text);
+    padding: 8px 16px;
+    font-size: var(--text-caption);
+    transition: border-color var(--duration-hover) var(--ease-hover);
+  }
+
+  .btn-outline:hover {
+    border-color: rgba(0, 0, 0, 0.35);
+  }
+
+  .btn-filled {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: var(--radius-sale);
+    background-color: #f5f5f5;
+    color: var(--color-primary);
+    padding: 4px 10px;
+    font-size: var(--text-caption);
+    font-weight: 600;
+    transition: background-color var(--duration-hover) var(--ease-hover);
+  }
+
+  .btn-filled:hover {
+    background-color: var(--color-surface-strong);
+  }
+
+  .orb {
+    background: radial-gradient(circle at 35% 30%, #d0cbff 0%, #312e81 55%, #1e1b4b 100%);
+  }
+
+  /* Monochrome logo glyph that inherits currentColor. */
+  .logo-mark {
+    background-color: currentColor;
+    mask: url("/logo.svg") center / contain no-repeat;
+  }
+
+  /* Placeholder until public/hero.jpg exists: warm beige → deep indigo. */
+  .hero-fallback {
+    background: linear-gradient(
+      165deg,
+      #efe5d8 0%,
+      #dcc9b3 28%,
+      #a08fb0 55%,
+      #4a438f 78%,
+      #1e1b4b 100%
+    );
+  }
+
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.35) 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

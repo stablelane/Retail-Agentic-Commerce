@@ -5,7 +5,7 @@ set -euo pipefail
 # install.sh — Local development setup for Retail Agentic Commerce
 #
 # Starts Docker infrastructure (Milvus, Phoenix, MinIO), installs dependencies,
-# seeds the vector database, starts all 8 services in background, verifies health.
+# seeds the vector database, starts all 9 services in background, verifies health.
 # Usage: ./install.sh
 # Stop:  ./stop.sh
 # =============================================================================
@@ -18,6 +18,7 @@ ROOT_VENV="$ROOT_DIR/.venv"
 AGENTS_DIR="$ROOT_DIR/src/agents"
 AGENTS_VENV="$AGENTS_DIR/.venv"
 UI_DIR="$ROOT_DIR/src/ui"
+STOREFRONT_DIR="$ROOT_DIR/src/storefront"
 WIDGET_DIR="$ROOT_DIR/src/apps_sdk/web"
 
 # --- Colors ----------------------------------------------------------------
@@ -133,6 +134,15 @@ if [ -z "${NVIDIA_API_KEY:-}" ] || [ "$NVIDIA_API_KEY" = "nvapi-xxx" ]; then
 fi
 ok "NVIDIA_API_KEY is set"
 
+# Fan out merchant webhooks to the storefront too (process env overrides .env for the merchant)
+STOREFRONT_WEBHOOK_URL="http://localhost:3002/api/webhooks/acp"
+WEBHOOK_URL="${WEBHOOK_URL:-}"
+case ",${WEBHOOK_URL// /}," in
+    *",$STOREFRONT_WEBHOOK_URL,"*) ;;
+    *) export WEBHOOK_URL="${WEBHOOK_URL:-http://localhost:3000/api/webhooks/acp},$STOREFRONT_WEBHOOK_URL" ;;
+esac
+ok "Merchant WEBHOOK_URL: $WEBHOOK_URL"
+
 # Warn on non-default NIM endpoints
 if [ "${NIM_LLM_BASE_URL:-}" != "https://integrate.api.nvidia.com/v1" ] || \
    [ "${NIM_EMBED_BASE_URL:-}" != "https://integrate.api.nvidia.com/v1" ]; then
@@ -210,6 +220,16 @@ if [ ! -f ".env.local" ]; then
 fi
 pnpm install --frozen-lockfile 2>/dev/null || pnpm install
 ok "UI dependencies installed"
+
+# Storefront (Feature 18)
+info "Installing storefront dependencies..."
+cd "$STOREFRONT_DIR"
+if [ ! -f ".env.local" ]; then
+    cp env.example .env.local
+    ok "Created src/storefront/.env.local from env.example"
+fi
+pnpm install --frozen-lockfile 2>/dev/null || pnpm install
+ok "Storefront dependencies installed"
 
 # Apps SDK Widget (non-blocking)
 info "Installing Apps SDK widget dependencies..."
@@ -329,6 +349,17 @@ SVC_PIDS+=("$UI_PID")
 info "  Started ui (PID $UI_PID, port 3000) → logs/ui.log"
 cd "$ROOT_DIR"
 
+# --- Storefront (Next.js dev server) ---
+cd "$STOREFRONT_DIR"
+pnpm dev > "$LOG_DIR/storefront.log" 2>&1 &
+STOREFRONT_PID=$!
+echo "$STOREFRONT_PID:storefront" >> "$PID_FILE"
+SVC_NAMES+=("storefront")
+SVC_PORTS+=("3002")
+SVC_PIDS+=("$STOREFRONT_PID")
+info "  Started storefront (PID $STOREFRONT_PID, port 3002) → logs/storefront.log"
+cd "$ROOT_DIR"
+
 ok "All services launched"
 
 # =============================================================================
@@ -340,9 +371,9 @@ sleep 15
 printf "\n${BOLD}%-25s %-6s %-8s %s${NC}\n" "SERVICE" "PORT" "STATUS" "PID"
 printf "%-25s %-6s %-8s %s\n"  "-------" "----" "------" "---"
 
-HEALTH_ENDPOINTS_NAMES=( "merchant" "psp" "apps-sdk" "promotion-agent" "post-purchase-agent" "recommendation-agent" "search-agent" "ui" )
-HEALTH_ENDPOINTS_PORTS=( 8000       8001  2091       8002              8003                  8004                   8005           3000 )
-HEALTH_ENDPOINTS_PATHS=( "/health"  "/health" "/health" "/health"      "/health"             "/health"              "/health"      "/" )
+HEALTH_ENDPOINTS_NAMES=( "merchant" "psp" "apps-sdk" "promotion-agent" "post-purchase-agent" "recommendation-agent" "search-agent" "ui" "storefront" )
+HEALTH_ENDPOINTS_PORTS=( 8000       8001  2091       8002              8003                  8004                   8005           3000 3002 )
+HEALTH_ENDPOINTS_PATHS=( "/health"  "/health" "/health" "/health"      "/health"             "/health"              "/health"      "/"  "/" )
 
 ALL_HEALTHY=true
 
@@ -389,6 +420,7 @@ fi
 
 printf "\n${BOLD}Access URLs:${NC}\n"
 echo "  Demo UI:         http://localhost:3000"
+echo "  Storefront:      http://localhost:3002"
 echo "  Merchant API:    http://localhost:8000/docs"
 echo "  PSP:             http://localhost:8001/docs"
 echo "  Apps SDK MCP:    http://localhost:2091/docs"
