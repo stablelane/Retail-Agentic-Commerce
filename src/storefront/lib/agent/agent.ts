@@ -18,7 +18,7 @@ export interface ChatTurnDeps {
   log?: (line: string) => void;
 }
 
-const MAX_TOOL_RESULT_CHARS = 4000;
+const MAX_TOOL_RESULT_CHARS = 12000;
 const MAX_SUGGESTIONS = 4;
 
 /**
@@ -63,7 +63,16 @@ export async function runChatTurn(
   async function runDeterministic(turn: RoutedTurn): Promise<void> {
     emit({ event: "text", data: { delta: turn.text } });
     emitted = true;
-    await runTool(turn.name, turn.args);
+    const outcome = await runTool(turn.name, turn.args);
+    const products = (outcome.result as { products?: unknown }).products;
+    if (outcome.ok && outcome.blocks.length === 0 && Array.isArray(products)) {
+      emit({
+        event: "text",
+        data: {
+          delta: " Nothing matches that right now. Try different dates or another type of event.",
+        },
+      });
+    }
   }
 
   function fallbackTurn(): RoutedTurn {
@@ -115,7 +124,13 @@ export async function runChatTurn(
         emit({ event: "text", data: { delta } });
       }
 
-      if (calls.length === 0 || toolChoice === "none") return;
+      if (calls.length === 0 || toolChoice === "none") {
+        // Some models end a tool-heavy turn with no prose; never leave the cards unexplained.
+        if (!textSoFar && emitted) {
+          emit({ event: "text", data: { delta: "Here's what I found for you." } });
+        }
+        return;
+      }
 
       messages.push({
         role: "assistant",

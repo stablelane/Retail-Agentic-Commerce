@@ -121,7 +121,7 @@ workflow:
     DO NOT skip the tool call. The search is REQUIRED.
     
     Search query should describe complementary items for the cart contents.
-    Example: if cart has "Bomber Jacket", search for "casual pants accessories footwear to pair with jacket"
+    Example: if cart has "La Perle", search for "Dubai live entertainment family attractions the same evening"
     
     AFTER RECEIVING SEARCH RESULTS - APPLY ARAG METHODOLOGY:
     =========================================================

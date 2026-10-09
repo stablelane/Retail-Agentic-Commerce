@@ -1,0 +1,2354 @@
+[
+  {
+    "slug": "the-tsars-bride",
+    "id": "evt_the-tsars-bride",
+    "sku": "EVT-THETSARSBRIDE",
+    "name": "The Tsar's Bride by Bolshoi Theatre",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Watch the iconic Russian production",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/b/the-tsars-bride-by-bolshoi-theatre-supplied-oct-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/the-tsars-bride",
+    "price_aed_from": 350,
+    "booking_domain": "",
+    "dates": [
+      {
+        "starts_at": "2026-12-02T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "the-way-back-home",
+    "id": "evt_the-way-back-home",
+    "sku": "EVT-THEWAYBACKHOME",
+    "name": "The Way Back Home - live on stage",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Experience a magial children's tale",
+    "venue": "The New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/t/the-way-back-home-supplied-feb-2026.jpg?cx=0.46&cy=0.56",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/the-way-back-home",
+    "price_aed_from": 135,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-31T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-01T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "the new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "dubai-basketball-crvena-zvezda",
+    "id": "evt_dubai-basketball-crvena-zvezda",
+    "sku": "EVT-DUBAIBASKETBALLC",
+    "name": "Dubai Basketball vs Crvena Zvezda",
+    "category": "sports",
+    "subcategory": "sports",
+    "description": "Get ready to cheer from the sidelines",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-basketball-vs-partizan-eventorganiser-oct-2025.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-basketball-crvena-zvezda",
+    "price_aed_from": 30,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-08T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "sports",
+      "sports",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "symphonic-orchestra-concert-bolshoi-theatre",
+    "id": "evt_symphonic-orchestra-concert-bolshoi-theatre",
+    "sku": "EVT-SYMPHONICORCHEST",
+    "name": "Symphonic Orchestra Concert by Bolshoi Theatre",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "An evening of musical brilliance",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/b/symphonic-orchestra-concert-by-bolshoi-theatre-dubai-opera-supplied-oct-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/symphonic-orchestra-concert-bolshoi-theatre",
+    "price_aed_from": 350,
+    "booking_domain": "",
+    "dates": [
+      {
+        "starts_at": "2026-12-03T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "tough-mudder",
+    "id": "evt_tough-mudder",
+    "sku": "EVT-TOUGHMUDDER",
+    "name": "Tough Mudder",
+    "category": "live-entertainment",
+    "subcategory": "outdoor-fitness",
+    "description": "Take on a muddy, epic challenge",
+    "venue": "The Sevens Stadium",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/t/tough-mudder/fallback-image/toughmudderjeepeventorganiserjan2021jpg.jpg?cx=0.52&cy=0.56",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/tough-mudder",
+    "price_aed_from": 110,
+    "booking_domain": "toughmuddermiddleeast.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-31T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-01T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "outdoor-fitness",
+      "the sevens stadium"
+    ]
+  },
+  {
+    "slug": "the-amy-winehouse-band",
+    "id": "evt_the-amy-winehouse-band",
+    "sku": "EVT-THEAMYWINEHOUSEB",
+    "name": "The Amy Winehouse Band",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Relive the magic of a once-in-a-generation voice",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/t/the-amy-winehouse-band-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/the-amy-winehouse-band",
+    "price_aed_from": 300,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-08T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "secondhand-serenade-live",
+    "id": "evt_secondhand-serenade-live",
+    "sku": "EVT-SECONDHANDSERENA",
+    "name": "Secondhand Serenade live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Rediscover John Vesely's iconic noughties hits",
+    "venue": "Jubilee Park, Expo City Dubai",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/j/secondhand-serenade-supplied-jun-2026.jpg?cx=0.52&cy=0.44",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/secondhand-serenade-live",
+    "price_aed_from": 199,
+    "booking_domain": "www.ticketmaster.ae",
+    "dates": [
+      {
+        "starts_at": "2026-12-05T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "jubilee park, expo city dubai"
+    ]
+  },
+  {
+    "slug": "benjamin-clementine",
+    "id": "evt_benjamin-clementine",
+    "sku": "EVT-BENJAMINCLEMENTI",
+    "name": "Benjamin Clementine live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Experience the distinctive sound of the British musician",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/b/benjamin-clementine-supplied-aug-2026-copy.jpg?cx=0.58&cy=0.36",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/benjamin-clementine",
+    "price_aed_from": 500,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-01T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "carl-cox-pacha-icons",
+    "id": "evt_carl-cox-pacha-icons",
+    "sku": "EVT-CARLCOXPACHAICON",
+    "name": "Carl Cox | Season Opening at Pacha ICONS",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Gear up for an epic celebration of electronic music",
+    "venue": "Playa Pacha, FIVE LUXE JBR",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/p/carl-cox-pacha-icons-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/carl-cox-pacha-icons",
+    "price_aed_from": 200,
+    "booking_domain": "www.pachaicons.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-09T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "playa pacha, five luxe jbr"
+    ]
+  },
+  {
+    "slug": "pacha-icons-andme",
+    "id": "evt_pacha-icons-andme",
+    "sku": "EVT-PACHAICONSANDME",
+    "name": "Pacha ICONS: &ME",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Get ready to dance along with the EDM hitmaker",
+    "venue": "Playa Pacha, FIVE LUXE JBR",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/p/five-luxe-pacha-icons-4.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/pacha-icons-andme",
+    "price_aed_from": 200,
+    "booking_domain": "www.pachaicons.com",
+    "dates": [
+      {
+        "starts_at": "2026-12-05T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "playa pacha, five luxe jbr"
+    ]
+  },
+  {
+    "slug": "alaa-el-sheikh-live",
+    "id": "evt_alaa-el-sheikh-live",
+    "sku": "EVT-ALAAELSHEIKHLIVE",
+    "name": "Alaa El Sheikh live",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Sign up for a night of laughter with the Egyptian comic",
+    "venue": "JAFZA One Convention Centre",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/alaa-el-sheikh-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/alaa-el-sheikh-live",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-09T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "jafza one convention centre"
+    ]
+  },
+  {
+    "slug": "mushrif-park-run",
+    "id": "evt_mushrif-park-run",
+    "sku": "EVT-MUSHRIFPARKRUN",
+    "name": "Mushrif Park Run",
+    "category": "live-entertainment",
+    "subcategory": "running",
+    "description": "Explore one of Dubai's largest parks on foot",
+    "venue": "Mushrif National Park",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/m/mushrif-park-half-marathon.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/mushrif-park-run",
+    "price_aed_from": 125,
+    "booking_domain": "www.premieronline.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-01T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "running",
+      "mushrif national park"
+    ]
+  },
+  {
+    "slug": "bohemia-presents-robin-schulz",
+    "id": "evt_bohemia-presents-robin-schulz",
+    "sku": "EVT-BOHEMIAPRESENTSR",
+    "name": "Bohemia Presents Robin Schulz",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "The house heavyweight returns to Dubai",
+    "venue": "Bohemia Beach Club, FIVE Palm Jumeirah",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/r/robin-schulz-bohemia-presents-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/bohemia-presents-robin-schulz",
+    "price_aed_from": 900,
+    "booking_domain": "www.bohemiadubai.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "bohemia beach club, five palm jumeirah"
+    ]
+  },
+  {
+    "slug": "jony-live",
+    "id": "evt_jony-live",
+    "sku": "EVT-JONYLIVE",
+    "name": "Jony live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Feel the beats of the Russian star's biggest hits",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/j/jony-supplied-jul-2026.jpg?cx=0.43&cy=0.51",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/jony-live",
+    "price_aed_from": 295,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-04T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "jamie-lever-live",
+    "id": "evt_jamie-lever-live",
+    "sku": "EVT-JAMIELEVERLIVE",
+    "name": "Dubai Comedy Festival: Jamie Lever",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Giggle at the Indian star's Bollywood impersonations",
+    "venue": "Emirates Theatre Jumeirah",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/jamie-lever-dcf-supplied-jul-2026.png?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/jamie-lever-live",
+    "price_aed_from": 145,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "emirates theatre jumeirah"
+    ]
+  },
+  {
+    "slug": "alone-in-the-universe",
+    "id": "evt_alone-in-the-universe",
+    "sku": "EVT-ALONEINTHEUNIVER",
+    "name": "Alone in the Universe",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Watch this Russian play on complex relationships",
+    "venue": "Meyana Theatre, Jumeirah Beach Hotel",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/r/alone-in-the-universe-play-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/alone-in-the-universe",
+    "price_aed_from": 550,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-12-06T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "meyana theatre, jumeirah beach hotel"
+    ]
+  },
+  {
+    "slug": "skechers-performance-night-run-2",
+    "id": "evt_skechers-performance-night-run-2",
+    "sku": "EVT-SKECHERSPERFORMA",
+    "name": "SKECHERS Performance Night Run 2",
+    "category": "live-entertainment",
+    "subcategory": "running",
+    "description": "Get your adrenaline pumping under the moonlight",
+    "venue": "Meydan Royal Bridge",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/s/skechers-performance-night-run-3000px-x-2000px.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/skechers-performance-night-run-2",
+    "price_aed_from": 50,
+    "booking_domain": "www.premieronline.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-04T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "running",
+      "meydan royal bridge"
+    ]
+  },
+  {
+    "slug": "frequency-971",
+    "id": "evt_frequency-971",
+    "sku": "EVT-FREQUENCY971",
+    "name": "Frequency 971: Benny Benasi, Morten and DJ Slim",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Groove to unmissable electonic beats",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/f/frequency-971-benny-benassi-and-morten-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/frequency-971",
+    "price_aed_from": 99,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "enrico-macias-live",
+    "id": "evt_enrico-macias-live",
+    "sku": "EVT-ENRICOMACIASLIVE",
+    "name": "Enrico Macias live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Spend an elegant evening with the French legend",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/e/enrico-macias-supplied-may-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/enrico-macias-live",
+    "price_aed_from": 295,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-12-10T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "amr-diab-live",
+    "id": "evt_amr-diab-live",
+    "sku": "EVT-AMRDIABLIVE",
+    "name": "Amr Diab live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "The King of Arabic pop returns this winter",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/amr-diab-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/amr-diab-live",
+    "price_aed_from": 295,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-07T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "muhandis-al-thouq-al-aam",
+    "id": "evt_muhandis-al-thouq-al-aam",
+    "sku": "EVT-MUHANDISALTHOUQA",
+    "name": "Dubai Comedy Festival: Muhandis Al Thouq Al Aam",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "A hilarious play on life's quirks",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/mohandis-dcf-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/muhandis-al-thouq-al-aam",
+    "price_aed_from": 260,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-09T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "guy-manoukian",
+    "id": "evt_guy-manoukian",
+    "sku": "EVT-GUYMANOUKIAN",
+    "name": "Guy Manoukian live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Enjoy an evening with the musical maestro",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/g/guy-manoukian-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/guy-manoukian",
+    "price_aed_from": 330,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-12-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "bohemia-presents-jonas-blue",
+    "id": "evt_bohemia-presents-jonas-blue",
+    "sku": "EVT-BOHEMIAPRESENTSJ",
+    "name": "Bohemia Presents Jonas Blue",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Feel the energy as the global hitmaker returns to Dubai",
+    "venue": "Bohemia Beach Club, FIVE Palm Jumeirah",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/b/bohemia-presents-jonas-blue-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/bohemia-presents-jonas-blue",
+    "price_aed_from": 100,
+    "booking_domain": "www.bohemiadubai.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-07T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "bohemia beach club, five palm jumeirah"
+    ]
+  },
+  {
+    "slug": "sonny-fodera",
+    "id": "evt_sonny-fodera",
+    "sku": "EVT-SONNYFODERA",
+    "name": "Pacha ICONS with Sonny Fodera live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Catch the unmissable beats of the London-based DJ",
+    "venue": "FIVE LUXE, JBR ",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/s/sonny-fodera-officialwebsite-jan-2026.jpg?cx=0.5&cy=0.55",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/sonny-fodera",
+    "price_aed_from": 150,
+    "booking_domain": "www.pachaicons.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "five luxe, jbr "
+    ]
+  },
+  {
+    "slug": "mahmut-orhan-live",
+    "id": "evt_mahmut-orhan-live",
+    "sku": "EVT-MAHMUTORHANLIVE",
+    "name": "Mahmut Orhan live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Groove to the Turkish DJ's infectious beats",
+    "venue": "Ushua\u00efa Dubai Harbour Experience",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/m/mahmut-orhan-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/mahmut-orhan-live",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-12-12T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "ushua\u00efa dubai harbour experience"
+    ]
+  },
+  {
+    "slug": "ministry-of-sound-classical-dubai-opera",
+    "id": "evt_ministry-of-sound-classical-dubai-opera",
+    "sku": "EVT-MINISTRYOFSOUNDC",
+    "name": "Ministry of Sound Classical",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Relive dance anthems with an orchestral twist",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/m/ministry-of-sound-classical-supplied-oct-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/ministry-of-sound-classical-dubai-opera",
+    "price_aed_from": 350,
+    "booking_domain": "",
+    "dates": [
+      {
+        "starts_at": "2026-11-07T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "oceanman",
+    "id": "evt_oceanman",
+    "sku": "EVT-OCEANMAN",
+    "name": "Oceanman Open Water Swim",
+    "category": "live-entertainment",
+    "subcategory": "swimming",
+    "description": "Push your limits at an open-water swimming event",
+    "venue": "Al Mamzar Beach Park",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/poi/a/al-mamzar-beach-park/fallback-image/al-mamzar-beach-park-01/al-mamzar-beach-park-poi-shutterstock.jpg?cx=0.24&cy=0.49",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/oceanman",
+    "price_aed_from": 170,
+    "booking_domain": "oceanmanswim.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-07T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-08T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "swimming",
+      "al mamzar beach park"
+    ]
+  },
+  {
+    "slug": "denis-matsuev-live-2",
+    "id": "evt_denis-matsuev-live-2",
+    "sku": "EVT-DENISMATSUEVLIVE",
+    "name": "Denis Matsuev live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Gear up for an evening of classical harmonies",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/denis-matsuev-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/denis-matsuev-live-2",
+    "price_aed_from": 350,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-12-16T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "plus500-city-half-marathon",
+    "id": "evt_plus500-city-half-marathon",
+    "sku": "EVT-PLUS500CITYHALFM",
+    "name": "Plus500 City Half Marathon 2026",
+    "category": "live-entertainment",
+    "subcategory": "running",
+    "description": "Lace up for a vibrant race this winter",
+    "venue": "Gate Building, DIFC",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/p/plus500-half-marathon-website-jun-2026.jpg?cx=0.48&cy=0.64",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/plus500-city-half-marathon",
+    "price_aed_from": 157,
+    "booking_domain": "promosevensports.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-08T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "running",
+      "gate building, difc"
+    ]
+  },
+  {
+    "slug": "world-championship-of-legends",
+    "id": "evt_world-championship-of-legends",
+    "sku": "EVT-WORLDCHAMPIONSHI",
+    "name": "World Championship of Legends",
+    "category": "sports",
+    "subcategory": "sports",
+    "description": "Catch cricket\u2019s greatest icons in action",
+    "venue": "Dubai International Cricket Stadium, Dubai Sports City",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/w/world-championship-legends-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/world-championship-of-legends",
+    "price_aed_from": 35,
+    "booking_domain": "www.wclcricket.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-09T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "sports",
+      "sports",
+      "dubai international cricket stadium, dubai sports city"
+    ]
+  },
+  {
+    "slug": "hariharan-live",
+    "id": "evt_hariharan-live",
+    "sku": "EVT-HARIHARANLIVE",
+    "name": "The Mehfil Studio: Hariharan live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Sign up for an evening of timeless tunes",
+    "venue": "Dubai World Trade Centre",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/h/hariharan-mehfil-stuido-supplied-sept-2026.jpg?cx=0.63&cy=0.53",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/hariharan-live",
+    "price_aed_from": 127,
+    "booking_domain": "",
+    "dates": [
+      {
+        "starts_at": "2026-12-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai world trade centre"
+    ]
+  },
+  {
+    "slug": "strings-and-dreams-5",
+    "id": "evt_strings-and-dreams-5",
+    "sku": "EVT-STRINGSANDDREAMS",
+    "name": "Strings & Dreams - A Spanish Journey in Dubai",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Gear up for an evening of virtuoso string music",
+    "venue": "Meyana Theatre, Jumeirah Beach Hotel",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/s/strings-and-dreams-event-organiser.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/strings-and-dreams-5",
+    "price_aed_from": 280,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "meyana theatre, jumeirah beach hotel"
+    ]
+  },
+  {
+    "slug": "abracadabra",
+    "id": "evt_abracadabra",
+    "sku": "EVT-ABRACADABRA",
+    "name": "Abra Kadabra",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "A hilarious play with mysterious elements",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/abrakadabra-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/abracadabra",
+    "price_aed_from": 230,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-11-19T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-23T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-28T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-02T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-06T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-10T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-15T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-19T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "dubai-police-triathlon",
+    "id": "evt_dubai-police-triathlon",
+    "sku": "EVT-DUBAIPOLICETRIAT",
+    "name": "Dubai Police Triathlon",
+    "category": "sports",
+    "subcategory": "sports",
+    "description": "Participate in this community-focused event",
+    "venue": "Al Mamzar Beach Park",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-police-triathlon-3000px-x-2000px.jpg?cx=0.16&cy=0.21",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-police-triathlon",
+    "price_aed_from": 100,
+    "booking_domain": "www.premieronline.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "sports",
+      "sports",
+      "al mamzar beach park"
+    ]
+  },
+  {
+    "slug": "dopa-world",
+    "id": "evt_dopa-world",
+    "sku": "EVT-DOPAWORLD",
+    "name": "Dopa World",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Immerse yourself in Arab creativity",
+    "venue": "Jubilee Park, Expo City Dubai",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dopa-world-supplied-aug-2026-v2.jpg?cx=0.52&cy=0.49",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dopa-world",
+    "price_aed_from": 245,
+    "booking_domain": "www.dopa.world",
+    "dates": [
+      {
+        "starts_at": "2026-12-18T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-19T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "jubilee park, expo city dubai"
+    ]
+  },
+  {
+    "slug": "young-maestro",
+    "id": "evt_young-maestro",
+    "sku": "EVT-YOUNGMAESTRO",
+    "name": "Young Maestro: Travels from Baroque to Romanticism in Dubai",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Join the young ones on a melodious journey",
+    "venue": "Meyana Theatre, Jumeirah Beach Hotel",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/y/young-maestro-eventorganiser-jan-2025.jpg?cx=0.52&cy=0.33",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/young-maestro",
+    "price_aed_from": 280,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "meyana theatre, jumeirah beach hotel"
+    ]
+  },
+  {
+    "slug": "frank-by-danila-kozlovsky",
+    "id": "evt_frank-by-danila-kozlovsky",
+    "sku": "EVT-FRANKBYDANILAKOZ",
+    "name": "Frank by Danila Kozlovsky",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Be blown away by this one-man theatrical performance",
+    "venue": "Meyana Theatre, Jumeirah Beach Hotel",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/f/frank-by-danila-kozlovsky-eventorganiser-feb-2026.jpg?cx=0.49&cy=0.37",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/frank-by-danila-kozlovsky",
+    "price_aed_from": 650,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-11-13T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "meyana theatre, jumeirah beach hotel"
+    ]
+  },
+  {
+    "slug": "dastangoi",
+    "id": "evt_dastangoi",
+    "sku": "EVT-DASTANGOI",
+    "name": "Dastangoi",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Get immersed in the world of Urdu storytelling",
+    "venue": "Nawab, Jebel Ali Recreation Club",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dastangoi-supplied-sept-2026.jpg?cx=0.5&cy=0.37",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dastangoi",
+    "price_aed_from": 140,
+    "booking_domain": "www.district.ae",
+    "dates": [
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "nawab, jebel ali recreation club"
+    ]
+  },
+  {
+    "slug": "chicago-the-musical",
+    "id": "evt_chicago-the-musical",
+    "sku": "EVT-CHICAGOTHEMUSICA",
+    "name": "Chicago The Musical",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Feel the razzle dazzle of this iconic Broadway show",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/c/chicago-the-musical-supplied-may-2026.jpg?cx=0.48&cy=0.47",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/chicago-the-musical",
+    "price_aed_from": 49,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-12-16T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-17T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-18T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-19T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-20T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "pacha-icons-anotr",
+    "id": "evt_pacha-icons-anotr",
+    "sku": "EVT-PACHAICONSANOTR",
+    "name": "Pacha ICONS presents ANOTR",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Feel the beats with the house music superstars",
+    "venue": "Playa Pacha, FIVE LUXE JBR",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/anotr-playa-pacha-eventorganiser-jan-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/pacha-icons-anotr",
+    "price_aed_from": 150,
+    "booking_domain": "www.pachaicons.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-13T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "playa pacha, five luxe jbr"
+    ]
+  },
+  {
+    "slug": "cinderella-show",
+    "id": "evt_cinderella-show",
+    "sku": "EVT-CINDERELLASHOW",
+    "name": "Cinderella Show",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Welcome the festive season with a pantomime",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/c/cinderella-pantomime-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/cinderella-show",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-12-05T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-08T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-10T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-13T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-16T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-19T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-21T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-24T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "when-chai-met-toast",
+    "id": "evt_when-chai-met-toast",
+    "sku": "EVT-WHENCHAIMETTOAST",
+    "name": "When Chai Met Toast live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Jam out with the Indian indie favourites",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/w/when-chai-met-toast-supplied-may-2026.jpg?cx=0.49&cy=0.56",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/when-chai-met-toast",
+    "price_aed_from": 229,
+    "booking_domain": "www.malloftheemirates.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-14T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "rahat-fateh-ali-khan-cca",
+    "id": "evt_rahat-fateh-ali-khan-cca",
+    "sku": "EVT-RAHATFATEHALIKHA",
+    "name": "Rahat Fateh Ali Khan and Shah Zaman Ali Khan: Once Upon a Time World Tour",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Watch the Pakistani legend perform with his son",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/r/rahat-fateh-ali-khan-and-shah-zaman-ali-khan-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/rahat-fateh-ali-khan-cca",
+    "price_aed_from": 95,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-12-26T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "bohemia-presents-alex-wann-sona",
+    "id": "evt_bohemia-presents-alex-wann-sona",
+    "sku": "EVT-BOHEMIAPRESENTSA",
+    "name": "Bohemia Presents Alex Wann and SONA",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Turn up the volume for an Afro-house takeover",
+    "venue": "Bohemia Beach Club, FIVE Palm Jumeirah",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/b/five-palm-jumeirah_bohemia-beach-club_bohemia-presents_1.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/bohemia-presents-alex-wann-sona",
+    "price_aed_from": 100,
+    "booking_domain": "www.bohemiadubai.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-14T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "bohemia beach club, five palm jumeirah"
+    ]
+  },
+  {
+    "slug": "munawar-faruqui-dcf",
+    "id": "evt_munawar-faruqui-dcf",
+    "sku": "EVT-MUNAWARFARUQUIDC",
+    "name": "Dubai Comedy Festival: Munawar Faruqui",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Spend an fun evening with the Indian sensation",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/munawar-faruqui-dcf-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/munawar-faruqui-dcf",
+    "price_aed_from": 125,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "argy-live",
+    "id": "evt_argy-live",
+    "sku": "EVT-ARGYLIVE",
+    "name": "Argy Presents Neworld (New Year's Eve)",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Get ready for electrifying beats",
+    "venue": "Ushua\u00efa Dubai Harbour Experience",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/argy-presents-neworld-supplied-sept-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/argy-live",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-12-31T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "ushua\u00efa dubai harbour experience"
+    ]
+  },
+  {
+    "slug": "adriatique-x-show",
+    "id": "evt_adriatique-x-show",
+    "sku": "EVT-ADRIATIQUEXSHOW",
+    "name": "Adriatique present X",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "A musical event with cutting-edge sound and pioneering creativity",
+    "venue": "Dubai Harbour",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/adriatique-x-ushuaia-harbour-experience-eventorhaniser-aug-2024.jpg?cx=0.5&cy=0.61",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/adriatique-x-show",
+    "price_aed_from": 195,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-11-14T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai harbour"
+    ]
+  },
+  {
+    "slug": "pawsa-live",
+    "id": "evt_pawsa-live",
+    "sku": "EVT-PAWSALIVE",
+    "name": "New Year\u2019s Eve at Pacha ICONS with PAWSA",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Ring in 2027 with the house music icon",
+    "venue": "Playa Pacha, FIVE LUXE JBR",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/k/pacha-icons-nye-with-pawsa-supplied-sep-2026.jpg?cx=0.55&cy=0.44",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/pawsa-live",
+    "price_aed_from": 300,
+    "booking_domain": "www.pachaicons.com",
+    "dates": [
+      {
+        "starts_at": "2026-12-31T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "playa pacha, five luxe jbr"
+    ]
+  },
+  {
+    "slug": "aashish-solanki-live",
+    "id": "evt_aashish-solanki-live",
+    "sku": "EVT-AASHISHSOLANKILI",
+    "name": "Aashish Solanki live",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Get ready for a fun evening with the Indian comic",
+    "venue": "Emirates Theatre",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/ashish-solanki-standup-comedy-supplied-oct-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/aashish-solanki-live",
+    "price_aed_from": 125,
+    "booking_domain": "",
+    "dates": [
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "emirates theatre"
+    ]
+  },
+  {
+    "slug": "katherine-ryan-live",
+    "id": "evt_katherine-ryan-live",
+    "sku": "EVT-KATHERINERYANLIV",
+    "name": "Dubai Comedy Festival: Katherine Ryan",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Experience the talented comic's biting humour",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/k/katherine-ryan-dcf-supplied-aug-2026.jpg?cx=0.45&cy=0.44",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/katherine-ryan-live",
+    "price_aed_from": 195,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-12T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "hanne-at-meyana-theatre",
+    "id": "evt_hanne-at-meyana-theatre",
+    "sku": "EVT-HANNEATMEYANATHE",
+    "name": "Hann\u00e9",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Catch a play filled with humour and unexpected twists",
+    "venue": "Meyana Theatre",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/h/hanne-arabic-play-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/hanne-at-meyana-theatre",
+    "price_aed_from": 175,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "meyana theatre"
+    ]
+  },
+  {
+    "slug": "imad-kehdy-live",
+    "id": "evt_imad-kehdy-live",
+    "sku": "EVT-IMADKEHDYLIVE",
+    "name": "Dubai Comedy Festival: Imad Kehdy",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Buckle up for a hilarious evening",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates ",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dcf-imad-kehdy-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/imad-kehdy-live",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-12T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "new covent garden theatre, mall of the emirates "
+    ]
+  },
+  {
+    "slug": "public-prosecution-run",
+    "id": "evt_public-prosecution-run",
+    "sku": "EVT-PUBLICPROSECUTIO",
+    "name": "Public Prosecution Run 2026",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Be part of a fun community event",
+    "venue": "Public Prosecution, Dubai",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/p/public-prosecution-run-det-oct-2024.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/public-prosecution-run",
+    "price_aed_from": 120,
+    "booking_domain": "www.premieronline.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "public prosecution, dubai"
+    ]
+  },
+  {
+    "slug": "mo-gilligan-dcf",
+    "id": "evt_mo-gilligan-dcf",
+    "sku": "EVT-MOGILLIGANDCF",
+    "name": "Dubai Comedy Festival: Mo Gilligan",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Tune in for an evening of pure British humour",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/mo-gilligan-dcf-supplied-jul-2026.png?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/mo-gilligan-dcf",
+    "price_aed_from": 250,
+    "booking_domain": "www.dubaicomedyfest.ae",
+    "dates": [
+      {
+        "starts_at": "2026-10-12T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "arabian-soul-fest",
+    "id": "evt_arabian-soul-fest",
+    "sku": "EVT-ARABIANSOULFEST",
+    "name": "Arabian Soul Fest",
+    "category": "live-entertainment",
+    "subcategory": "recovery",
+    "description": "Embrace wellness through movement and connection",
+    "venue": "Zabeel Park",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/poi/z/zabeel-park/fallback-image/zabeel-park-02.jpg?cx=0.43&cy=0.69",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/arabian-soul-fest",
+    "price_aed_from": 75,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-11-14T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "recovery",
+      "zabeel park"
+    ]
+  },
+  {
+    "slug": "enissa-amani-dcf",
+    "id": "evt_enissa-amani-dcf",
+    "sku": "EVT-ENISSAAMANIDCF",
+    "name": "Dubai Comedy Festival: Enissa Amani",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Catch the Iranian-German comic live",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dcf-enissa-amani-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/enissa-amani-dcf",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-13T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "dp-world-tour-championship",
+    "id": "evt_dp-world-tour-championship",
+    "sku": "EVT-DPWORLDTOURCHAMP",
+    "name": "DP World Tour Championship",
+    "category": "live-entertainment",
+    "subcategory": "golf",
+    "description": "Golfing greats battle to win the DP World Tour Rankings",
+    "venue": "Jumeirah Golf Estates. Earth Course",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dp-world-tour-championship-supplied-feb-2026.jpg?cx=0.47&cy=0.75",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dp-world-tour-championship",
+    "price_aed_from": 55,
+    "booking_domain": "www.europeantour.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-12T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-13T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-14T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "golf",
+      "jumeirah golf estates. earth course"
+    ]
+  },
+  {
+    "slug": "mario-bassil-chady-maroun-aline-ahmar",
+    "id": "evt_mario-bassil-chady-maroun-aline-ahmar",
+    "sku": "EVT-MARIOBASSILCHADY",
+    "name": "Dubai Comedy Festival: Mario Bassil and Friends",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Spend a hilarious evening with the Lebanese comics",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dcf-mario-bassil-chady-maroun-aline-ahmar-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/mario-bassil-chady-maroun-aline-ahmar",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-14T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "ripe-market-community-run",
+    "id": "evt_ripe-market-community-run",
+    "sku": "EVT-RIPEMARKETCOMMUN",
+    "name": "Community Run at The Ripe Market",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Lace up for a fun race with family and friends",
+    "venue": "The Ripe Market, Dubai Police Academy Park",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/r/ripe-market-community-run.jpg?cx=0.51&cy=0.44",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/ripe-market-community-run",
+    "price_aed_from": 116,
+    "booking_domain": "promosevensports.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-04T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-29T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-11T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-23T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-06T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-18T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-12-31T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "the ripe market, dubai police academy park"
+    ]
+  },
+  {
+    "slug": "t100-triathlon",
+    "id": "evt_t100-triathlon",
+    "sku": "EVT-T100TRIATHLON",
+    "name": "Dubai T100 Triathlon",
+    "category": "live-entertainment",
+    "subcategory": "triathlon",
+    "description": "Test your speed, endurance and strategy",
+    "venue": "Al Mamzar",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-t100-triathlon-supplied-nov-2025.jpg?cx=0.45&cy=0.62",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/t100-triathlon",
+    "price_aed_from": 1074,
+    "booking_domain": "t100triathlon.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-13T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-14T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "triathlon",
+      "al mamzar"
+    ]
+  },
+  {
+    "slug": "global-village",
+    "id": "evt_global-village",
+    "sku": "EVT-GLOBALVILLAGE",
+    "name": "Global Village",
+    "category": "live-entertainment",
+    "subcategory": "shopping",
+    "description": "Shop, dine and chill at one of Dubai's most enduring attractions",
+    "venue": "Global Village",
+    "image_url": "https://www.visitdubai.com/-/media/migration/images/events/g/global-village-season-25-eventorganiser-oct-2020.jpg?cx=0.5&cy=0.67",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/global-village",
+    "price_aed_from": 25,
+    "booking_domain": "globalvillage.ae",
+    "dates": [
+      {
+        "starts_at": "2026-10-14T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "shopping",
+      "global village"
+    ]
+  },
+  {
+    "slug": "unity-run",
+    "id": "evt_unity-run",
+    "sku": "EVT-UNITYRUN",
+    "name": "Emirates NBD Unity Run",
+    "category": "family",
+    "subcategory": "family",
+    "description": "A charity run in support of people of determination",
+    "venue": "Dubai",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/u/unity-run-supplied-oct-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/unity-run",
+    "price_aed_from": 50,
+    "booking_domain": "www.unityrun.ae",
+    "dates": [
+      {
+        "starts_at": "2026-11-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "dubai"
+    ]
+  },
+  {
+    "slug": "pitch-them-perfect",
+    "id": "evt_pitch-them-perfect",
+    "sku": "EVT-PITCHTHEMPERFECT",
+    "name": "Dubai Comedy Festival: Pitch Them Perfect",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Join a live interactive show with a twist",
+    "venue": "Pepperoni Comedy Club, One Central",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/pitch-them-perfect-akkawi-dcf-supplied-sept-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/pitch-them-perfect",
+    "price_aed_from": 125,
+    "booking_domain": "www.dubaicomedyfest.ae",
+    "dates": [
+      {
+        "starts_at": "2026-10-09T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-11T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-12T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-13T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-14T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "pepperoni comedy club, one central"
+    ]
+  },
+  {
+    "slug": "alexander-merkul-dcf",
+    "id": "evt_alexander-merkul-dcf",
+    "sku": "EVT-ALEXANDERMERKULD",
+    "name": "Dubai Comedy Festival: Alexander Merkul",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Expect the unexpected at this improv show",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/alexander-dcf-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/alexander-merkul-dcf",
+    "price_aed_from": 150,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-15T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "anuv-jain-live",
+    "id": "evt_anuv-jain-live",
+    "sku": "EVT-ANUVJAINLIVE",
+    "name": "Anuv Jain live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "The Indian hitmaker launches his world tour from Dubai",
+    "venue": "Dubai Millenium Amphitheatre, Expo City Dubai",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/anuv-jain-supplied-apr-2026.jpg?cx=0.43&cy=0.31",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/anuv-jain-live",
+    "price_aed_from": 149,
+    "booking_domain": "www.livenation.me",
+    "dates": [
+      {
+        "starts_at": "2026-11-20T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai millenium amphitheatre, expo city dubai"
+    ]
+  },
+  {
+    "slug": "shane-todd-dcf",
+    "id": "evt_shane-todd-dcf",
+    "sku": "EVT-SHANETODDDCF",
+    "name": "Dubai Comedy Festival: Shane Todd",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Laugh along with the podcast sensation",
+    "venue": "New Covent Garden Theatre, Mall of Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/shane-todd-dc-supplied-jul-2026.png?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/shane-todd-dcf",
+    "price_aed_from": 195,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-16T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "new covent garden theatre, mall of emirates"
+    ]
+  },
+  {
+    "slug": "zarna-garg-dcf",
+    "id": "evt_zarna-garg-dcf",
+    "sku": "EVT-ZARNAGARGDCF",
+    "name": "Dubai Comedy Festival: Zarna Garg",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Catch the US-based Indian star's new show",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/z/zarna-garg-dcf-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/zarna-garg-dcf",
+    "price_aed_from": 195,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-16T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "bohemia-presents-mk",
+    "id": "evt_bohemia-presents-mk",
+    "sku": "EVT-BOHEMIAPRESENTSM",
+    "name": "Bohemia Presents MK",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Experience a night of unmatched energy",
+    "venue": "Bohemia Beach Club, FIVE Palm Jumeirah",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/m/mk-bohemia-presents-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/bohemia-presents-mk",
+    "price_aed_from": 100,
+    "booking_domain": "www.bohemiadubai.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-21T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "bohemia beach club, five palm jumeirah"
+    ]
+  },
+  {
+    "slug": "turf-games",
+    "id": "evt_turf-games",
+    "sku": "EVT-TURFGAMES",
+    "name": "Turf Games Dubai 2026",
+    "category": "live-entertainment",
+    "subcategory": "functional",
+    "description": "Build your team for this functional fitness competition",
+    "venue": "ISD Stadium, Dubai Sports City",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/s/sports-events/2023/jul/turf-games-officialwebsite-jul-2023.jpg?cx=0.63&cy=0.52",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/turf-games",
+    "price_aed_from": 2300,
+    "booking_domain": "turfgames.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-20T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-21T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "functional",
+      "isd stadium, dubai sports city"
+    ]
+  },
+  {
+    "slug": "abbas-bukhari",
+    "id": "evt_abbas-bukhari",
+    "sku": "EVT-ABBASBUKHARI",
+    "name": "Dubai Comedy Festival: Abbas Bukhari",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Get a dose of desi humour with the Pakistani comic",
+    "venue": "New Covent Garden, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/abbas-bukkhari-dcf-supplied-aug-2026.jpg?cx=0.53&cy=0.42",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/abbas-bukhari",
+    "price_aed_from": 295,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-16T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "new covent garden, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "spinneys-dubai-92-cycle-challenge-build-up-ride-",
+    "id": "evt_spinneys-dubai-92-cycle-challenge-build-up-ride-",
+    "sku": "EVT-SPINNEYSDUBAI92C",
+    "name": "\u200bSpinneys Dubai 92 Cycle Challenge Build-Up Ride 3",
+    "category": "live-entertainment",
+    "subcategory": "cycling",
+    "description": "Rolling up to the main event",
+    "venue": "Al Qudra Cycling Path",
+    "image_url": "https://www.visitdubai.com/-/media/dotsite/images/5-0-newsroom/2021/05/green-scene-21/al-qudra.jpg?cx=0.01&cy=0.6",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/spinneys-dubai-92-cycle-challenge-build-up-ride-3",
+    "price_aed_from": 86,
+    "booking_domain": "cyclechallenge.ae",
+    "dates": [
+      {
+        "starts_at": "2026-11-22T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "cycling",
+      "al qudra cycling path"
+    ]
+  },
+  {
+    "slug": "bohemia-presents-themba",
+    "id": "evt_bohemia-presents-themba",
+    "sku": "EVT-BOHEMIAPRESENTST",
+    "name": "Bohemia Presents THEMBA",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Groove to the South African DJ's pulsating beats",
+    "venue": "Bohemia Beach Club, FIVE Palm Jumeirah",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/b/bohemia-presents-themba-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/bohemia-presents-themba",
+    "price_aed_from": 100,
+    "booking_domain": "www.bohemiadubai.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "bohemia beach club, five palm jumeirah"
+    ]
+  },
+  {
+    "slug": "dubai-sail-grand-prix",
+    "id": "evt_dubai-sail-grand-prix",
+    "sku": "EVT-DUBAISAILGRANDPR",
+    "name": "Emirates Dubai Sail Grand Prix presented by DP World",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Gear up for Dubai's fastest weekend",
+    "venue": "Mina Rashid",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/s/dubai-sail-grand-prix-eventorganiser-oct-2023.jpg?cx=0.49&cy=0.71",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-sail-grand-prix",
+    "price_aed_from": 160,
+    "booking_domain": "tickets.sailgp.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-21T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-22T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "mina rashid"
+    ]
+  },
+  {
+    "slug": "neema-naz-dcf",
+    "id": "evt_neema-naz-dcf",
+    "sku": "EVT-NEEMANAZDCF",
+    "name": "Dubai Comedy Festival: Neema Naz",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Sign up for night of unfiltered jokes",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dcf-neema-naz-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/neema-naz-dcf",
+    "price_aed_from": 195,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "new covent garden theatre, mall of the emirates"
+    ]
+  },
+  {
+    "slug": "uae-lifeguard-championship",
+    "id": "evt_uae-lifeguard-championship",
+    "sku": "EVT-UAELIFEGUARDCHAM",
+    "name": "UAE Lifeguard Championship 2026",
+    "category": "live-entertainment",
+    "subcategory": "swimming",
+    "description": "Watch a test of endurance, fitness and skills",
+    "venue": "Atlantis, The Palm",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/u/uae-lifeguard-championship-2026-unsplash-feb-2026.jpg?cx=0.31&cy=0.54",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/uae-lifeguard-championship",
+    "price_aed_from": 400,
+    "booking_domain": "www.premieronline.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-24T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "swimming",
+      "atlantis, the palm"
+    ]
+  },
+  {
+    "slug": "one-year-of-pepperoni-club-dcf",
+    "id": "evt_one-year-of-pepperoni-club-dcf",
+    "sku": "EVT-ONEYEAROFPEPPERO",
+    "name": "Dubai Comedy Festival: One Year of Pepperoni",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Join the fun anniversary celebrations of the comedy club",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dcf-1-year-of-pepperoni-comedy-club-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/one-year-of-pepperoni-club-dcf",
+    "price_aed_from": 175,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "atif-aslam-live",
+    "id": "evt_atif-aslam-live",
+    "sku": "EVT-ATIFASLAMLIVE",
+    "name": "Atif Aslam Live",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "The hitmaker returns for another blockbuster show",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/atif-aslam-live-eventorganiser-feb-2026.jpg?cx=0.51&cy=0.58",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/atif-aslam-live",
+    "price_aed_from": 250,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-27T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "coca-cola arena"
+    ]
+  },
+  {
+    "slug": "navratri-utsav-3",
+    "id": "evt_navratri-utsav-3",
+    "sku": "EVT-NAVRATRIUTSAV3",
+    "name": "Navratri Utsav 2026",
+    "category": "family",
+    "subcategory": "family",
+    "description": "Celebrate the colourful spirit of Navratri",
+    "venue": "Zabeel Park Amphitheatre",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/n/navratri-utsav-dandiya-nights-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/navratri-utsav-3",
+    "price_aed_from": 20,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-16T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "family",
+      "family",
+      "zabeel park amphitheatre"
+    ]
+  },
+  {
+    "slug": "hiba-tawaji-ibrahim-maalouf",
+    "id": "evt_hiba-tawaji-ibrahim-maalouf",
+    "sku": "EVT-HIBATAWAJIIBRAHI",
+    "name": "Hiba Tawaji & Ibrahim Maalouf '\u00c0 La Fran\u00e7aise'",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Watch two exceptional talents come together on stage",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/i/ibrahim-maalouf-and-hiba-tawaji-eventoganiser-feb-2026.jpg?cx=0.5&cy=0.31",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/hiba-tawaji-ibrahim-maalouf",
+    "price_aed_from": 355,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-27T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "dubai-comedy-festival-rafi-bastos",
+    "id": "evt_dubai-comedy-festival-rafi-bastos",
+    "sku": "EVT-DUBAICOMEDYFESTI",
+    "name": "Dubai Comedy Festival: Rafi Bastos",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Laugh out loud with the Brazilian comedian",
+    "venue": "New Covent Garden Theatre",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/r/rafi-bastos-dcf-supplied-sep-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-comedy-festival-rafi-bastos",
+    "price_aed_from": 175,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "new covent garden theatre"
+    ]
+  },
+  {
+    "slug": "john-achkar-dcf",
+    "id": "evt_john-achkar-dcf",
+    "sku": "EVT-JOHNACHKARDCF",
+    "name": "Dubai Comedy Festival: John Achkar",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Watch the Lebanese star deliver his bold new set",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/john-achkar-dcf-supplied-jul-2026.png?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/john-achkar-dcf",
+    "price_aed_from": 185,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "dubai-7s",
+    "id": "evt_dubai-7s",
+    "sku": "EVT-DUBAI7S",
+    "name": "Emirates Dubai 7s",
+    "category": "live-entertainment",
+    "subcategory": "rugby",
+    "description": "Catch the action on and off the field",
+    "venue": "The Sevens Stadium",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-rugby-7s/emirates-7s-supplied-jul-2026.jpg?cx=0.5&cy=0.45",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-7s",
+    "price_aed_from": 75,
+    "booking_domain": "dubairugby7s.com",
+    "dates": [
+      {
+        "starts_at": "2026-11-27T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-28T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-29T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "rugby",
+      "the sevens stadium"
+    ]
+  },
+  {
+    "slug": "trevor-noah",
+    "id": "evt_trevor-noah",
+    "sku": "EVT-TREVORNOAH",
+    "name": "Trevor Noah live",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Roll out the red carpet for the global sensation",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/t/trevor-noah-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/trevor-noah",
+    "price_aed_from": 295,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-11-25T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-26T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-27T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-28T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-11-29T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "amit-tandon-dcf",
+    "id": "evt_amit-tandon-dcf",
+    "sku": "EVT-AMITTANDONDCF",
+    "name": "Dubai Comedy Festival: Amit Tandon",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Get ready for an evening of sharp desi humour",
+    "venue": "Dubai Opera",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/amit-tandon-dcf-supplied-jul-2026.png?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/amit-tandon-dcf",
+    "price_aed_from": 150,
+    "booking_domain": "www.dubaiopera.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "dubai opera"
+    ]
+  },
+  {
+    "slug": "dubai-comedy-festival",
+    "id": "evt_dubai-comedy-festival",
+    "sku": "EVT-DUBAICOMEDYFEST2",
+    "name": "Dubai Comedy Festival 2026",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "Laugh along with comedy's biggest stars",
+    "venue": "Citywide",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/dubai-comedy-festival-eventorganiser-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-comedy-festival",
+    "price_aed_from": 125,
+    "booking_domain": "www.dubaicomedyfest.ae",
+    "dates": [
+      {
+        "starts_at": "2026-10-09T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-10T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-12T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-13T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-14T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-15T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "citywide"
+    ]
+  },
+  {
+    "slug": "kings-and-queens-of-comedy",
+    "id": "evt_kings-and-queens-of-comedy",
+    "sku": "EVT-KINGSANDQUEENSOF",
+    "name": "Dubai Comedy Festival: Kings and Queens of Comedy",
+    "category": "live-entertainment",
+    "subcategory": "dubai-comedy-festival",
+    "description": "Settle in to see South Africa's top comics in Dubai",
+    "venue": "New Covent Garden Theatre, Mall of the Emirates ",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dcf-kings-and-queens-of-comedy-supplied-sep-2026.jpg?cx=0.51&cy=0.51",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/kings-and-queens-of-comedy",
+    "price_aed_from": 125,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "dubai-comedy-festival",
+      "new covent garden theatre, mall of the emirates "
+    ]
+  },
+  {
+    "slug": "aquaman-open-water",
+    "id": "evt_aquaman-open-water",
+    "sku": "EVT-AQUAMANOPENWATER",
+    "name": "Aquaman Open Water Dubai",
+    "category": "live-entertainment",
+    "subcategory": "health-fitness",
+    "description": "Dive into a thrilling open-water challenge",
+    "venue": "Umm Suqeim 1",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/a/aquaman-open-water-website-jun-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/aquaman-open-water",
+    "price_aed_from": 154,
+    "booking_domain": "www.premieronline.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "health-fitness",
+      "umm suqeim 1"
+    ]
+  },
+  {
+    "slug": "vir-das-dcf",
+    "id": "evt_vir-das-dcf",
+    "sku": "EVT-VIRDASDCF",
+    "name": "Dubai Comedy Festival: Vir Das",
+    "category": "live-entertainment",
+    "subcategory": "comedy",
+    "description": "See the Emmy-winning Indian comedy star live",
+    "venue": "Coca-Cola Arena ",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-comedy-festival/vir-das-dcf-supplied-jul-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/vir-das-dcf",
+    "price_aed_from": 195,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "comedy",
+      "coca-cola arena "
+    ]
+  },
+  {
+    "slug": "game-set-match",
+    "id": "evt_game-set-match",
+    "sku": "EVT-GAMESETMATCH",
+    "name": "Game. Set. Match: The Rerun",
+    "category": "live-entertainment",
+    "subcategory": "concert",
+    "description": "Watch a sharp comedy about love, lies and digital lives",
+    "venue": "The Junction, Alserkal Avenue",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/g/game-set-match-1-supplied-aug-2026.jpg?cx=0.5&cy=0.5",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/game-set-match",
+    "price_aed_from": 105,
+    "booking_domain": "dubai.platinumlist.net",
+    "dates": [
+      {
+        "starts_at": "2026-10-16T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-17T19:00:00+04:00"
+      },
+      {
+        "starts_at": "2026-10-18T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "live-entertainment",
+      "concert",
+      "the junction, alserkal avenue"
+    ]
+  },
+  {
+    "slug": "dubai-basketball-sc-derby",
+    "id": "evt_dubai-basketball-sc-derby",
+    "sku": "EVT-DUBAIBASKETBALLS",
+    "name": "Dubai Basketball vs SC Derby",
+    "category": "sports",
+    "subcategory": "sports",
+    "description": "Cheer on your favourites at this showdown",
+    "venue": "Coca-Cola Arena",
+    "image_url": "https://www.visitdubai.com/-/media/gathercontent/event/d/dubai-basketball-vs-sc-derby-eventorganiser-jan-2025.jpg?cx=0.51&cy=0.22",
+    "source_url": "https://www.visitdubai.com/en/festivals-and-events/dubai-events-calendar/dubai-basketball-sc-derby",
+    "price_aed_from": 15,
+    "booking_domain": "coca-cola-arena.com",
+    "dates": [
+      {
+        "starts_at": "2026-10-19T19:00:00+04:00"
+      }
+    ],
+    "attributes": [
+      "sports",
+      "sports",
+      "coca-cola arena"
+    ]
+  }
+]

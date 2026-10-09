@@ -23,6 +23,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.merchant.config import get_settings
+from tests.merchant.catalog_ids import ITEM_ID
 
 BUYER_EMAIL = "orders@example.com"
 
@@ -40,7 +41,7 @@ def _complete_order(auth_client: TestClient) -> dict[str, Any]:
     create_response = auth_client.post(
         "/checkout_sessions",
         json={
-            "items": [{"id": "prod_1", "quantity": 1}],
+            "items": [{"id": ITEM_ID, "quantity": 1}],
             "buyer": {"first_name": "Order", "email": BUYER_EMAIL},
             "fulfillment_address": {
                 "name": "Order User",
@@ -87,7 +88,7 @@ class TestGetOrder:
             f"{get_settings().order_tracking_base_url}/{order_id}"
         )
         assert data["buyer"]["email"] == BUYER_EMAIL
-        assert data["line_items"][0]["item"]["id"] == "prod_1"
+        assert data["line_items"][0]["item"]["id"] == ITEM_ID
         assert any(t["type"] == "total" for t in data["totals"])
         assert data["fulfillment_address"]["name"] == "Order User"
         assert data["fulfillment"]["option_id"] == session["fulfillment_option_id"]

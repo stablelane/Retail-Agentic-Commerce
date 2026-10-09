@@ -19,10 +19,16 @@ import json
 import logging
 from datetime import UTC, datetime
 from typing import Any, cast
+from zoneinfo import ZoneInfo
 
 from sqlmodel import Session, select
 
-from src.merchant.db.models import CheckoutSession, CheckoutStatus, Product
+from src.merchant.db.models import (
+    CheckoutSession,
+    CheckoutStatus,
+    EventSession,
+    Product,
+)
 from src.merchant.domain.checkout.calculations import (
     DEFAULT_CURRENCY,
     DEFAULT_SHOP_URL,
@@ -48,6 +54,48 @@ from src.merchant.domain.checkout.models import (
 )
 
 logger = logging.getLogger(__name__)
+DUBAI = ZoneInfo("Asia/Dubai")
+
+
+def resolve_line_item(db: Session, item_id: str) -> tuple[Product, EventSession | None]:
+    """Resolve an ACP item id to a product and, for events, its performance.
+
+    Session ids are the bookable identity. A product id is accepted only when
+    that product has no sessions (legacy rows). Unknown ids raise ProductNotFoundError.
+    """
+    event = db.get(EventSession, item_id)
+    if event is not None:
+        product = db.get(Product, event.product_id)
+        if product is None:
+            raise ProductNotFoundError(item_id)
+        return product, event
+
+    product = db.get(Product, item_id)
+    if product is None:
+        raise ProductNotFoundError(item_id)
+    has_sessions = db.exec(
+        select(EventSession.id).where(EventSession.product_id == product.id).limit(1)
+    ).first()
+    if has_sessions is not None:
+        raise ProductNotFoundError(item_id)
+    return product, None
+
+
+def _assert_seats(event: EventSession | None, item_id: str, quantity: int) -> None:
+    if event is not None and quantity > event.seats_left:
+        raise InsufficientSeatsError(item_id, quantity, event.seats_left)
+
+
+def _performance_name(product: Product, event: EventSession | None) -> str:
+    if event is None:
+        return product.name
+    starts = event.starts_at
+    # SQLite keeps the Dubai wall clock and drops the offset.
+    if starts.tzinfo is None:
+        starts = starts.replace(tzinfo=DUBAI)
+    local = starts.astimezone(DUBAI)
+    label = f"{local.strftime('%a')} {local.day} {local.strftime('%b, %H:%M')}"
+    return f"{product.name} · {label}"
 
 
 # =============================================================================
@@ -71,6 +119,18 @@ class SessionNotFoundError(CheckoutServiceError):
         super().__init__(
             message=f"Checkout session '{session_id}' not found",
             code="session_not_found",
+        )
+
+
+class InsufficientSeatsError(CheckoutServiceError):
+    """Raised when a performance does not have enough seats left."""
+
+    def __init__(self, item_id: str, requested: int, available: int):
+        super().__init__(
+            message=(
+                f"Only {available} seats left for '{item_id}' (requested {requested})"
+            ),
+            code="validation_error",
         )
 
 
@@ -164,14 +224,16 @@ async def create_checkout_session(
     line_items: list[dict[str, Any]] = []
     products_by_id: dict[str, Product] = {}
     for item in request.items:
-        product = db.exec(select(Product).where(Product.id == item.id)).first()
-        if product is None:
-            logger.warning(f"Product not found: {item.id}")
-            raise ProductNotFoundError(item.id)
+        product, event = resolve_line_item(db, item.id)
+        _assert_seats(event, item.id, item.quantity)
         products_by_id[item.id] = product
-
-        # Get line item with promotion discount (async call to agent)
-        line_item = await calculate_line_item_with_promotion(db, product, item.quantity)
+        line_item = await calculate_line_item_with_promotion(
+            db,
+            product,
+            item.quantity,
+            item_ref=item.id,
+            display_name=_performance_name(product, event),
+        )
         line_items.append(line_item)
 
     submitted_codes = _extract_discount_codes_from_request(
@@ -240,6 +302,8 @@ async def create_checkout_session(
         links_json=json.dumps(links),
         metadata_json=json.dumps(metadata),
     )
+    if check_ready_for_payment(checkout_session):
+        checkout_session.status = CheckoutStatus.READY_FOR_PAYMENT
 
     db.add(checkout_session)
     db.commit()
@@ -366,22 +430,23 @@ async def update_checkout_session(
 
         new_line_items: list[dict[str, Any]] = []
         for item in request.items:
-            product = db.exec(select(Product).where(Product.id == item.id)).first()
-            if product is None:
-                raise ProductNotFoundError(item.id)
+            product, event = resolve_line_item(db, item.id)
+            _assert_seats(event, item.id, item.quantity)
             products_by_id[item.id] = product
 
-            # Check if this product has existing promotion data
             existing_li = existing_by_product_id.get(item.id)
             if existing_li is not None:
-                # Reuse existing promotion, just recalculate totals for new quantity
                 line_item = recalculate_line_item_from_existing(
                     product, item.quantity, existing_li
                 )
+                line_item["name"] = _performance_name(product, event)
             else:
-                # New product added to cart - call promotion agent
                 line_item = await calculate_line_item_with_promotion(
-                    db, product, item.quantity
+                    db,
+                    product,
+                    item.quantity,
+                    item_ref=item.id,
+                    display_name=_performance_name(product, event),
                 )
             new_line_items.append(line_item)
         session.line_items_json = json.dumps(new_line_items)
@@ -389,9 +454,11 @@ async def update_checkout_session(
         current_line_items: list[dict[str, Any]] = json.loads(session.line_items_json)
         for line_item in current_line_items:
             product_id = str(line_item["item"]["id"])
-            product = db.exec(select(Product).where(Product.id == product_id)).first()
-            if product is not None:
-                products_by_id[product_id] = product
+            try:
+                product, _event = resolve_line_item(db, product_id)
+            except ProductNotFoundError:
+                continue
+            products_by_id[product_id] = product
 
     # Update buyer if provided
     if request.buyer is not None:
@@ -559,6 +626,19 @@ def complete_checkout_session(
     if not check_ready_for_payment(session):
         logger.warning(f"Session {session_id} not ready for payment")
         raise InvalidStateTransitionError(session.status.value, "complete")
+
+    # ponytail: no row lock; SQLite single-writer is enough for the demo,
+    # use SELECT … FOR UPDATE on Postgres
+    for line in json.loads(session.line_items_json):
+        item_id = str(line["item"]["id"])
+        quantity = int(line["item"]["quantity"])
+        event = db.get(EventSession, item_id)
+        if event is None:
+            continue
+        if quantity > event.seats_left:
+            raise InsufficientSeatsError(item_id, quantity, event.seats_left)
+        event.seats_left -= quantity
+        db.add(event)
 
     # Create order
     order_id = generate_order_id()

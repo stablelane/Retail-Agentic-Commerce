@@ -99,6 +99,6 @@ def test_fallback_message_includes_all_items() -> None:
 
     response = get_fallback_message(request)
 
-    assert response["subject"] == "Order Confirmed"
+    assert response["subject"] == "Your tickets are ready"
     assert "Classic Tee (x1)" in response["message"]
     assert "Logo Hoodie (x2)" in response["message"]

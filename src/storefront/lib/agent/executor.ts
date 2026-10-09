@@ -1,6 +1,20 @@
 import "server-only";
 
-import { parseToolCall, DEFAULT_TOOL_LIMIT, MAX_LINE_QUANTITY } from "@/lib/agent/tools";
+import {
+  EVENT_MINUTES,
+  MAX_EVENTS_PER_DAY,
+  MAX_PLAN_DAYS,
+  SAME_VENUE_GAP_MINUTES,
+  TRAVEL_GAP_MINUTES,
+  eachDay,
+  planItinerary as buildPlan,
+} from "@/lib/agent/itinerary";
+import {
+  parseToolCall,
+  DEFAULT_TOOL_LIMIT,
+  MAX_LINE_QUANTITY,
+  MAX_LISTED_SESSIONS,
+} from "@/lib/agent/tools";
 import type { ToolArgs, ToolInvocation } from "@/lib/agent/tools";
 import type {
   CartSummaryBlock,
@@ -12,7 +26,7 @@ import type {
   UIBlock,
 } from "@/lib/agent/types";
 import { findTotal } from "@/lib/commerce/acp";
-import { productImageSrc } from "@/lib/commerce/catalog";
+import { formatSessionWhen, productImageSrc } from "@/lib/commerce/catalog";
 import { callMcpTool } from "@/lib/commerce/mcp";
 import { normalizeRecommendations } from "@/lib/commerce/mcp-protocol";
 import {
@@ -21,6 +35,7 @@ import {
   getOrder,
   getProduct,
   listProducts,
+  type EventSessionSummary,
   type OrderStatusResponse,
   type Product,
 } from "@/lib/commerce/merchant";
@@ -33,6 +48,46 @@ export interface ExecutorDeps {
   getOrder: typeof getOrder;
   getCheckoutSession: typeof getCheckoutSession;
   callMcpTool: typeof callMcpTool;
+}
+
+interface Bookable {
+  product: Product;
+  lineId: string;
+  name: string;
+  maxQuantity: number;
+}
+
+function resolveBookable(catalog: Iterable<Product>, id: string): Bookable | null {
+  const products = [...catalog];
+  for (const product of products) {
+    const session = product.sessions?.find((entry) => entry.id === id);
+    if (session) {
+      return {
+        product,
+        lineId: session.id,
+        name: `${product.name} · ${formatSessionWhen(session.starts_at, true)}`,
+        maxQuantity: Math.max(0, Math.min(MAX_LINE_QUANTITY, session.seats_left)),
+      };
+    }
+  }
+  const product = products.find((entry) => entry.id === id);
+  if (!product || (product.sessions?.length ?? 0) > 0) return null;
+  return {
+    product,
+    lineId: product.id,
+    name: product.name,
+    maxQuantity: Math.max(0, Math.min(MAX_LINE_QUANTITY, product.stock_count)),
+  };
+}
+
+function coversDate(product: Product, from?: string, to?: string): boolean {
+  if (!from && !to) return true;
+  return (product.sessions ?? []).some((session: EventSessionSummary) => {
+    const day = session.starts_at.slice(0, 10);
+    if (from && day < from) return false;
+    if (to && day > to) return false;
+    return true;
+  });
 }
 
 const DEFAULT_DEPS: ExecutorDeps = {
@@ -170,6 +225,23 @@ function merchantUnavailable(): ToolOutcome {
   );
 }
 
+function noEventsOutcome(catalog: Map<string, Product>): ToolOutcome {
+  const days = [...catalog.values()]
+    .flatMap((product) => product.sessions ?? [])
+    .map((session) => session.starts_at.slice(0, 10))
+    .sort();
+  return {
+    ok: true,
+    result: {
+      products: [],
+      message:
+        "No events in the catalog for those dates. Tell the shopper and offer dates the calendar covers; do not retry with the same dates.",
+      ...(days.length > 0 ? { calendar_covers: { from: days[0], to: days[days.length - 1] } } : {}),
+    },
+    blocks: [],
+  };
+}
+
 /** Merchant tracking URLs come from server config; only allow http(s). */
 function safeHttpUrl(value: string | null | undefined): string | null {
   if (!value) return null;
@@ -243,14 +315,14 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
     const catalog = await loadCatalog(ctx);
     const items: CartUpdateItem[] = [];
     for (const line of ctx.cart.items) {
-      const product = catalog.get(line.id);
-      if (!product) continue;
-      const maxQuantity = Math.max(1, Math.min(MAX_LINE_QUANTITY, product.stock_count));
+      const bookable = resolveBookable(catalog.values(), line.id);
+      if (!bookable || bookable.maxQuantity <= 0) continue;
+      const maxQuantity = Math.max(1, bookable.maxQuantity);
       items.push({
-        id: product.id,
-        name: product.name,
-        price: product.base_price,
-        imageUrl: productImageSrc(product.image_url),
+        id: bookable.lineId,
+        name: bookable.name,
+        price: bookable.product.base_price,
+        imageUrl: productImageSrc(bookable.product.image_url),
         quantity: Math.min(line.quantity, maxQuantity),
         maxQuantity,
       });
@@ -454,7 +526,26 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
     ctx: ExecutorContext
   ): Promise<ToolOutcome> {
     const catalog = await loadCatalog(ctx);
-    const tiles = [...catalog.values()]
+    let source = [...catalog.values()];
+    if (args.date_from || args.date_to) {
+      try {
+        const listed = await deps.listProducts({
+          limit: 100,
+          ...(args.category ? { category: args.category } : {}),
+          ...(args.date_from ? { from: args.date_from } : {}),
+          ...(args.date_to ? { to: args.date_to } : {}),
+        });
+        source = listed.products;
+      } catch (error) {
+        if (error instanceof MerchantApiError) return merchantUnavailable();
+      }
+    }
+    const daySubtitle =
+      !args.subtitle && args.date_from && (!args.date_to || args.date_to === args.date_from)
+        ? formatSessionWhen(args.date_from)
+        : args.subtitle;
+    const matched = source
+      .filter((product) => coversDate(product, args.date_from, args.date_to))
       .filter((product) => !args.category || product.category === args.category)
       .filter(
         (product) =>
@@ -462,9 +553,28 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
           (product.compare_at_price !== null && product.compare_at_price > product.base_price)
       )
       .filter((product) => !args.max_price_cents || product.base_price <= args.max_price_cents)
-      .slice(0, args.limit ?? DEFAULT_TOOL_LIMIT)
-      .map((product) => toTile(product));
-    return productOutcome(args.title, tiles, args.subtitle ? { subtitle: args.subtitle } : {});
+      .slice(0, args.limit ?? DEFAULT_TOOL_LIMIT);
+    const tiles = matched.map((product) => toTile(product));
+    if (tiles.length === 0 && (args.date_from || args.date_to)) return noEventsOutcome(catalog);
+    const outcome = productOutcome(args.title, tiles, daySubtitle ? { subtitle: daySubtitle } : {});
+    // Dated listings carry their sessions so the model can build a timed itinerary in one step.
+    if (args.date_from || args.date_to) {
+      const result = outcome.result as { products?: Record<string, unknown>[] };
+      result.products = (result.products ?? []).map((entry, index) => {
+        const product = matched[index];
+        const sessions = (product?.sessions ?? [])
+          .filter((session) => {
+            const day = session.starts_at.slice(0, 10);
+            return (
+              (!args.date_from || day >= args.date_from) && (!args.date_to || day <= args.date_to)
+            );
+          })
+          .slice(0, MAX_LISTED_SESSIONS)
+          .map(({ id, starts_at, seats_left }) => ({ id, starts_at, seats_left }));
+        return { ...entry, ...(product?.venue ? { venue: product.venue } : {}), sessions };
+      });
+    }
+    return outcome;
   }
 
   async function getProductDetails(args: ToolArgs<"get_product_details">): Promise<ToolOutcome> {
@@ -478,8 +588,70 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
         stock_count: product.stock_count,
         description: (product.description ?? "").slice(0, 240),
         attributes: product.attributes.slice(0, 8),
+        sessions: (product.sessions ?? []).map(({ id, starts_at, seats_left }) => ({
+          id,
+          starts_at,
+          seats_left,
+        })),
       },
       blocks: [carousel(product.name, [tile], { variant: "detail" })],
+    };
+  }
+
+  async function planItinerary(
+    args: ToolArgs<"plan_itinerary">,
+    ctx: ExecutorContext
+  ): Promise<ToolOutcome> {
+    if (eachDay(args.date_from, args.date_to).length > MAX_PLAN_DAYS) {
+      return failure({ error: "range_too_long", max_days: MAX_PLAN_DAYS });
+    }
+    const catalog = await loadCatalog(ctx);
+    let source: Product[] = [...catalog.values()];
+    try {
+      source = (await deps.listProducts({ limit: 100, from: args.date_from, to: args.date_to }))
+        .products;
+    } catch (error) {
+      if (error instanceof MerchantApiError) return merchantUnavailable();
+    }
+    const partySize = args.party_size ?? 1;
+    const maxPerDay = args.max_per_day ?? MAX_EVENTS_PER_DAY;
+    const plan = buildPlan(source, {
+      dateFrom: args.date_from,
+      dateTo: args.date_to,
+      partySize,
+      maxPerDay,
+      ...(args.categories ? { categories: args.categories } : {}),
+    });
+    const events = plan.days.flatMap((day) => day.events);
+    if (events.length === 0) return noEventsOutcome(catalog);
+
+    const perPerson = events.reduce((sum, event) => sum + event.product.base_price, 0);
+    return {
+      ok: true,
+      result: {
+        party_size: partySize,
+        event_count: events.length,
+        total_cents: perPerson * partySize,
+        days: plan.days.map((day) => ({
+          date: day.date,
+          events: day.events.map((event) => ({
+            session_id: event.sessionId,
+            name: event.product.name,
+            ...(event.product.venue ? { venue: event.product.venue } : {}),
+            time: event.startsAt.slice(11, 16),
+            price_cents: event.product.base_price,
+          })),
+        })),
+        free_days: plan.freeDays,
+        assumptions: `Each event about ${EVENT_MINUTES / 60} h; ${SAME_VENUE_GAP_MINUTES} min between shows at the same venue, ${TRAVEL_GAP_MINUTES} min travel between venues. Free days have no bookable events.`,
+      },
+      blocks: [
+        carousel(
+          args.title,
+          events.map((event) => toTile(event.product)),
+          { subtitle: args.subtitle ?? `${events.length} events, ready to book` }
+        ),
+      ],
     };
   }
 
@@ -487,23 +659,39 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
     args: ToolArgs<"add_to_cart">,
     ctx: ExecutorContext
   ): Promise<ToolOutcome> {
-    const product = await deps.getProduct(args.product_id);
-    if (!product) return failure({ error: "product_not_found", product_id: args.product_id });
-    if (product.stock_count <= 0) {
-      return failure({ error: "out_of_stock", product_id: product.id, name: product.name });
+    const refs = args.session_ids ?? [args.session_id ?? args.product_id ?? ""];
+    const catalog = await loadCatalog(ctx);
+    const added: Array<Record<string, unknown>> = [];
+    const failed: Array<Record<string, unknown>> = [];
+    for (const ref of new Set(refs)) {
+      const bookable = resolveBookable(catalog.values(), ref);
+      if (!bookable) {
+        failed.push({ error: "product_not_found", product_id: ref });
+        continue;
+      }
+      if (bookable.maxQuantity <= 0) {
+        failed.push({ error: "out_of_stock", product_id: bookable.lineId, name: bookable.name });
+        continue;
+      }
+      const current = ctx.cart.items.find((item) => item.id === bookable.lineId)?.quantity ?? 0;
+      const requested = current + (args.quantity ?? 1);
+      const quantity = Math.min(requested, bookable.maxQuantity);
+      setLine(ctx, bookable.lineId, quantity);
+      added.push({
+        id: bookable.lineId,
+        name: bookable.name,
+        quantity,
+        ...(requested > bookable.maxQuantity ? { capped_at: bookable.maxQuantity } : {}),
+      });
     }
-    const max = Math.min(MAX_LINE_QUANTITY, product.stock_count);
-    const current = ctx.cart.items.find((item) => item.id === product.id)?.quantity ?? 0;
-    const quantity = Math.min(current + (args.quantity ?? 1), max);
-    setLine(ctx, product.id, quantity);
-    return cartOutcome(
-      ctx,
-      {
-        added: { id: product.id, name: product.name, quantity },
-        ...(quantity === max && current + (args.quantity ?? 1) > max ? { capped_at: max } : {}),
-      },
-      true
-    );
+    if (!args.session_ids) {
+      const [single] = added;
+      if (!single) return failure(failed[0] ?? { error: "session_required" });
+      const { capped_at, ...line } = single;
+      return cartOutcome(ctx, { added: line, ...(capped_at ? { capped_at } : {}) }, true);
+    }
+    if (added.length === 0) return failure({ error: "nothing_added", failed });
+    return cartOutcome(ctx, { added, ...(failed.length > 0 ? { failed } : {}) }, true);
   }
 
   async function updateCart(
@@ -516,12 +704,18 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
       setLine(ctx, args.product_id, 0);
       return cartOutcome(ctx, { removed: args.product_id }, true);
     }
-    const product = (await loadCatalog(ctx)).get(args.product_id);
-    if (!product) return failure({ error: "product_not_found", product_id: args.product_id });
-    if (product.stock_count <= 0) return failure({ error: "out_of_stock", product_id: product.id });
-    const quantity = Math.min(args.quantity, MAX_LINE_QUANTITY, product.stock_count);
-    setLine(ctx, product.id, quantity);
-    return cartOutcome(ctx, { updated: { id: product.id, name: product.name, quantity } }, true);
+    const bookable = resolveBookable((await loadCatalog(ctx)).values(), args.product_id);
+    if (!bookable) return failure({ error: "product_not_found", product_id: args.product_id });
+    if (bookable.maxQuantity <= 0) {
+      return failure({ error: "out_of_stock", product_id: bookable.lineId });
+    }
+    const quantity = Math.min(args.quantity, bookable.maxQuantity);
+    setLine(ctx, bookable.lineId, quantity);
+    return cartOutcome(
+      ctx,
+      { updated: { id: bookable.lineId, name: bookable.name, quantity } },
+      true
+    );
   }
 
   async function startCheckout(ctx: ExecutorContext): Promise<ToolOutcome> {
@@ -613,6 +807,8 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
         return listCatalog(invocation.args, ctx);
       case "get_product_details":
         return getProductDetails(invocation.args);
+      case "plan_itinerary":
+        return planItinerary(invocation.args, ctx);
       case "add_to_cart":
         return addToCart(invocation.args, ctx);
       case "update_cart":

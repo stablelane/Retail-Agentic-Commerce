@@ -30,12 +30,13 @@ describe("buildSystemPrompt", () => {
       cart: { sessionId: "checkout_1", items: [{ id: "prod_1", quantity: 2 }] },
       locale: "fr",
     });
-    expect(prompt).toContain("shopping assistant for Matter");
+    expect(prompt).toContain("itinerary assistant for Matter");
     expect(prompt).toContain("John Doe (john@example.com), Gold member, 1250 points");
     expect(prompt).toContain("Current page: pdp, viewing product prod_3.");
     expect(prompt).toContain("Bag: 2 items (prod_1 x2), checkout_1.");
     expect(prompt).toContain("Respond in French");
-    expect(prompt).toContain("Never invent products");
+    expect(prompt).toContain("Never invent events");
+    expect(prompt).toContain("never ask permission to show events");
   });
 
   it("describes an empty bag", () => {

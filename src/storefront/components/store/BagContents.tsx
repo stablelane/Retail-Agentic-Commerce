@@ -9,8 +9,15 @@ import { LineItemRow } from "@/components/store/LineItemRow";
 import { ShippingSelector } from "@/components/store/ShippingSelector";
 import { TotalsBlock } from "@/components/store/TotalsBlock";
 import type { CheckoutSession } from "@/lib/commerce/acp";
-import { cartStore, cartSubtotal, useCart, type SyncStatus } from "@/lib/commerce/cart-store";
+import {
+  cartStore,
+  cartSubtotal,
+  useCart,
+  type CartItem,
+  type SyncStatus,
+} from "@/lib/commerce/cart-store";
 import { getSessionSyncer } from "@/lib/commerce/session-sync";
+import { formatSessionWhen, sessionDate } from "@/lib/commerce/catalog";
 import { cn } from "@/lib/cn";
 
 function SyncStatusLine({ status, sessionId }: { status: SyncStatus; sessionId: string | null }) {
@@ -79,6 +86,23 @@ export function SessionSummary({
   );
 }
 
+function groupByDay(items: readonly CartItem[]) {
+  const groups = new Map<string, CartItem[]>();
+  for (const item of items) {
+    const day = sessionDate(item.id) ?? "unscheduled";
+    const list = groups.get(day) ?? [];
+    list.push(item);
+    groups.set(day, list);
+  }
+  return [...groups.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([day, groupItems]) => ({
+      day,
+      label: day === "unscheduled" ? "Your itinerary" : formatSessionWhen(day),
+      items: groupItems,
+    }));
+}
+
 interface BagContentsProps {
   variant: "drawer" | "page";
   /** Called when a link inside the bag navigates away (closes the drawer). */
@@ -96,7 +120,7 @@ export function BagContents({ variant, onNavigate }: BagContentsProps) {
   if (cart.items.length === 0) {
     return (
       <div className="flex flex-col items-start gap-4">
-        <p className="text-body">Your bag is empty.</p>
+        <p className="text-body">Your itinerary is empty.</p>
         <Link
           href="/catalog"
           {...(onNavigate ? { onClick: onNavigate } : {})}
@@ -121,16 +145,23 @@ export function BagContents({ variant, onNavigate }: BagContentsProps) {
       )}
     >
       <section aria-label="Items">
-        <ul className="divide-y divide-line">
-          {cart.items.map((item) => (
-            <LineItemRow
-              key={item.id}
-              item={item}
-              line={linesByProduct.get(item.id)}
-              onQuantityChange={(quantity) => cartStore.setQuantity(item.id, quantity)}
-              onRemove={() => cartStore.remove(item.id)}
-              onNavigate={onNavigate}
-            />
+        <ul className="flex flex-col gap-6">
+          {groupByDay(cart.items).map((group) => (
+            <li key={group.day}>
+              <h2 className="text-small font-semibold">{group.label}</h2>
+              <ul className="divide-y divide-line">
+                {group.items.map((item) => (
+                  <LineItemRow
+                    key={item.id}
+                    item={item}
+                    line={linesByProduct.get(item.id)}
+                    onQuantityChange={(quantity) => cartStore.setQuantity(item.id, quantity)}
+                    onRemove={() => cartStore.remove(item.id)}
+                    onNavigate={onNavigate}
+                  />
+                ))}
+              </ul>
+            </li>
           ))}
         </ul>
         <SyncStatusLine status={cart.syncStatus} sessionId={cart.sessionId} />

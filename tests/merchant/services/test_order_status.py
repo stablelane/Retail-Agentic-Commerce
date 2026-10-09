@@ -31,10 +31,10 @@ COMPLETED_AT = datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC)
     [
         (0, ShippingStatus.ORDER_CONFIRMED, 1),
         (STEP - 1, ShippingStatus.ORDER_CONFIRMED, 1),
-        (STEP, ShippingStatus.ORDER_SHIPPED, 2),
-        (2 * STEP, ShippingStatus.OUT_FOR_DELIVERY, 3),
-        (3 * STEP, ShippingStatus.DELIVERED, 4),
-        (10 * STEP, ShippingStatus.DELIVERED, 4),
+        (STEP, ShippingStatus.TICKETS_ISSUED, 2),
+        (2 * STEP, ShippingStatus.TICKETS_ISSUED, 2),
+        (3 * STEP, ShippingStatus.TICKETS_ISSUED, 2),
+        (10 * STEP, ShippingStatus.TICKETS_ISSUED, 2),
     ],
 )
 def test_derive_status_steps(
@@ -56,12 +56,10 @@ def test_history_timestamps_are_spaced_by_step() -> None:
 
     assert [event["status"] for event in history] == [
         ShippingStatus.ORDER_CONFIRMED,
-        ShippingStatus.ORDER_SHIPPED,
-        ShippingStatus.OUT_FOR_DELIVERY,
-        ShippingStatus.DELIVERED,
+        ShippingStatus.TICKETS_ISSUED,
     ]
     assert [datetime.fromisoformat(event["at"]) for event in history] == [
-        COMPLETED_AT + timedelta(seconds=i * STEP) for i in range(4)
+        COMPLETED_AT + timedelta(seconds=i * STEP) for i in range(2)
     ]
 
 
@@ -72,7 +70,7 @@ def test_naive_datetimes_are_treated_as_utc() -> None:
         naive_completed, COMPLETED_AT + timedelta(seconds=STEP), STEP
     )
 
-    assert status == ShippingStatus.ORDER_SHIPPED
+    assert status == ShippingStatus.TICKETS_ISSUED
     assert datetime.fromisoformat(history[0]["at"]) == COMPLETED_AT
 
 

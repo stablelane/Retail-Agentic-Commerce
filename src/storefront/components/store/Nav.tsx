@@ -14,7 +14,7 @@ import { HERO_ID } from "@/lib/content/home";
 
 const LINKS = [
   { href: "/", label: "Home" },
-  { href: "/catalog", label: "Catalog" },
+  { href: "/catalog", label: "What’s On" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

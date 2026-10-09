@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     webhook_secret: str = "whsec_demo_secret"
 
     # Storefront / order tracking
-    brand_name: str = "NVShop"
+    brand_name: str = "Visit Dubai"
     order_tracking_base_url: str = "https://track.nvshop.demo/orders"
     order_status_step_seconds: int = 120
 

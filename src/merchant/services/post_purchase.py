@@ -56,6 +56,7 @@ class ShippingStatus(StrEnum):
     """Shipping status values for post-purchase communications."""
 
     ORDER_CONFIRMED = "order_confirmed"
+    TICKETS_ISSUED = "tickets_issued"
     ORDER_SHIPPED = "order_shipped"
     OUT_FOR_DELIVERY = "out_for_delivery"
     DELIVERED = "delivered"
@@ -269,8 +270,12 @@ def get_post_purchase_client(
 FALLBACK_TEMPLATES: dict[str, dict[str, dict[str, str]]] = {
     "en": {
         ShippingStatus.ORDER_CONFIRMED.value: {
-            "subject": "Order Confirmed",
-            "message": "Thank you for your order, {customer_name}! Your {items} order has been confirmed.\n\n- {company_name}",
+            "subject": "Your tickets are ready",
+            "message": "Your tickets are ready, {customer_name}. {items}\n\n- {company_name}",
+        },
+        ShippingStatus.TICKETS_ISSUED.value: {
+            "subject": "Your tickets are ready",
+            "message": "Your tickets are ready, {customer_name}. {items}\n\n- {company_name}",
         },
         ShippingStatus.ORDER_SHIPPED.value: {
             "subject": "Your Order Has Shipped",

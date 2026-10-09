@@ -22,6 +22,14 @@ export interface Product {
   subcategory: string | null;
   description: string | null;
   attributes: string[];
+  venue?: string | null;
+  sessions?: EventSessionSummary[];
+}
+
+export interface EventSessionSummary {
+  id: string;
+  starts_at: string;
+  seats_left: number;
 }
 
 export interface ProductListResponse {
@@ -32,11 +40,15 @@ export interface ProductListResponse {
 
 export interface ListProductsParams {
   category?: string;
+  date?: string;
+  from?: string;
+  to?: string;
   limit?: number;
   offset?: number;
 }
 
-export type ShippingStatus = "order_confirmed" | "order_shipped" | "out_for_delivery" | "delivered";
+export type ShippingStatus =
+  "order_confirmed" | "tickets_issued" | "order_shipped" | "out_for_delivery" | "delivered";
 
 export interface OrderStatusEvent {
   status: ShippingStatus;
@@ -151,6 +163,9 @@ async function merchantGet<T>(path: string, query?: URLSearchParams): Promise<T 
 export async function listProducts(params: ListProductsParams = {}): Promise<ProductListResponse> {
   const query = new URLSearchParams();
   if (params.category) query.set("category", params.category);
+  if (params.date) query.set("date", params.date);
+  if (params.from) query.set("from", params.from);
+  if (params.to) query.set("to", params.to);
   query.set("limit", String(params.limit ?? 100));
   if (params.offset) query.set("offset", String(params.offset));
 

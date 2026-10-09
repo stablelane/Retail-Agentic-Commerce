@@ -24,7 +24,7 @@ export function OrderTimeline({ status, history, className }: OrderTimelineProps
   const reachedAt = new Map(history.map((event) => [event.status, event.at]));
 
   return (
-    <ol aria-label="Order progress" className={cn("grid gap-4 sm:grid-cols-4 sm:gap-2", className)}>
+    <ol aria-label="Order progress" className={cn("grid gap-4 sm:grid-cols-2 sm:gap-2", className)}>
       {SHIPPING_STEPS.map((step, index) => {
         const state: StepState =
           index < currentIndex ? "complete" : index === currentIndex ? "current" : "upcoming";

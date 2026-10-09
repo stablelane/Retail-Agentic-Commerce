@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Price } from "@/components/store/Price";
 import { SaleBadge } from "@/components/store/SaleBadge";
-import { productImageSrc } from "@/lib/commerce/catalog";
+import { formatSessionWhen, nextSession, productImageSrc } from "@/lib/commerce/catalog";
 import type { Product } from "@/lib/commerce/merchant";
 import { isOnSale } from "@/lib/money";
 
@@ -39,7 +39,13 @@ export function ProductCard({
       </div>
       <div className="px-3 pt-3 pb-4">
         <h3 className="truncate text-[15px] font-semibold text-text">{product.name}</h3>
-        <div className="mt-1">
+        <p className="mt-1 truncate text-micro text-text-secondary">
+          {[product.venue, formatSessionWhen(nextSession(product.sessions)?.starts_at ?? "")]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
+        <div className="mt-1 flex items-baseline gap-1">
+          <span className="text-micro text-text-secondary">From</span>
           <Price price={product.base_price} compareAtPrice={product.compare_at_price} />
         </div>
         {caption ? (

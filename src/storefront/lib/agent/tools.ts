@@ -3,6 +3,7 @@ import "server-only";
 import type { ChatCompletionTool } from "openai/resources/chat/completions";
 import { z } from "zod";
 
+import { MAX_EVENTS_PER_DAY, MAX_PLAN_DAYS } from "@/lib/agent/itinerary";
 import { CATEGORIES } from "@/lib/commerce/catalog";
 import { ORDER_ID, PRODUCT_ID } from "@/lib/commerce/proxy-allowlist";
 
@@ -11,6 +12,7 @@ export const TOOL_NAMES = [
   "get_recommendations",
   "list_catalog",
   "get_product_details",
+  "plan_itinerary",
   "add_to_cart",
   "update_cart",
   "get_cart",
@@ -23,6 +25,8 @@ export type ToolName = (typeof TOOL_NAMES)[number];
 export const MAX_LINE_QUANTITY = 10;
 export const MAX_TOOL_LIMIT = 12;
 export const DEFAULT_TOOL_LIMIT = 6;
+export const MAX_LISTED_SESSIONS = 6;
+export const MAX_BATCH_SESSIONS = 24;
 
 const CATEGORY_IDS = CATEGORIES.map((category) => category.id) as [string, ...string[]];
 
@@ -32,6 +36,7 @@ export const TOOL_LABELS: Record<ToolName, string> = {
   get_recommendations: "Finding recommendations…",
   list_catalog: "Browsing the catalog…",
   get_product_details: "Looking up the product…",
+  plan_itinerary: "Planning your itinerary…",
   add_to_cart: "Updating your bag…",
   update_cart: "Updating your bag…",
   get_cart: "Checking your bag…",
@@ -45,6 +50,7 @@ export const TOOL_LABELS: Record<ToolName, string> = {
 // ---------------------------------------------------------------------------
 
 const productId = z.string().regex(PRODUCT_ID);
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const title = z.string().trim().min(1).max(80);
 const subtitle = z.string().trim().min(1).max(120);
 const category = z.enum(CATEGORY_IDS);
@@ -68,18 +74,41 @@ export const TOOL_ARG_SCHEMAS = {
       category: category.optional(),
       on_sale_only: z.boolean().optional(),
       max_price_cents: z.number().int().min(1).max(10_000_000).optional(),
+      date_from: isoDate.optional(),
+      date_to: isoDate.optional(),
       limit: limit.optional(),
       title,
       subtitle: subtitle.optional(),
     })
     .strict(),
   get_product_details: z.object({ product_id: productId }).strict(),
+  plan_itinerary: z
+    .object({
+      date_from: isoDate,
+      date_to: isoDate,
+      party_size: z.number().int().min(1).max(MAX_LINE_QUANTITY).optional(),
+      max_per_day: z.number().int().min(1).max(MAX_EVENTS_PER_DAY).optional(),
+      categories: z.array(category).min(1).max(CATEGORY_IDS.length).optional(),
+      title,
+      subtitle: subtitle.optional(),
+    })
+    .strict()
+    .refine((value) => value.date_from <= value.date_to, {
+      message: "date_to must not be before date_from",
+      path: ["date_to"],
+    }),
   add_to_cart: z
     .object({
-      product_id: productId,
+      session_id: productId.optional(),
+      session_ids: z.array(productId).min(1).max(MAX_BATCH_SESSIONS).optional(),
+      product_id: productId.optional(),
       quantity: z.number().int().min(1).max(MAX_LINE_QUANTITY).optional(),
     })
-    .strict(),
+    .strict()
+    .refine((value) => Boolean(value.session_id || value.session_ids || value.product_id), {
+      message: "session_id is required",
+      path: ["session_id"],
+    }),
   update_cart: z
     .object({ product_id: productId, quantity: z.number().int().min(0).max(MAX_LINE_QUANTITY) })
     .strict(),
@@ -199,11 +228,13 @@ export const TOOL_DEFINITIONS: ChatCompletionTool[] = [
   ),
   fn(
     "list_catalog",
-    "Browse the catalog by category, sale status or max price.",
+    "Browse the catalog by category, sale status, max price or dates. With date_from/date_to each event includes its venue and sessions (id, starts_at, seats_left) in that window.",
     {
       category: CATEGORY_PROP,
       on_sale_only: { type: "boolean", description: "Only products with a compare-at price" },
-      max_price_cents: { type: "integer", minimum: 1, description: "Max price in cents" },
+      max_price_cents: { type: "integer", minimum: 1, description: "Max price in fils" },
+      date_from: { type: "string", description: "ISO date, inclusive, Asia/Dubai" },
+      date_to: { type: "string", description: "ISO date, inclusive, Asia/Dubai" },
       limit: LIMIT_PROP,
       ...TITLE_PROPS,
     },
@@ -211,23 +242,58 @@ export const TOOL_DEFINITIONS: ChatCompletionTool[] = [
   ),
   fn(
     "get_product_details",
-    "Full details (description, attributes, stock) for one product.",
+    "Full details for one event, including sessions with seats left.",
     { product_id: PRODUCT_ID_PROP },
     ["product_id"]
   ),
   fn(
-    "add_to_cart",
-    "Add a product to the customer's bag.",
+    "plan_itinerary",
+    `Build the fullest bookable itinerary for a trip: as many different events as fit, each with enough seats for the party, no overlaps and travel time between venues. Returns day-by-day session ids. Max ${MAX_PLAN_DAYS} days.`,
     {
-      product_id: PRODUCT_ID_PROP,
+      date_from: { type: "string", description: "First trip day, ISO date, Asia/Dubai" },
+      date_to: { type: "string", description: "Last trip day, ISO date, inclusive" },
+      party_size: {
+        type: "integer",
+        minimum: 1,
+        maximum: MAX_LINE_QUANTITY,
+        description: "Tickets per event. Default 1.",
+      },
+      max_per_day: {
+        type: "integer",
+        minimum: 1,
+        maximum: MAX_EVENTS_PER_DAY,
+        description: `Events per day cap. Default ${MAX_EVENTS_PER_DAY}; lower only if the customer asks for a slower pace.`,
+      },
+      categories: {
+        type: "array",
+        items: { type: "string", enum: CATEGORY_IDS },
+        description: "Only these categories; omit to consider everything",
+      },
+      ...TITLE_PROPS,
+    },
+    ["date_from", "date_to", "title"]
+  ),
+  fn(
+    "add_to_cart",
+    "Add performances to the itinerary. Use session ids, not event ids. Pass every session of a plan in session_ids in one call.",
+    {
+      session_id: {
+        ...PRODUCT_ID_PROP,
+        description: "Session id, e.g. evt_la-perle_2026-10-12T20:00",
+      },
+      session_ids: {
+        type: "array",
+        items: PRODUCT_ID_PROP,
+        maxItems: MAX_BATCH_SESSIONS,
+        description: "Several session ids to add at once, e.g. a whole itinerary",
+      },
       quantity: {
         type: "integer",
         minimum: 1,
         maximum: MAX_LINE_QUANTITY,
-        description: "Default 1",
+        description: "Party size, applied to each session. Default 1. Must be within seats_left.",
       },
-    },
-    ["product_id"]
+    }
   ),
   fn(
     "update_cart",

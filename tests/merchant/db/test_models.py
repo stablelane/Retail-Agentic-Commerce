@@ -123,7 +123,7 @@ class TestCheckoutSessionModel:
 
         assert session.id == "checkout_test"
         assert session.status == CheckoutStatus.NOT_READY_FOR_PAYMENT
-        assert session.currency == "USD"
+        assert session.currency == "AED"
         assert session.locale == "en-US"
         assert session.line_items_json == "[]"
         assert session.buyer_json is None

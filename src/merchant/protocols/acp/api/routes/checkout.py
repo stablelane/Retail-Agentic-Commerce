@@ -21,6 +21,7 @@ from sqlmodel import Session
 from src.merchant.api.dependencies import verify_api_key
 from src.merchant.db.database import get_session
 from src.merchant.domain.checkout.service import (
+    InsufficientSeatsError,
     InvalidStateTransitionError,
     ProductNotFoundError,
     SessionNotFoundError,
@@ -66,6 +67,16 @@ def _handle_service_error(error: Exception) -> HTTPException:
             detail=ErrorResponse(
                 type=ErrorTypeEnum.NOT_FOUND,
                 code=ErrorResponseCodeEnum.SESSION_NOT_FOUND,
+                message=error.message,
+            ).model_dump(),
+        )
+
+    if isinstance(error, InsufficientSeatsError):
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                type=ErrorTypeEnum.INVALID_REQUEST,
+                code=ErrorResponseCodeEnum.VALIDATION_ERROR,
                 message=error.message,
             ).model_dump(),
         )
@@ -133,6 +144,7 @@ async def create_checkout(
     try:
         return await create_checkout_session(db, request)
     except (
+        InsufficientSeatsError,
         ProductNotFoundError,
         SessionNotFoundError,
         InvalidStateTransitionError,
@@ -209,6 +221,7 @@ async def update_checkout(
     try:
         return await update_checkout_session(db, session_id, request)
     except (
+        InsufficientSeatsError,
         ProductNotFoundError,
         SessionNotFoundError,
         InvalidStateTransitionError,
@@ -300,7 +313,11 @@ def complete_checkout(
             )
 
         return response
-    except (SessionNotFoundError, InvalidStateTransitionError) as e:
+    except (
+        InsufficientSeatsError,
+        SessionNotFoundError,
+        InvalidStateTransitionError,
+    ) as e:
         raise _handle_service_error(e) from e
 
 
@@ -334,5 +351,9 @@ def cancel_checkout(
     """
     try:
         return cancel_checkout_session(db, session_id)
-    except (SessionNotFoundError, InvalidStateTransitionError) as e:
+    except (
+        InsufficientSeatsError,
+        SessionNotFoundError,
+        InvalidStateTransitionError,
+    ) as e:
         raise _handle_service_error(e) from e

@@ -1,8 +1,8 @@
-const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+const aed = new Intl.NumberFormat("en-AE", { style: "currency", currency: "AED" });
 
-/** Format integer cents as USD, e.g. 2500 → "$25.00". */
+/** Format integer fils as AED, e.g. 35000 → "AED 350.00". */
 export function formatCents(cents: number): string {
-  return usd.format(cents / 100);
+  return aed.format(cents / 100);
 }
 
 /**

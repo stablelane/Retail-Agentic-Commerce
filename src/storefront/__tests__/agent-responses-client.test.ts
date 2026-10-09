@@ -1,7 +1,13 @@
 // @vitest-environment node
-import { LlmError, createLlmClient, type LlmStreamEvent } from "@/lib/agent/client";
+import {
+  LlmError,
+  createLlmClient,
+  withFallback,
+  type LlmClient,
+  type LlmStreamEvent,
+} from "@/lib/agent/client";
 import { buildResponsesRequest, responsesUrl } from "@/lib/agent/responses-client";
-import { getLlmConfig, type LlmConfig } from "@/lib/env";
+import { getFallbackLlmConfig, getLlmConfig, type LlmConfig } from "@/lib/env";
 
 vi.mock("server-only", () => ({}));
 
@@ -75,6 +81,56 @@ describe("getLlmConfig", () => {
     vi.stubEnv("AZURE_OPENAI_BASE_URL", AZURE_BASE);
     vi.stubEnv("CHAT_LLM_PROVIDER", "nim");
     expect(getLlmConfig().provider).toBe("nim");
+  });
+});
+
+describe("withFallback", () => {
+  const request = { messages: [], tools: [], toolChoice: "auto" as const };
+
+  function fake(events: LlmStreamEvent[], fail?: LlmError): LlmClient & { calls: number } {
+    const client = {
+      calls: 0,
+      async *streamStep() {
+        client.calls += 1;
+        for (const event of events) yield event;
+        if (fail) throw fail;
+      },
+    };
+    return client;
+  }
+
+  it("switches to the backup when the primary fails before answering, and stays there", async () => {
+    const primary = fake([], new LlmError("http", 403));
+    const backup = fake([{ type: "text", delta: "from NIM" }]);
+    const log = vi.fn();
+    const llm = withFallback(primary, backup, log);
+
+    expect(await collect(llm.streamStep(request))).toEqual([{ type: "text", delta: "from NIM" }]);
+    await collect(llm.streamStep(request));
+    expect(primary.calls).toBe(1);
+    expect(backup.calls).toBe(2);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("403"));
+  });
+
+  it("does not switch once the primary has streamed output", async () => {
+    const primary = fake([{ type: "text", delta: "partial" }], new LlmError("timeout"));
+    const backup = fake([{ type: "text", delta: "backup" }]);
+    await expect(collect(withFallback(primary, backup).streamStep(request))).rejects.toBeInstanceOf(
+      LlmError
+    );
+    expect(backup.calls).toBe(0);
+  });
+
+  it("offers NIM as backup only for the Azure provider with an NVIDIA key", () => {
+    vi.stubEnv("NVIDIA_API_KEY", "nv");
+    vi.stubEnv("CHAT_LLM_FALLBACK", "");
+    expect(getFallbackLlmConfig(config())?.provider).toBe("nim");
+    expect(getFallbackLlmConfig(config({ provider: "nim" }))).toBeNull();
+    vi.stubEnv("CHAT_LLM_FALLBACK", "off");
+    expect(getFallbackLlmConfig(config())).toBeNull();
+    vi.stubEnv("CHAT_LLM_FALLBACK", "");
+    vi.stubEnv("NVIDIA_API_KEY", "");
+    expect(getFallbackLlmConfig(config())).toBeNull();
   });
 });
 

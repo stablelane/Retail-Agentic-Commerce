@@ -31,7 +31,7 @@ export function OrderStatusBlock({ block }: { block: OrderStatusBlockData }) {
 
   return (
     <section aria-label={`Order ${block.orderId}`} className="flex flex-col gap-4 text-caption">
-      <ol aria-label="Order progress" className="grid grid-cols-4 gap-1">
+      <ol aria-label="Order progress" className="grid grid-cols-2 gap-1">
         {SHIPPING_STEPS.map((step, index) => {
           const state =
             index < currentIndex ? "complete" : index === currentIndex ? "current" : "upcoming";

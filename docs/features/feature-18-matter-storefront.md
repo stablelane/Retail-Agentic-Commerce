@@ -2,7 +2,7 @@
 
 **Goal**: Ship a consumer-facing storefront (`src/storefront`, Next.js, port 3002) styled after the Matter design system, with an LLM-driven shopping chat overlay that reproduces every Apps SDK widget capability (search, recommendations, cart, ACP checkout, loyalty, post-purchase messages) and adds order tracking — all backed by the existing Merchant API, PSP, Apps SDK MCP server, and NAT agents.
 
-**Status**: ✅ Complete
+**Status**: ✅ Complete. The apparel catalogue and USD prices described below were replaced by Dubai events in AED; see [Feature 19](./feature-19-dubai-events.md).
 **Priority**: P1
 **Dependencies**: Features 3, 5, 7, 8, 11, 14, 16
 **Design reference**: [Matter Design System](../design/matter-design-system.md)

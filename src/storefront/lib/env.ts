@@ -1,5 +1,29 @@
 import "server-only";
 
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+
+const ROOT_ENV_KEY =
+  /^(MERCHANT_API_(URL|KEY)|PSP_API_(URL|KEY)|MCP_SERVER_URL|WEBHOOK_SECRET|NVIDIA_API_KEY|NIM_LLM_[A-Z_]+|AZURE_OPENAI_[A-Z_]+|CHAT_[A-Z_]+)$/;
+
+/**
+ * Local runs: fill missing or empty storefront settings from the repo-root .env so a plain
+ * `pnpm start` works. Non-empty environment values always win; no-op when the file is absent.
+ */
+function loadRootEnv(): void {
+  if (process.env.VITEST) return;
+  const file = path.resolve(/* turbopackIgnore: true */ process.cwd(), "../../.env");
+  if (!existsSync(file)) return;
+  for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
+    const match = /^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/.exec(line);
+    const key = match?.[1];
+    if (!key || !ROOT_ENV_KEY.test(key) || process.env[key]?.trim()) continue;
+    process.env[key] = (match[2] ?? "").replace(/^(['"])(.*)\1$/, "$2");
+  }
+}
+
+loadRootEnv();
+
 export interface UpstreamConfig {
   baseUrl: string;
   apiKey: string | undefined;
@@ -81,6 +105,10 @@ export function getLlmConfig(): LlmConfig {
     };
   }
 
+  return nimConfig(maxToolSteps);
+}
+
+function nimConfig(maxToolSteps: number): LlmConfig {
   return {
     provider: "nim",
     apiKey: nonEmpty(process.env.NVIDIA_API_KEY),
@@ -90,4 +118,16 @@ export function getLlmConfig(): LlmConfig {
     timeoutMs: boundedInt(process.env.CHAT_LLM_TIMEOUT_MS, 20_000, 1_000, 120_000),
     maxToolSteps,
   };
+}
+
+/**
+ * NIM backup used when the Azure provider fails before answering (e.g. 403 from a
+ * network-restricted resource). Null when Azure is not primary, NIM has no key, or
+ * `CHAT_LLM_FALLBACK=off`.
+ */
+export function getFallbackLlmConfig(primary: LlmConfig): LlmConfig | null {
+  if (primary.provider !== "responses") return null;
+  if (nonEmpty(process.env.CHAT_LLM_FALLBACK)?.toLowerCase() === "off") return null;
+  const fallback = nimConfig(primary.maxToolSteps);
+  return fallback.apiKey ? fallback : null;
 }

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { AddToBag } from "@/components/store/AddToBag";
+import { AddToBag, BookSeats } from "@/components/store/AddToBag";
 import { Price } from "@/components/store/Price";
 import { Recommendations } from "@/components/store/Recommendations";
 import { SaleBadge } from "@/components/store/SaleBadge";
@@ -57,6 +57,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <p className="text-caption text-text-secondary">{categoryLabel(product.category)}</p>
             ) : null}
             <h1 className="mt-1 font-serif text-h2 leading-[1.1] font-normal">{product.name}</h1>
+            {product.venue ? (
+              <p className="mt-2 text-caption text-text-secondary">{product.venue}</p>
+            ) : null}
             <div className="mt-3">
               <Price
                 price={product.base_price}
@@ -83,15 +86,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </ul>
           ) : null}
 
-          <AddToBag
-            product={{
-              id: product.id,
-              name: product.name,
-              price: product.base_price,
-              imageUrl: product.image_url,
-            }}
-            stockCount={product.stock_count}
-          />
+          {product.sessions && product.sessions.length > 0 ? (
+            <BookSeats
+              product={{
+                id: product.id,
+                name: product.name,
+                price: product.base_price,
+                imageUrl: product.image_url,
+              }}
+              sessions={product.sessions}
+            />
+          ) : (
+            <AddToBag
+              product={{
+                id: product.id,
+                name: product.name,
+                price: product.base_price,
+                imageUrl: product.image_url,
+              }}
+              stockCount={product.stock_count}
+            />
+          )}
         </div>
       </article>
 

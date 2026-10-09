@@ -26,6 +26,7 @@ This document breaks down the project requirements into discrete, implementable 
 | 16 | [Apps SDK Integration (Merchant Iframe)](./feature-16-apps-sdk.md) | P1 | Features 7, 9, 13 |  ✅ Complete |
 | 17 | [UCP Protocol Integration](./feature-17-ucp-integration.md) | P1 | Features 3, 4, 5, 6, 7, 8 |  ✅ Complete |
 | 18 | [Matter Storefront + AI Shopping Chat](./feature-18-matter-storefront.md) | P1 | Features 3, 5, 7, 8, 11, 14, 16 | ✅ Complete |
+| 19 | [Dubai Events Catalogue + Itinerary Booking](./feature-19-dubai-events.md) | P1 | Feature 18 | ✅ Complete |
 
 ---
 
@@ -102,6 +103,16 @@ Add a first-party, Matter-styled storefront whose primary interaction is an LLM 
     - Post-purchase `shipping_update` webhooks surfaced as chat notifications
     - Merchant API additions: `GET /products` list + enrichment (`compare_at_price`), `GET /orders/{id}?email=` with deterministic status progression, `WEBHOOK_URL` fan-out
     - Scope: ACP only; no UCP, real payments, auth, or points redemption
+
+### Phase 8: Dubai Events (Feature 19)
+Replace the apparel catalogue with Visit Dubai events for 1 Oct–31 Dec 2026. The storefront books e-tickets; the chat agent plans a day-by-day itinerary.
+
+19. **Feature 19**: Dubai Events Catalogue + Itinerary Booking
+    - One product per event, one `EventSession` per performance; the bag line id is the session id
+    - Mock seats per performance, decremented when checkout completes; digital e-ticket, no shipping address; currency AED
+    - Catalogue generated from `src/data/visitdubai_2026q4.json` by `scripts/scrape_visitdubai.py` (dev-only Playwright; not called at runtime)
+    - Catalog date chips, session picker, bag grouped by day; chat tools take `session_id` and date ranges
+    - Theme, layout and components stay as in Feature 18
 
 ---
 

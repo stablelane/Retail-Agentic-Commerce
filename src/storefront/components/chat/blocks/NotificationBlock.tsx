@@ -4,11 +4,7 @@ import Link from "next/link";
 
 import { useBlockActions } from "@/components/chat/blocks/BlockActions";
 import type { NotificationBlock as NotificationBlockData } from "@/lib/agent/types";
-import { SHIPPING_STEPS, formatOrderDateTime, orderHref, safeHttpUrl } from "@/lib/commerce/orders";
-
-function statusLabel(status: string): string {
-  return SHIPPING_STEPS.find((step) => step.status === status)?.label ?? status.replace(/_/g, " ");
-}
+import { formatOrderDateTime, orderHref, safeHttpUrl, statusLabel } from "@/lib/commerce/orders";
 
 export function NotificationBlock({ block }: { block: NotificationBlockData }) {
   const { navigate, email } = useBlockActions();

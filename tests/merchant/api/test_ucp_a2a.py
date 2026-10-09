@@ -33,6 +33,7 @@ from src.merchant.protocols.ucp.services.a2a_transport import (
 from src.merchant.protocols.ucp.services.agent_executor import clear_idempotency_cache
 from src.merchant.protocols.ucp.services.negotiation import clear_profile_cache
 from src.merchant.services.idempotency import reset_idempotency_store
+from tests.merchant.catalog_ids import ITEM_ID, bookable_id
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -179,7 +180,7 @@ class TestHeaderValidation:
     ) -> None:
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post(
             "/a2a",
@@ -195,7 +196,7 @@ class TestHeaderValidation:
     ) -> None:
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post(
             "/a2a",
@@ -211,7 +212,7 @@ class TestHeaderValidation:
     ) -> None:
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post(
             "/a2a",
@@ -229,7 +230,7 @@ class TestHeaderValidation:
     ) -> None:
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = client.post("/a2a", json=request, headers=a2a_headers)
         assert response.status_code == 401
@@ -247,7 +248,7 @@ class TestCheckoutActions:
     ) -> None:
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
 
@@ -270,7 +271,7 @@ class TestCheckoutActions:
     ) -> None:
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
@@ -289,13 +290,13 @@ class TestCheckoutActions:
         assert any(d.get("code") == "SAVE10" for d in checkout["discounts"]["applied"])
 
     @pytest.mark.usefixtures("mock_platform_profile")
-    def test_create_checkout_with_buyer_starts_incomplete(
+    def test_create_checkout_with_buyer_is_ready(
         self, auth_client: TestClient, a2a_headers: dict[str, str]
     ) -> None:
         request = _make_request(
             "create_checkout",
             {
-                "line_items": [{"item": {"id": "prod_1"}, "quantity": 1}],
+                "line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}],
                 "buyer": {
                     "first_name": "John",
                     "last_name": "Doe",
@@ -316,7 +317,7 @@ class TestCheckoutActions:
         body = response.json()
         assert "error" not in body
         checkout = body["result"]["parts"][0]["data"]["a2a.ucp.checkout"]
-        assert checkout["status"] == "incomplete"
+        assert checkout["status"] == "ready_for_complete"
 
     @pytest.mark.usefixtures("mock_platform_profile")
     def test_get_checkout(
@@ -325,7 +326,7 @@ class TestCheckoutActions:
         # Create first
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
@@ -346,7 +347,7 @@ class TestCheckoutActions:
         # Create
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
@@ -354,7 +355,7 @@ class TestCheckoutActions:
         # Add another product
         add_req = _make_request(
             "add_to_checkout",
-            {"product_id": "prod_2", "quantity": 2},
+            {"product_id": bookable_id(1), "quantity": 2},
             context_id=ctx,
         )
         add_resp = auth_client.post("/a2a", json=add_req, headers=a2a_headers)
@@ -374,14 +375,14 @@ class TestCheckoutActions:
     ) -> None:
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
 
         add_req = _make_request(
             "add_to_checkout",
-            {"product_id": "prod_1", "quantity": quantity},
+            {"product_id": ITEM_ID, "quantity": quantity},
             context_id=ctx,
         )
         response = auth_client.post("/a2a", json=add_req, headers=a2a_headers)
@@ -397,7 +398,7 @@ class TestCheckoutActions:
     ) -> None:
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
@@ -446,7 +447,7 @@ class TestCheckoutActions:
         create_req = _make_request(
             "create_checkout",
             {
-                "line_items": [{"item": {"id": "prod_1"}, "quantity": 1}],
+                "line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}],
                 "buyer": {
                     "first_name": "John",
                     "last_name": "Doe",
@@ -530,7 +531,7 @@ class TestCheckoutActions:
         create_req = _make_request(
             "create_checkout",
             {
-                "line_items": [{"item": {"id": "prod_1"}, "quantity": 1}],
+                "line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}],
                 "buyer": {
                     "first_name": "John",
                     "last_name": "Doe",
@@ -630,7 +631,7 @@ class TestApplicationErrors:
     ) -> None:
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
@@ -677,7 +678,7 @@ class TestContextPersistence:
     ) -> None:
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
         ctx = response.json()["result"]["contextId"]
@@ -689,7 +690,7 @@ class TestContextPersistence:
     ) -> None:
         create_req = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         create_resp = auth_client.post("/a2a", json=create_req, headers=a2a_headers)
         ctx = create_resp.json()["result"]["contextId"]
@@ -712,7 +713,7 @@ class TestIdempotency:
         msg_id = str(uuid.uuid4())
         request = _make_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
             message_id=msg_id,
         )
 

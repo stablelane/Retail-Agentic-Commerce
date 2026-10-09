@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import Image from "next/image";
 
+import { HeroVideo } from "@/components/store/HeroVideo";
 import { HERO_ID, homeContent } from "@/lib/content/home";
 
 function heroImageAvailable(src: string): boolean {
@@ -11,8 +12,9 @@ function heroImageAvailable(src: string): boolean {
 }
 
 export function Hero() {
-  const { eyebrow, headline, body, image } = homeContent.hero;
+  const { eyebrow, headline, body, image, video } = homeContent.hero;
   const hasImage = heroImageAvailable(image.src);
+  const hasVideo = heroImageAvailable(video.src);
 
   return (
     <section
@@ -30,6 +32,7 @@ export function Hero() {
           className="object-cover object-center"
         />
       ) : null}
+      {hasVideo ? <HeroVideo src={video.src} poster={hasImage ? image.src : undefined} /> : null}
       <div aria-hidden="true" className="hero-overlay absolute inset-0" />
       <div className="absolute inset-x-4 bottom-8 flex flex-col gap-4 text-white sm:inset-x-8 md:flex-row md:items-end md:justify-between">
         <div>

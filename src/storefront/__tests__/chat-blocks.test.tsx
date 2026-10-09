@@ -58,11 +58,11 @@ describe("ProductCarouselBlock", () => {
     ]);
     const sale = links[0]!;
     expect(sale).toHaveTextContent("Graphic Tee");
-    expect(sale).toHaveTextContent("$32.00");
-    expect(sale).toHaveTextContent("$40.00");
+    expect(sale).toHaveTextContent(/AED 32\.00/);
+    expect(sale).toHaveTextContent(/AED 40\.00/);
     expect(within(sale).getByText("20% OFF")).toBeInTheDocument();
 
-    expect(links[1]).toHaveTextContent("$25.00");
+    expect(links[1]).toHaveTextContent(/AED 25\.00/);
     expect(within(links[1]!).queryByText(/% OFF/)).not.toBeInTheDocument();
   });
 
@@ -151,10 +151,10 @@ describe("OrderStatusBlock", () => {
     renderBlock({
       type: "order_status",
       orderId: "order_abc123",
-      status: "order_shipped",
+      status: "tickets_issued",
       statusHistory: [
         { status: "order_confirmed", at: "2026-01-01T10:00:00Z" },
-        { status: "order_shipped", at: "2026-01-01T10:02:00Z" },
+        { status: "tickets_issued", at: "2026-01-01T10:02:00Z" },
       ],
       estimatedDelivery: "2026-01-05T00:00:00Z",
       trackingUrl: "javascript:alert(1)",
@@ -166,15 +166,10 @@ describe("OrderStatusBlock", () => {
     const steps = within(screen.getByRole("list", { name: "Order progress" })).getAllByRole(
       "listitem"
     );
-    expect(steps.map((step) => step.dataset.state)).toEqual([
-      "complete",
-      "current",
-      "upcoming",
-      "upcoming",
-    ]);
+    expect(steps.map((step) => step.dataset.state)).toEqual(["complete", "current"]);
     expect(screen.getByText("UPS")).toBeInTheDocument();
     expect(screen.getByText("Classic Tee × 2")).toBeInTheDocument();
-    expect(screen.getByText("$55.99")).toBeInTheDocument();
+    expect(screen.getByText("AED 55.99")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Track package" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View order details" })).toHaveAttribute(
       "href",
@@ -196,8 +191,8 @@ describe("cart and checkout blocks", () => {
       ],
       sessionId: "checkout_1",
     });
-    expect(screen.getByText("2 × $25.00")).toBeInTheDocument();
-    expect(screen.getByText("$55.99")).toBeInTheDocument();
+    expect(screen.getByText("2 × AED 25.00")).toBeInTheDocument();
+    expect(screen.getByText("AED 55.99")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Go to checkout" })).toHaveAttribute(
       "href",
       "/checkout"
@@ -215,7 +210,7 @@ describe("cart and checkout blocks", () => {
       totals: null,
       sessionId: null,
     });
-    expect(screen.getByText("$75.00")).toBeInTheDocument();
+    expect(screen.getByText("AED 75.00")).toBeInTheDocument();
     expect(screen.getByText("Taxes and shipping calculated at checkout")).toBeInTheDocument();
   });
 
@@ -226,7 +221,7 @@ describe("cart and checkout blocks", () => {
       total: 5599,
       itemCount: 2,
     });
-    expect(screen.getByText(/\$55\.99/)).toBeInTheDocument();
+    expect(screen.getByText(/AED 55\.99/)).toBeInTheDocument();
     const link = screen.getByRole("link", { name: "Go to checkout" });
     expect(link).toHaveAttribute("href", "/checkout");
     const stopNavigation = (event: MouseEvent) => event.preventDefault();

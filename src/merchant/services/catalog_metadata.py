@@ -36,6 +36,7 @@ class CatalogMetadata(TypedDict):
     description: str | None
     attributes: list[str]
     compare_at_price_cents: int | None
+    venue: str | None
 
 
 def get_catalog_metadata(product_id: str) -> CatalogMetadata:
@@ -48,6 +49,7 @@ def get_catalog_metadata(product_id: str) -> CatalogMetadata:
             description=None,
             attributes=[],
             compare_at_price_cents=None,
+            venue=None,
         )
     return CatalogMetadata(
         category=product["category"],
@@ -55,6 +57,7 @@ def get_catalog_metadata(product_id: str) -> CatalogMetadata:
         description=product["description"],
         attributes=list(product["attributes"]),
         compare_at_price_cents=product.get("compare_at_price_cents"),
+        venue=product.get("venue") or None,
     )
 
 

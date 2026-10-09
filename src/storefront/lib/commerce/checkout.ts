@@ -30,7 +30,7 @@ export class CheckoutError extends Error {
 export interface PlaceOrderParams {
   session: CheckoutSession;
   buyer: AcpBuyerInput;
-  address: AcpAddressInput;
+  address?: AcpAddressInput;
   card: CardDetails;
   language: Language;
   onStep?: (step: CheckoutStep) => void;
@@ -58,7 +58,7 @@ export async function placeOrder({
     method: "POST",
     body: {
       buyer,
-      fulfillment_address: address,
+      ...(address ? { fulfillment_address: address } : {}),
       ...(fulfillmentOptionId ? { fulfillment_option_id: fulfillmentOptionId } : {}),
     },
     fetchImpl,
@@ -81,7 +81,7 @@ export async function placeOrder({
       amount,
       currency: ready.currency,
       checkoutSessionId: ready.id,
-      billingAddress: address,
+      ...(address ? { billingAddress: address } : {}),
     },
     fetchImpl
   );
@@ -97,7 +97,7 @@ export async function placeOrder({
         payment_data: {
           token,
           provider: ready.payment_provider?.provider ?? "stripe",
-          billing_address: address,
+          ...(address ? { billing_address: address } : {}),
         },
         preferred_language: language,
       },

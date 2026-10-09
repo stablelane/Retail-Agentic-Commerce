@@ -17,6 +17,12 @@
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session
+
+from src.data.product_catalog import PRODUCTS
+from src.merchant.db.database import get_engine
+from src.merchant.db.models import EventSession
+from tests.merchant.catalog_ids import ITEM_ID, UNIT_PRICE, bookable_id
 
 
 class TestCreateCheckoutSession:
@@ -28,7 +34,7 @@ class TestCreateCheckoutSession:
         """Happy path: Creating a session with valid items returns 201."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 201
@@ -37,7 +43,7 @@ class TestCreateCheckoutSession:
         """Happy path: Response contains a checkout session ID."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -48,7 +54,7 @@ class TestCreateCheckoutSession:
         """Happy path: New session has not_ready_for_payment status."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -60,28 +66,28 @@ class TestCreateCheckoutSession:
         """Happy path: Line items are calculated correctly."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 2}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 2}]},
         )
         data = response.json()
 
         assert len(data["line_items"]) == 1
         line_item = data["line_items"][0]
-        assert line_item["item"]["id"] == "prod_1"
+        assert line_item["item"]["id"] == ITEM_ID
         assert line_item["item"]["quantity"] == 2
-        # prod_1 base_price is 2500 cents, so 2 * 2500 = 5000
-        assert line_item["base_amount"] == 5000
+        base = UNIT_PRICE * 2
+        tax = int(base * 0.10)
+        assert line_item["base_amount"] == base
         assert line_item["discount"] == 0
-        assert line_item["subtotal"] == 5000
-        # 10% tax
-        assert line_item["tax"] == 500
-        assert line_item["total"] == 5500
+        assert line_item["subtotal"] == base
+        assert line_item["tax"] == tax
+        assert line_item["total"] == base + tax
 
     def test_create_session_with_buyer_info(self, auth_client: TestClient) -> None:
         """Happy path: Session includes buyer info when provided."""
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {"first_name": "John", "email": "john@example.com"},
             },
         )
@@ -98,7 +104,7 @@ class TestCreateCheckoutSession:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "fulfillment_address": {
                     "name": "John Doe",
                     "line_one": "123 Main St",
@@ -121,7 +127,7 @@ class TestCreateCheckoutSession:
         """Happy path: Response includes payment provider configuration."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -135,7 +141,7 @@ class TestCreateCheckoutSession:
         """Session response includes discount extension capabilities payload."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -152,7 +158,7 @@ class TestCreateCheckoutSession:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "discounts": {"codes": ["save10"]},
             },
         )
@@ -167,7 +173,7 @@ class TestCreateCheckoutSession:
         """Happy path: Response includes calculated totals."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -184,7 +190,7 @@ class TestCreateCheckoutSession:
         """Happy path: Response includes messages array."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -195,7 +201,7 @@ class TestCreateCheckoutSession:
         """Happy path: Response includes HATEOAS links."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -233,7 +239,7 @@ class TestCreateCheckoutSession:
         """Failure case: Zero quantity returns 422 validation error."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 0}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 0}]},
         )
 
         assert response.status_code == 422
@@ -244,8 +250,8 @@ class TestCreateCheckoutSession:
             "/checkout_sessions",
             json={
                 "items": [
-                    {"id": "prod_1", "quantity": 1},
-                    {"id": "prod_2", "quantity": 2},
+                    {"id": ITEM_ID, "quantity": 1},
+                    {"id": bookable_id(1), "quantity": 2},
                 ]
             },
         )
@@ -259,7 +265,7 @@ class TestCreateCheckoutSession:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {
                     "first_name": "John",
                     "last_name": "Doe",
@@ -282,7 +288,7 @@ class TestCreateCheckoutSession:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {"first_name": "Jane", "email": "jane@example.com"},
             },
         )
@@ -301,7 +307,7 @@ class TestGetCheckoutSession:
         # Create a session first
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -316,7 +322,7 @@ class TestGetCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 3}],
+                "items": [{"id": ITEM_ID, "quantity": 3}],
                 "buyer": {"first_name": "Jane", "email": "jane@example.com"},
             },
         )
@@ -348,7 +354,7 @@ class TestUpdateCheckoutSession:
         # Create a session
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -365,7 +371,7 @@ class TestUpdateCheckoutSession:
         # Create a session without buyer
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -385,10 +391,10 @@ class TestUpdateCheckoutSession:
         # Create a session without address
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
-        assert len(create_response.json()["fulfillment_options"]) == 0
+        assert create_response.json()["fulfillment_options"][0]["id"] == "eticket"
 
         # Update with address
         response = auth_client.post(
@@ -416,7 +422,7 @@ class TestUpdateCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "fulfillment_address": {
                     "name": "Bob Smith",
                     "line_one": "456 Oak Ave",
@@ -447,7 +453,7 @@ class TestUpdateCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "fulfillment_address": {
                     "name": "Complete User",
                     "line_one": "789 Pine St",
@@ -478,7 +484,7 @@ class TestUpdateCheckoutSession:
         # Create a session with 1 item
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
         original_total = next(
@@ -490,7 +496,7 @@ class TestUpdateCheckoutSession:
         # Update to 2 items
         response = auth_client.post(
             f"/checkout_sessions/{session_id}",
-            json={"items": [{"id": "prod_1", "quantity": 2}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 2}]},
         )
         data = response.json()
         new_total = next(t["amount"] for t in data["totals"] if t["type"] == "total")
@@ -503,7 +509,7 @@ class TestUpdateCheckoutSession:
         """Invalid coupon codes are rejected and surfaced in warning messages."""
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -537,7 +543,7 @@ class TestUpdateCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {"first_name": "Test", "email": "test@example.com"},
                 "fulfillment_address": {
                     "name": "Test User",
@@ -586,7 +592,7 @@ class TestCompleteCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {"first_name": "Ready", "email": "ready@example.com"},
                 "fulfillment_address": {
                     "name": "Ready User",
@@ -691,7 +697,7 @@ class TestCompleteCheckoutSession:
         # Create a session without all required fields
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -731,7 +737,7 @@ class TestCancelCheckoutSession:
         # Create a session
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -744,7 +750,7 @@ class TestCancelCheckoutSession:
         # Create a session
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -759,7 +765,7 @@ class TestCancelCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {"first_name": "Test", "email": "test@example.com"},
                 "fulfillment_address": {
                     "name": "Test User",
@@ -801,7 +807,7 @@ class TestCancelCheckoutSession:
         create_response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "buyer": {"first_name": "Test", "email": "test@example.com"},
                 "fulfillment_address": {
                     "name": "Test User",
@@ -837,7 +843,7 @@ class TestCancelCheckoutSession:
         # Create and cancel a session
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -856,7 +862,7 @@ class TestCheckoutSessionResponseFormat:
         """Edge case: Response contains all ACP-required fields."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
@@ -877,17 +883,17 @@ class TestCheckoutSessionResponseFormat:
         """Edge case: Currency is lowercase ISO 4217."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
 
-        assert data["currency"] == "usd"
+        assert data["currency"] == "aed"
 
     def test_line_item_has_all_required_fields(self, auth_client: TestClient) -> None:
         """Edge case: Line items contain all required fields."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         data = response.json()
         line_item = data["line_items"][0]
@@ -912,7 +918,7 @@ class TestCheckoutSessionResponseFormat:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "fulfillment_address": {
                     "name": "Test User",
                     "line_one": "123 Test St",
@@ -941,7 +947,7 @@ class TestCheckoutSessionResponseFormat:
         """Edge case: Response has correct content type."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert "application/json" in response.headers["content-type"]
@@ -954,7 +960,71 @@ class TestCheckoutSessionResponseFormat:
         response = auth_client.request(
             method,
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 405
+
+
+class TestEventBooking:
+    """Digital e-tickets and per-performance seats."""
+
+    def test_buyer_email_without_address_is_ready(self, auth_client: TestClient) -> None:
+        response = auth_client.post(
+            "/checkout_sessions",
+            json={
+                "items": [{"id": ITEM_ID, "quantity": 1}],
+                "buyer": {"first_name": "Ada", "email": "ada@example.com"},
+            },
+        )
+        data = response.json()
+
+        assert response.status_code == 201
+        assert data["status"] == "ready_for_payment"
+        assert data["currency"] == "aed"
+        assert data["fulfillment_address"] is None
+        assert data["fulfillment_options"][0]["id"] == "eticket"
+        assert data["fulfillment_options"][0]["type"] == "digital"
+        assert data["fulfillment_options"][0]["total"] == 0
+
+    def test_quantity_above_seats_is_rejected(self, auth_client: TestClient) -> None:
+        product = next((entry for entry in PRODUCTS if entry.get("sessions")), None)
+        if product is None:
+            pytest.skip("catalogue has no performances")
+        session = product["sessions"][0]
+        response = auth_client.post(
+            "/checkout_sessions",
+            json={"items": [{"id": session["id"], "quantity": int(session["seats"]) + 1}]},
+        )
+
+        assert response.status_code == 400
+
+    def test_complete_decrements_seats(self, auth_client: TestClient) -> None:
+        product = next((entry for entry in PRODUCTS if entry.get("sessions")), None)
+        if product is None:
+            pytest.skip("catalogue has no performances")
+        session_id = product["sessions"][0]["id"]
+        with Session(get_engine()) as db:
+            before = db.get(EventSession, session_id)
+        if before is None:
+            pytest.skip("performance is not seeded")
+        seats = before.seats_left
+
+        created = auth_client.post(
+            "/checkout_sessions",
+            json={
+                "items": [{"id": session_id, "quantity": 1}],
+                "buyer": {"first_name": "Ada", "email": "ada@example.com"},
+            },
+        )
+        checkout_id = created.json()["id"]
+        completed = auth_client.post(
+            f"/checkout_sessions/{checkout_id}/complete",
+            json={"payment_data": {"token": "tok_test", "provider": "stripe"}},
+        )
+
+        assert completed.status_code == 200
+        with Session(get_engine()) as db:
+            after = db.get(EventSession, session_id)
+        assert after is not None
+        assert after.seats_left == seats - 1

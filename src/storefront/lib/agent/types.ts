@@ -119,7 +119,7 @@ export interface OrderFormBlock {
 }
 
 export type OrderShippingStatus =
-  "order_confirmed" | "order_shipped" | "out_for_delivery" | "delivered";
+  "order_confirmed" | "tickets_issued" | "order_shipped" | "out_for_delivery" | "delivered";
 
 export interface OrderStatusBlock {
   type: "order_status";

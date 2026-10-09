@@ -20,20 +20,20 @@ const noContext = { cartItems: [] };
 describe("intents", () => {
   it("lists the five chips in spec order with icons", () => {
     expect(CHAT_INTENTS.map((intent) => [intent.label, intent.icon])).toEqual([
-      ["Help me choose", "sparkles"],
+      ["Plan my weekend", "sparkles"],
       ["Track my order", "truck"],
-      ["Suggest essentials for a weekend trip", "search"],
-      ["Recommend a gift for a runner", "search"],
-      ["What goes with the Classic Tee?", "list"],
+      ["Family days out", "search"],
+      ["Live shows", "search"],
+      ["Sports events", "list"],
     ]);
   });
 
   it.each([
     ["help_me_choose", "list_catalog", { limit: 8 }],
     ["track_order", "track_order", {}],
-    ["weekend_trip", "search_products", { query: "weekend trip essentials", limit: 6 }],
-    ["gift_runner", "search_products", { query: "running", limit: 6 }],
-    ["pairs_with_classic_tee", "get_recommendations", { product_id: "prod_1" }],
+    ["weekend_trip", "search_products", { query: "family days out", limit: 6 }],
+    ["gift_runner", "search_products", { category: "live-entertainment", limit: 6 }],
+    ["pairs_with_classic_tee", "list_catalog", { category: "sports" }],
   ] as const)("maps %s to %s", (id, tool, args) => {
     const intent = getChatIntent(id);
     expect(intent.tool).toBe(tool);
@@ -54,7 +54,7 @@ describe("intents", () => {
 
   it("matches typed chip labels case- and punctuation-insensitively", () => {
     expect(intentFromText("track my order")?.id).toBe("track_order");
-    expect(intentFromText("  What goes with the classic tee  ")?.id).toBe("pairs_with_classic_tee");
+    expect(intentFromText("  sports events  ")?.id).toBe("pairs_with_classic_tee");
     expect(intentFromText("Track my order please")).toBeNull();
   });
 
@@ -73,9 +73,12 @@ describe("intents", () => {
 
 describe("routeIntent", () => {
   it("runs the chip tool with canned text", () => {
-    const turn = routeIntent(getChatIntent("gift_runner"), "Recommend a gift for a runner");
-    expect(turn).toMatchObject({ name: "search_products", args: { query: "running" } });
-    expect(turn.text).toMatch(/runner/);
+    const turn = routeIntent(getChatIntent("gift_runner"), "Live shows");
+    expect(turn).toMatchObject({
+      name: "search_products",
+      args: { category: "live-entertainment" },
+    });
+    expect(turn.text).toMatch(/concert/i);
   });
 
   it("parses order id and email from an order form submission", () => {
@@ -105,7 +108,7 @@ describe("routeMessage (keyword fallback)", () => {
     ["I want to checkout", "start_checkout"],
     ["How many points do I have?", "get_account"],
     ["My loyalty status", "get_account"],
-    ["Show me some tops", "search_products"],
+    ["Show me some concerts", "search_products"],
     ["something warm for winter", "search_products"],
   ])("%s → %s", (message, tool) => {
     expect(routeMessage(message, noContext).name).toBe(tool);
@@ -135,11 +138,11 @@ describe("routeMessage (keyword fallback)", () => {
   });
 
   it("searches with the message and a detected category", () => {
-    const turn = routeMessage("Show me some tops", noContext);
+    const turn = routeMessage("Show me some concerts", noContext);
     expect(turn.args).toMatchObject({
-      query: "Show me some tops",
-      category: "tops",
-      title: "Tops",
+      query: "Show me some concerts",
+      category: "live-entertainment",
+      title: "Live entertainment",
     });
     expect(parseToolCall(turn.name, turn.args).ok).toBe(true);
   });
@@ -160,8 +163,8 @@ describe("router helpers", () => {
   });
 
   it("detects categories from synonyms", () => {
-    expect(detectCategory("new sneakers")).toBe("footwear");
-    expect(detectCategory("a warm jacket")).toBe("outerwear");
+    expect(detectCategory("new concerts")).toBe("live-entertainment");
+    expect(detectCategory("a theme park")).toBe("attractions");
     expect(detectCategory("hello")).toBeNull();
   });
 });

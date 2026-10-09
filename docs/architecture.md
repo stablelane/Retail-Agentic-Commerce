@@ -117,6 +117,8 @@ graph TD
 
 **Matter Storefront (Feature 18)**: a third client (`src/storefront`, port 3002) alongside the simulator and the Apps SDK widget. Pages and the chat overlay call ACP checkout and PSP delegation through server-side proxies (keys never reach the browser), use the Apps SDK MCP server for search and recommendations, and receive the same signed post-purchase webhooks as the Demo UI via the merchant's comma-separated `WEBHOOK_URL`. See `docs/features/feature-18-matter-storefront.md`.
 
+**Catalogue (Feature 19)**: `src/data/product_catalog.py` is generated from `src/data/visitdubai_2026q4.json` and holds Dubai events for 1 Oct–31 Dec 2026. Each event is one product; each performance is an `EventSession`. Checkout line items use the session id, seats decrement on completion, fulfillment is a zero-cost digital e-ticket, and prices are AED fils in the existing cent fields. See `docs/features/feature-19-dubai-events.md`.
+
 **3. Dual Protocol Architecture**
 
 The system implements **both ACP and UCP protocols** to demonstrate how merchants can support multiple commerce standards simultaneously.
@@ -221,7 +223,7 @@ The following components are **protocol-agnostic** and serve both ACP and UCP:
    - 3DS authentication flow
 
 4. **Database Layer**
-   - Products catalog
+   - Products catalog (Dubai events; performances in `event_session`)
    - Checkout sessions (protocol field stores ACP vs UCP)
    - Orders and history
 

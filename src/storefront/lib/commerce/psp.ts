@@ -24,7 +24,7 @@ export interface DelegatePaymentParams {
   amount: number;
   currency: string;
   checkoutSessionId: string;
-  billingAddress: AcpAddressInput;
+  billingAddress?: AcpAddressInput;
   now?: Date;
 }
 
@@ -70,15 +70,19 @@ export function buildDelegatePaymentRequest({
       expires_at: new Date(now.getTime() + TOKEN_TTL_MS).toISOString(),
     },
     risk_signals: [{ type: "card_testing", action: "authorized" }],
-    billing_address: {
-      name: billingAddress.name,
-      line_one: billingAddress.line_one,
-      line_two: billingAddress.line_two ?? null,
-      city: billingAddress.city,
-      state: billingAddress.state,
-      country: billingAddress.country,
-      postal_code: billingAddress.postal_code,
-    },
+    ...(billingAddress
+      ? {
+          billing_address: {
+            name: billingAddress.name,
+            line_one: billingAddress.line_one,
+            line_two: billingAddress.line_two ?? null,
+            city: billingAddress.city,
+            state: billingAddress.state,
+            country: billingAddress.country,
+            postal_code: billingAddress.postal_code,
+          },
+        }
+      : {}),
   };
 }
 

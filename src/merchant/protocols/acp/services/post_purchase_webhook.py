@@ -88,8 +88,8 @@ async def trigger_post_purchase_flow(
             order_id=order_id,
             status=response["status"],
             language=response["language"],
-            subject=response["subject"],
-            message=response["message"],
+            subject="Your tickets are ready",
+            message="Your tickets are ready",
             tracking_url=tracking_url,
         )
         if success:

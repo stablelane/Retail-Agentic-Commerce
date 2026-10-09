@@ -25,6 +25,8 @@ import uuid
 
 from fastapi.testclient import TestClient
 
+from tests.merchant.catalog_ids import ITEM_ID
+
 
 class TestAPIKeyAuthentication:
     """Test suite for API key authentication."""
@@ -33,7 +35,7 @@ class TestAPIKeyAuthentication:
         """Failure case: Request without API key returns 401 Unauthorized."""
         response = client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 401
@@ -45,7 +47,7 @@ class TestAPIKeyAuthentication:
         """Failure case: Request with invalid API key returns 403 Forbidden."""
         response = client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={"Authorization": "Bearer invalid-key"},
         )
 
@@ -58,7 +60,7 @@ class TestAPIKeyAuthentication:
         """Happy path: Valid Bearer token allows request."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 201
@@ -70,7 +72,7 @@ class TestAPIKeyAuthentication:
         """Happy path: Valid X-API-Key header allows request."""
         response = auth_client_x_api_key.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 201
@@ -81,7 +83,7 @@ class TestAPIKeyAuthentication:
         # Both headers present, Bearer is valid
         response = client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={
                 "Authorization": "Bearer test-api-key-12345",
                 "X-API-Key": "different-key",
@@ -113,7 +115,7 @@ class TestIdempotency:
         """Happy path: Requests without idempotency key work normally."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 201
@@ -123,7 +125,7 @@ class TestIdempotency:
     ) -> None:
         """Happy path: Same idempotency key with same request returns cached response."""
         idempotency_key = str(uuid.uuid4())
-        request_body = {"items": [{"id": "prod_1", "quantity": 1}]}
+        request_body = {"items": [{"id": ITEM_ID, "quantity": 1}]}
 
         # First request
         response1 = auth_client.post(
@@ -156,7 +158,7 @@ class TestIdempotency:
         # First request
         response1 = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={"Idempotency-Key": idempotency_key},
         )
         assert response1.status_code == 201
@@ -176,7 +178,7 @@ class TestIdempotency:
         self, auth_client: TestClient
     ) -> None:
         """Edge case: Different idempotency keys create different sessions."""
-        request_body = {"items": [{"id": "prod_1", "quantity": 1}]}
+        request_body = {"items": [{"id": ITEM_ID, "quantity": 1}]}
 
         response1 = auth_client.post(
             "/checkout_sessions",
@@ -199,7 +201,7 @@ class TestIdempotency:
 
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={"Idempotency-Key": idempotency_key},
         )
 
@@ -210,7 +212,7 @@ class TestIdempotency:
         # Create a session first
         create_response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
         session_id = create_response.json()["id"]
 
@@ -239,7 +241,7 @@ class TestACPHeaders:
         """Happy path: Request-Id is generated if not provided."""
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
         )
 
         assert response.status_code == 201
@@ -254,7 +256,7 @@ class TestACPHeaders:
 
         response = auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={"Request-Id": provided_request_id},
         )
 
@@ -267,7 +269,7 @@ class TestACPHeaders:
 
         response = client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={"Request-Id": provided_request_id},
         )
 
@@ -282,7 +284,7 @@ class TestACPHeaders:
         # First request
         auth_client.post(
             "/checkout_sessions",
-            json={"items": [{"id": "prod_1", "quantity": 1}]},
+            json={"items": [{"id": ITEM_ID, "quantity": 1}]},
             headers={"Idempotency-Key": idempotency_key},
         )
 
@@ -305,7 +307,7 @@ class TestRequestValidation:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1}],
+                "items": [{"id": ITEM_ID, "quantity": 1}],
                 "unknown_field": "should_fail",
             },
         )
@@ -335,7 +337,7 @@ class TestRequestValidation:
         response = auth_client.post(
             "/checkout_sessions",
             json={
-                "items": [{"id": "prod_1", "quantity": 1, "extra": "field"}],
+                "items": [{"id": ITEM_ID, "quantity": 1, "extra": "field"}],
             },
         )
 

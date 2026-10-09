@@ -42,7 +42,7 @@ const CATALOG: Product[] = [
     id: "prod_5",
     name: "Rain Shell",
     base_price: 12000,
-    category: "outerwear",
+    category: "tours",
     image_url: "https://evil.example/x.png",
   }),
 ];
@@ -233,11 +233,11 @@ describe("search_products", () => {
   it("only serves local image paths", async () => {
     const outcome = await createExecutor(makeDeps()).execute(
       "list_catalog",
-      { category: "outerwear", title: "Outerwear" },
+      { category: "tours", title: "Tours" },
       ctx()
     );
     const block = outcome.blocks[0];
-    expect(block?.type === "product_carousel" && block.products[0]?.imageUrl).toBe("/prod_1.jpeg");
+    expect(block?.type === "product_carousel" && block.products[0]?.imageUrl).toBe("/hero.jpg");
   });
 
   it("reports merchant outages", async () => {
@@ -280,7 +280,7 @@ describe("list_catalog", () => {
   it("returns no block when nothing matches", async () => {
     const outcome = await createExecutor(makeDeps()).execute(
       "list_catalog",
-      { category: "accessories", title: "Accessories" },
+      { category: "attractions", title: "Attractions" },
       ctx()
     );
     expect(outcome.blocks).toEqual([]);
@@ -406,6 +406,68 @@ describe("cart tools", () => {
     expect(outcome.cartUpdate?.items.map((item) => item.id)).toEqual(["prod_2"]);
   });
 
+  it("books two different days and refuses a sold-out performance", async () => {
+    const events: Product[] = [
+      product({
+        id: "evt_show",
+        name: "La Perle",
+        category: "live-entertainment",
+        sessions: [
+          {
+            id: "evt_show_2026-12-12T19:00",
+            starts_at: "2026-12-12T19:00:00+04:00",
+            seats_left: 0,
+          },
+          {
+            id: "evt_show_2026-12-13T19:00",
+            starts_at: "2026-12-13T19:00:00+04:00",
+            seats_left: 4,
+          },
+        ],
+      }),
+      product({
+        id: "evt_park",
+        name: "Dubai Aquarium",
+        category: "family",
+        sessions: [
+          {
+            id: "evt_park_2026-12-14T11:00",
+            starts_at: "2026-12-14T11:00:00+04:00",
+            seats_left: 8,
+          },
+        ],
+      }),
+    ];
+    const deps = makeDeps({
+      listProducts: vi.fn(async () => ({ products: events, total: events.length, category: null })),
+    });
+    const executor = createExecutor(deps);
+    const context = ctx();
+
+    const soldOut = await executor.execute(
+      "add_to_cart",
+      { session_id: "evt_show_2026-12-12T19:00", quantity: 2 },
+      context
+    );
+    expect(soldOut.result).toMatchObject({ error: "out_of_stock" });
+    expect(context.cart.items).toEqual([]);
+
+    await executor.execute(
+      "add_to_cart",
+      { session_id: "evt_show_2026-12-13T19:00", quantity: 2 },
+      context
+    );
+    await executor.execute(
+      "add_to_cart",
+      { session_id: "evt_park_2026-12-14T11:00", quantity: 2 },
+      context
+    );
+    expect(context.cart.items.map((item) => item.id)).toEqual([
+      "evt_show_2026-12-13T19:00",
+      "evt_park_2026-12-14T11:00",
+    ]);
+  });
+
   it("get_cart shows ACP totals when the session is current", async () => {
     const deps = makeDeps({
       getCheckoutSession: vi.fn(async () => ({
@@ -440,6 +502,143 @@ describe("cart tools", () => {
     expect(ready.blocks).toEqual([
       { type: "checkout_panel", sessionId: null, total: null, itemCount: 2 },
     ]);
+  });
+});
+
+describe("plan_itinerary", () => {
+  function session(slug: string, at: string, seats = 50) {
+    return { id: `evt_${slug}_${at}`, starts_at: `${at}:00+04:00`, seats_left: seats };
+  }
+  const events: Product[] = [
+    product({
+      id: "evt_brunch",
+      name: "Brunch Cruise",
+      venue: "Marina",
+      base_price: 10000,
+      sessions: [session("brunch", "2026-12-03T11:00")],
+    }),
+    product({
+      id: "evt_opera",
+      name: "Opera Night",
+      venue: "Dubai Opera",
+      base_price: 35000,
+      sessions: [session("opera", "2026-12-03T19:00")],
+    }),
+    // Starts before the matinee ends.
+    product({
+      id: "evt_tight",
+      name: "Tight Squeeze",
+      venue: "Expo City",
+      sessions: [session("tight", "2026-12-03T17:30")],
+    }),
+    product({
+      id: "evt_matinee",
+      name: "Matinee",
+      venue: "Dubai Opera",
+      sessions: [session("matinee", "2026-12-03T15:00")],
+    }),
+    // Runs on both days; must only be booked once and should land on the 4th.
+    product({
+      id: "evt_magic",
+      name: "Magic Show",
+      venue: "Coca-Cola Arena",
+      sessions: [session("magic", "2026-12-03T19:00"), session("magic", "2026-12-04T19:00")],
+    }),
+    product({
+      id: "evt_full",
+      name: "Sold Out",
+      sessions: [session("full", "2026-12-04T11:00", 1)],
+    }),
+  ];
+
+  function plannerDeps() {
+    return makeDeps({
+      listProducts: vi.fn(async () => ({ products: events, total: events.length, category: null })),
+    });
+  }
+
+  it("fits the most distinct events with travel time and enough seats", async () => {
+    const outcome = await createExecutor(plannerDeps()).execute(
+      "plan_itinerary",
+      { date_from: "2026-12-03", date_to: "2026-12-05", party_size: 2, title: "Your trip" },
+      ctx()
+    );
+    expect(outcome.ok).toBe(true);
+    const result = outcome.result as {
+      days: Array<{ date: string; events: Array<{ session_id: string; time: string }> }>;
+      free_days: string[];
+      event_count: number;
+      total_cents: number;
+    };
+    expect(result.days).toEqual([
+      {
+        date: "2026-12-03",
+        events: [
+          expect.objectContaining({ session_id: "evt_brunch_2026-12-03T11:00", time: "11:00" }),
+          expect.objectContaining({ session_id: "evt_matinee_2026-12-03T15:00", time: "15:00" }),
+          expect.objectContaining({ session_id: "evt_opera_2026-12-03T19:00", time: "19:00" }),
+        ],
+      },
+      {
+        date: "2026-12-04",
+        events: [expect.objectContaining({ session_id: "evt_magic_2026-12-04T19:00" })],
+      },
+    ]);
+    expect(result.free_days).toEqual(["2026-12-05"]);
+    expect(result.event_count).toBe(4);
+    expect(result.total_cents).toBe((10000 + 2500 + 35000 + 2500) * 2);
+    expect(outcome.blocks[0]).toMatchObject({ type: "product_carousel", title: "Your trip" });
+  });
+
+  it("respects max_per_day and rejects long or reversed ranges", async () => {
+    const executor = createExecutor(plannerDeps());
+    const slow = await executor.execute(
+      "plan_itinerary",
+      { date_from: "2026-12-03", date_to: "2026-12-03", max_per_day: 1, title: "Slow" },
+      ctx()
+    );
+    expect((slow.result as { event_count: number }).event_count).toBe(1);
+    expect(
+      (
+        await executor.execute(
+          "plan_itinerary",
+          { date_from: "2026-12-01", date_to: "2026-12-20", title: "Long" },
+          ctx()
+        )
+      ).result
+    ).toMatchObject({ error: "range_too_long" });
+    expect(
+      parseToolCall("plan_itinerary", {
+        date_from: "2026-12-05",
+        date_to: "2026-12-03",
+        title: "x",
+      }).ok
+    ).toBe(false);
+  });
+
+  it("add_to_cart books a whole plan in one call and reports failures", async () => {
+    const context = ctx();
+    const outcome = await createExecutor(plannerDeps()).execute(
+      "add_to_cart",
+      {
+        session_ids: [
+          "evt_brunch_2026-12-03T11:00",
+          "evt_opera_2026-12-03T19:00",
+          "evt_nope_2026-12-03T19:00",
+        ],
+        quantity: 2,
+      },
+      context
+    );
+    expect(outcome.ok).toBe(true);
+    expect(context.cart.items).toEqual([
+      { id: "evt_brunch_2026-12-03T11:00", quantity: 2 },
+      { id: "evt_opera_2026-12-03T19:00", quantity: 2 },
+    ]);
+    expect(outcome.result).toMatchObject({
+      added: [{ quantity: 2 }, { quantity: 2 }],
+      failed: [{ error: "product_not_found", product_id: "evt_nope_2026-12-03T19:00" }],
+    });
   });
 });
 

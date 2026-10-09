@@ -42,7 +42,7 @@ COPY . ./
 # NEXT_PUBLIC_* values are inlined into the client bundle at build time.
 # API keys and upstream URLs are server-side only and supplied at runtime.
 ARG NEXT_PUBLIC_API_VERSION=2026-01-16
-ARG NEXT_PUBLIC_BRAND_NAME=Matter
+ARG NEXT_PUBLIC_BRAND_NAME="Visit Dubai"
 ARG NEXT_PUBLIC_DEMO_PREFILL=true
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_API_VERSION=${NEXT_PUBLIC_API_VERSION}

@@ -26,10 +26,16 @@ function sortProducts(products: readonly Product[], sort: SortId): readonly Prod
 interface CatalogViewProps {
   title: string;
   activeCategory: CategoryId | null;
+  activeDate?: string | null;
   products: readonly Product[];
 }
 
-export function CatalogView({ title, activeCategory, products }: CatalogViewProps) {
+export function CatalogView({
+  title,
+  activeCategory,
+  activeDate = null,
+  products,
+}: CatalogViewProps) {
   const [sort, setSort] = useState<SortId>("featured");
   const sorted = useMemo(() => sortProducts(products, sort), [products, sort]);
 
@@ -37,7 +43,7 @@ export function CatalogView({ title, activeCategory, products }: CatalogViewProp
     <>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
         <SectionTitle as="h1">{title}</SectionTitle>
-        <CategoryFilters active={activeCategory} />
+        <CategoryFilters active={activeCategory} activeDate={activeDate} />
         <label className="ml-auto flex items-center gap-2 text-caption text-text-secondary">
           <span>Sort</span>
           <select

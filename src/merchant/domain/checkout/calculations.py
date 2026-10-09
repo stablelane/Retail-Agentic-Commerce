@@ -17,7 +17,6 @@
 
 import json
 import uuid
-from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 
 from sqlmodel import Session
@@ -35,9 +34,11 @@ from src.merchant.domain.checkout.models import (
     CheckoutStatusEnum,
     ContentTypeEnum,
     Coupon,
+    DigitalFulfillmentOption,
     DiscountsResponse,
     ErrorCodeEnum,
     ExtensionDeclaration,
+    FulfillmentOption,
     Item,
     LineItem,
     Link,
@@ -66,7 +67,7 @@ from src.merchant.services.promotion import (
 # =============================================================================
 
 TAX_RATE = 0.10  # 10% tax rate
-DEFAULT_CURRENCY = "usd"
+DEFAULT_CURRENCY = "aed"
 DEFAULT_SHOP_URL = "https://shop.example.com"
 DISCOUNT_EXTENSION_SCHEMA_URL = (
     "https://agenticcommerce.dev/schemas/discount/2026-01-27.json"
@@ -401,6 +402,8 @@ def calculate_line_item(
     discount_per_unit: int = 0,
     promotion_info: dict[str, Any] | None = None,
     line_item_id: str | None = None,
+    item_ref: str | None = None,
+    display_name: str | None = None,
 ) -> dict[str, Any]:
     """Calculate line item totals for a product.
 
@@ -410,6 +413,8 @@ def calculate_line_item(
         discount_per_unit: Discount amount per unit in cents (default 0).
         promotion_info: Optional promotion metadata (action, reason_codes, reasoning).
         line_item_id: Optional existing line item ID to preserve (for updates).
+        item_ref: ACP item id. Session id for events, product id otherwise.
+        display_name: Receipt name, including the performance when booked.
 
     Returns:
         Dictionary with line item data for JSON storage.
@@ -423,10 +428,10 @@ def calculate_line_item(
     line_item: dict[str, Any] = {
         "id": line_item_id or generate_line_item_id(),
         "item": {
-            "id": product.id,
+            "id": item_ref or product.id,
             "quantity": quantity,
         },
-        "name": product.name,
+        "name": display_name or product.name,
         "base_amount": base_amount,
         "discount": total_discount,
         "promotion_discount": total_discount,
@@ -450,7 +455,11 @@ def calculate_line_item(
 
 
 async def calculate_line_item_with_promotion(
-    db: Session, product: Product, quantity: int
+    db: Session,
+    product: Product,
+    quantity: int,
+    item_ref: str | None = None,
+    display_name: str | None = None,
 ) -> dict[str, Any]:
     """Calculate line item with promotion agent discount.
 
@@ -474,6 +483,8 @@ async def calculate_line_item_with_promotion(
         quantity=quantity,
         discount_per_unit=promotion_result["discount"],
         promotion_info=promotion_result,
+        item_ref=item_ref,
+        display_name=display_name,
     )
 
 
@@ -518,6 +529,8 @@ def recalculate_line_item_from_existing(
         discount_per_unit=discount_per_unit,
         promotion_info=promotion_info,
         line_item_id=existing_line_item["id"],
+        item_ref=str(existing_line_item["item"]["id"]),
+        display_name=existing_line_item.get("name") or product.name,
     )
 
 
@@ -553,53 +566,33 @@ def dict_to_line_item(data: dict[str, Any]) -> LineItem:
 
 
 def generate_fulfillment_options(has_address: bool) -> list[dict[str, Any]]:
-    """Generate available fulfillment options.
-
-    Args:
-        has_address: Whether a fulfillment address has been provided.
-
-    Returns:
-        List of fulfillment option dictionaries.
-    """
-    if not has_address:
-        return []
-
-    now = datetime.now(UTC)
-    standard_earliest = now + timedelta(days=5)
-    standard_latest = now + timedelta(days=7)
-    express_earliest = now + timedelta(days=2)
-    express_latest = now + timedelta(days=3)
-
+    """Return the digital e-ticket. Events are not shipped, so address is ignored."""
+    _ = has_address
     return [
         {
-            "type": "shipping",
-            "id": "shipping_standard",
-            "title": "Standard Shipping",
-            "subtitle": "5-7 business days",
-            "carrier_info": "USPS",
-            "earliest_delivery_time": standard_earliest.isoformat(),
-            "latest_delivery_time": standard_latest.isoformat(),
-            "subtotal": 599,
+            "type": "digital",
+            "id": "eticket",
+            "title": "E-ticket",
+            "subtitle": "Sent to your email",
+            "subtotal": 0,
             "tax": 0,
-            "total": 599,
-        },
-        {
-            "type": "shipping",
-            "id": "shipping_express",
-            "title": "Express Shipping",
-            "subtitle": "2-3 business days",
-            "carrier_info": "UPS",
-            "earliest_delivery_time": express_earliest.isoformat(),
-            "latest_delivery_time": express_latest.isoformat(),
-            "subtotal": 1299,
-            "tax": 0,
-            "total": 1299,
-        },
+            "total": 0,
+        }
     ]
 
 
-def dict_to_fulfillment_option(data: dict[str, Any]) -> ShippingFulfillmentOption:
+def dict_to_fulfillment_option(data: dict[str, Any]) -> FulfillmentOption:
     """Convert dictionary to FulfillmentOption response model."""
+    if data.get("type") == "digital":
+        return DigitalFulfillmentOption(
+            type="digital",
+            id=data["id"],
+            title=data["title"],
+            subtitle=data.get("subtitle") or "Sent to your email",
+            subtotal=data["subtotal"],
+            tax=data["tax"],
+            total=data["total"],
+        )
     return ShippingFulfillmentOption(
         type=data["type"],
         id=data["id"],
@@ -798,9 +791,6 @@ def check_ready_for_payment(session: CheckoutSession) -> bool:
     if session.protocol == "ucp":
         return True
 
-    if session.fulfillment_address_json is None:
-        return False
-
     return session.selected_fulfillment_option_id is not None
 
 
@@ -829,7 +819,7 @@ def session_to_response(session: CheckoutSession) -> CheckoutSessionResponse:
 
     # Convert to response models
     line_items = [dict_to_line_item(item) for item in line_items_data]
-    fulfillment_options: list[ShippingFulfillmentOption] = [
+    fulfillment_options: list[FulfillmentOption] = [
         dict_to_fulfillment_option(opt) for opt in fulfillment_options_data
     ]
     totals = [dict_to_total(t) for t in totals_data] if totals_data else []

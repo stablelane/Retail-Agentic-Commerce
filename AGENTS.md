@@ -36,6 +36,7 @@ This project implements ACP/UCP flows with strict architecture contracts. Do not
 | System architecture and data flow | `docs/architecture.md` |
 | Feature-specific behavior | `docs/features/index.md` and `docs/features/feature-XX-*.md` |
 | Storefront, chat agent, order tracking | `docs/features/feature-18-matter-storefront.md` |
+| Dubai events catalogue and itinerary booking | `docs/features/feature-19-dubai-events.md` |
 | Docker deployment, common operations | `deploy/docker-deployment.md` |
 | Local development, `install.sh`/`stop.sh` | `deploy/local-development.md` |
 

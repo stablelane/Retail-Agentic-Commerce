@@ -93,7 +93,7 @@ describe("Recommendations", () => {
       "/products/prod_3",
     ]);
     expect(within(links[0]!).getByText("Classic pairing")).toBeInTheDocument();
-    expect(within(links[0]!).getByText("$60.00")).toBeInTheDocument();
+    expect(within(links[0]!).getByText(/AED 60\.00/)).toBeInTheDocument();
     expect(within(links[0]!).getByText("Sale")).toBeInTheDocument();
   });
 

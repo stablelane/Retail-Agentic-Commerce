@@ -12,7 +12,7 @@ export function Footer() {
         </Link>
         <nav aria-label="Footer" className="flex gap-4 text-small font-semibold">
           <Link href="/catalog" className="text-white/70 hover:text-white">
-            Catalog
+            What’s On
           </Link>
           <Link href="/contact" className="text-white/70 hover:text-white">
             Contact

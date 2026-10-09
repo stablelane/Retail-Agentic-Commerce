@@ -23,7 +23,7 @@ export function ShippingSelector({
 
   return (
     <fieldset className="flex flex-col gap-2" disabled={disabled}>
-      <legend className="mb-2 text-small font-semibold">Delivery</legend>
+      <legend className="mb-2 text-small font-semibold">Tickets</legend>
       {options.map((option) => {
         const selected = option.id === selectedId;
         return (
@@ -45,7 +45,9 @@ export function ShippingSelector({
             />
             <span className="flex flex-1 flex-col">
               <span className="text-small font-semibold">
-                {option.title} — {formatCents(option.total)}
+                {option.title}
+                {" · "}
+                {option.total === 0 ? "Free" : formatCents(option.total)}
               </span>
               <span className="text-micro text-text-secondary">
                 {option.subtitle}

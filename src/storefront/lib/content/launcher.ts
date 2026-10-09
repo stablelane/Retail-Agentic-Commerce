@@ -1,8 +1,8 @@
 export const LAUNCHER_LABELS = [
   "Chat with our AI",
-  "Find a product",
-  "Track my order",
-  "Help me choose",
+  "Plan my weekend",
+  "Family days out",
+  "Live shows",
 ] as const;
 
 export const LAUNCHER_ROTATE_MS = 4000;

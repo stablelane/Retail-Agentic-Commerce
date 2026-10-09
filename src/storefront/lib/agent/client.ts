@@ -10,7 +10,8 @@ import type {
 } from "openai/resources/chat/completions";
 
 import { createResponsesClient } from "@/lib/agent/responses-client";
-import { getLlmConfig, type LlmConfig } from "@/lib/env";
+import { createTextToolCallFilter } from "@/lib/agent/text-tool-calls";
+import { getFallbackLlmConfig, getLlmConfig, type LlmConfig } from "@/lib/env";
 
 export type LlmMessage = ChatCompletionMessageParam;
 
@@ -92,9 +93,10 @@ export function createLlmClient(config: LlmConfig = getLlmConfig()): LlmClient |
     const params: NimStreamingParams = {
       model: config.model,
       messages: request.messages,
-      tools: request.tools,
-      tool_choice: request.toolChoice,
-      parallel_tool_calls: false,
+      // NIM models ignore tool_choice "none" and print tool calls as text, so drop the tools.
+      ...(request.tools.length > 0 && request.toolChoice !== "none"
+        ? { tools: request.tools, tool_choice: request.toolChoice, parallel_tool_calls: false }
+        : {}),
       temperature: TEMPERATURE,
       max_tokens: MAX_TOKENS,
       stream: true,
@@ -102,13 +104,15 @@ export function createLlmClient(config: LlmConfig = getLlmConfig()): LlmClient |
     };
 
     const calls = new Map<number, LlmToolCall>();
+    const textFilter = createTextToolCallFilter();
     try {
       const stream = await client.chat.completions.create(params, { signal });
       for await (const chunk of stream) {
         const delta = chunk.choices[0]?.delta;
         if (!delta) continue;
         if (typeof delta.content === "string" && delta.content.length > 0) {
-          yield { type: "text", delta: delta.content };
+          const visible = textFilter.push(delta.content);
+          if (visible) yield { type: "text", delta: visible };
         }
         for (const part of delta.tool_calls ?? []) {
           const existing = calls.get(part.index);
@@ -126,6 +130,18 @@ export function createLlmClient(config: LlmConfig = getLlmConfig()): LlmClient |
       throw toLlmError(error, request.signal);
     }
 
+    const rest = textFilter.finish();
+    if (rest.text) yield { type: "text", delta: rest.text };
+    if (calls.size === 0 && request.toolChoice !== "none") {
+      rest.calls.slice(0, MAX_TOOL_CALLS_PER_STEP).forEach((call, index) => {
+        calls.set(index, {
+          id: `call_text_${index}`,
+          name: call.name,
+          arguments: call.arguments.slice(0, MAX_TOOL_ARGUMENT_CHARS),
+        });
+      });
+    }
+
     if (calls.size > 0) {
       yield {
         type: "tool_calls",
@@ -137,4 +153,54 @@ export function createLlmClient(config: LlmConfig = getLlmConfig()): LlmClient |
   }
 
   return { streamStep };
+}
+
+/**
+ * Tries `primary`; if it fails before emitting anything, answers with `secondary` and
+ * keeps using it for the rest of this client's lifetime (one chat turn).
+ */
+export function withFallback(
+  primary: LlmClient,
+  secondary: LlmClient,
+  log?: (line: string) => void
+): LlmClient {
+  let primaryDown = false;
+
+  async function* streamStep(
+    request: LlmStepRequest
+  ): AsyncGenerator<LlmStreamEvent, void, undefined> {
+    if (!primaryDown) {
+      let emitted = false;
+      try {
+        for await (const event of primary.streamStep(request)) {
+          emitted = true;
+          yield event;
+        }
+        return;
+      } catch (error) {
+        const aborted =
+          request.signal?.aborted || (error instanceof LlmError && error.code === "aborted");
+        if (emitted || aborted) throw error;
+        primaryDown = true;
+        log?.(
+          `[chat] primary ${error instanceof LlmError ? error.message : "LLM request failed"}; using fallback`
+        );
+      }
+    }
+    yield* secondary.streamStep(request);
+  }
+
+  return { streamStep };
+}
+
+/** Primary client, chained to the NIM backup when one is configured. */
+export function createChatLlm(
+  config: LlmConfig = getLlmConfig(),
+  log?: (line: string) => void
+): LlmClient | null {
+  const primary = createLlmClient(config);
+  const backupConfig = getFallbackLlmConfig(config);
+  const backup = backupConfig ? createLlmClient(backupConfig) : null;
+  if (primary && backup) return withFallback(primary, backup, log);
+  return primary ?? backup;
 }

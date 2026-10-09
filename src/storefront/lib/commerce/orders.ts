@@ -2,11 +2,25 @@ import type { ShippingStatus } from "@/lib/commerce/merchant";
 import { ORDER_ID } from "@/lib/commerce/proxy-allowlist";
 
 export const SHIPPING_STEPS: ReadonlyArray<{ status: ShippingStatus; label: string }> = [
-  { status: "order_confirmed", label: "Order confirmed" },
-  { status: "order_shipped", label: "Shipped" },
-  { status: "out_for_delivery", label: "Out for delivery" },
-  { status: "delivered", label: "Delivered" },
+  { status: "order_confirmed", label: "Confirmed" },
+  { status: "tickets_issued", label: "Tickets issued" },
 ];
+
+const LEGACY_STATUS_LABELS: Record<string, string> = {
+  order_confirmed: "Confirmed",
+  tickets_issued: "Tickets issued",
+  order_shipped: "Shipped",
+  out_for_delivery: "Out for delivery",
+  delivered: "Delivered",
+};
+
+export function statusLabel(status: string): string {
+  return (
+    SHIPPING_STEPS.find((step) => step.status === status)?.label ??
+    LEGACY_STATUS_LABELS[status] ??
+    status.replace(/_/g, " ")
+  );
+}
 
 const MAX_EMAIL_LENGTH = 256;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

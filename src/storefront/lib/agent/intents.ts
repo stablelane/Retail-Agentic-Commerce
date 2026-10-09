@@ -24,11 +24,11 @@ export interface ChatIntent {
 export const CHAT_INTENTS: readonly ChatIntent[] = [
   {
     id: "help_me_choose",
-    label: "Help me choose",
+    label: "Plan my weekend",
     icon: "sparkles",
     tool: "list_catalog",
     args: { limit: 8, title: "A few favourites" },
-    text: "Here are a few favourites — tell me who you're shopping for or what you need and I'll narrow it down.",
+    text: "Tell me your dates and how many people, and I'll plan the days.",
     preferLlm: true,
   },
   {
@@ -42,29 +42,34 @@ export const CHAT_INTENTS: readonly ChatIntent[] = [
   },
   {
     id: "weekend_trip",
-    label: "Suggest essentials for a weekend trip",
+    label: "Family days out",
     icon: "search",
     tool: "search_products",
-    args: { query: "weekend trip essentials", limit: 6, title: "Weekend trip essentials" },
-    text: "Here are some easy pieces to pack for a weekend away.",
+    args: { query: "family days out", category: "family", limit: 6, title: "Family days out" },
+    text: "Here are family days out in Dubai.",
     preferLlm: false,
   },
   {
     id: "gift_runner",
-    label: "Recommend a gift for a runner",
+    label: "Live shows",
     icon: "search",
     tool: "search_products",
-    args: { query: "running", limit: 6, title: "Gifts for runners" },
-    text: "A few ideas any runner would appreciate.",
+    args: {
+      query: "concerts, comedy and live shows",
+      category: "live-entertainment",
+      limit: 6,
+      title: "Live shows",
+    },
+    text: "Here are concerts and shows.",
     preferLlm: false,
   },
   {
     id: "pairs_with_classic_tee",
-    label: "What goes with the Classic Tee?",
+    label: "Sports events",
     icon: "list",
-    tool: "get_recommendations",
-    args: { product_id: "prod_1", title: "Pairs well with the Classic Tee" },
-    text: "These pair nicely with the Classic Tee.",
+    tool: "list_catalog",
+    args: { category: "sports", limit: 6, title: "Sports events" },
+    text: "Here are upcoming sports events.",
     preferLlm: false,
   },
 ];
@@ -94,15 +99,16 @@ export function intentFromText(text: string): ChatIntent | null {
   return CHAT_INTENTS.find((intent) => normalize(intent.label) === normalized) ?? null;
 }
 
-const BROWSE_FOLLOW_UPS = ["What's on sale?", "Show me outerwear", "View my bag"];
-const BAG_FOLLOW_UPS = ["Go to checkout", "What's on sale?", "Track my order"];
+const BROWSE_FOLLOW_UPS = ["What's on this weekend?", "Family days out", "View my bag"];
+const BAG_FOLLOW_UPS = ["Go to checkout", "What's on this weekend?", "Track my order"];
 
 /** Follow-up chips (≤ 4) keyed by the last tool that ran. */
 export const FOLLOW_UP_SUGGESTIONS: Record<ToolName, readonly string[]> = {
   search_products: BROWSE_FOLLOW_UPS,
   list_catalog: BROWSE_FOLLOW_UPS,
   get_recommendations: BROWSE_FOLLOW_UPS,
-  get_product_details: ["What goes with this?", "View my bag", "What's on sale?"],
+  get_product_details: ["Similar events", "View my bag", "What's on this weekend?"],
+  plan_itinerary: ["Book all of these", "View my bag", "Family days out"],
   add_to_cart: BAG_FOLLOW_UPS,
   update_cart: BAG_FOLLOW_UPS,
   get_cart: BAG_FOLLOW_UPS,

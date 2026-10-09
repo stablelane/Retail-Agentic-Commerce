@@ -2,12 +2,12 @@ import { formatCents, isOnSale, percentOff } from "@/lib/money";
 
 describe("formatCents", () => {
   it.each([
-    [2500, "$25.00"],
-    [3200, "$32.00"],
-    [4000, "$40.00"],
-    [599, "$5.99"],
-    [0, "$0.00"],
-    [123456, "$1,234.56"],
+    [2500, "AED\u00a025.00"],
+    [3200, "AED\u00a032.00"],
+    [4000, "AED\u00a040.00"],
+    [599, "AED\u00a05.99"],
+    [0, "AED\u00a00.00"],
+    [123456, "AED\u00a01,234.56"],
   ])("formats %i cents as %s", (cents, expected) => {
     expect(formatCents(cents)).toBe(expected);
   });

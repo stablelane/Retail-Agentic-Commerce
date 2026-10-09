@@ -210,7 +210,7 @@ describe("POST /api/chat", () => {
       max_tokens: 600,
       chat_template_kwargs: { enable_thinking: false },
     });
-    expect((first.tools as unknown[]).length).toBe(10);
+    expect((first.tools as unknown[]).length).toBe(11);
 
     const second = JSON.parse(String(calls[1]?.[1]?.body)) as {
       messages: Array<{ role: string; content: string | null }>;

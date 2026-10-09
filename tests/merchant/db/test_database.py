@@ -174,17 +174,18 @@ class TestSeedData:
             with Session(engine) as session:
                 seed_data(session)
 
-                classic_tee = session.exec(
-                    select(Product).where(Product.id == "prod_1")
+                first = PRODUCTS[0]
+                seeded = session.exec(
+                    select(Product).where(Product.id == first["id"])
                 ).first()
 
-                assert classic_tee is not None
-                assert classic_tee.sku == "TS-001"
-                assert classic_tee.name == "Classic Tee"
-                assert classic_tee.base_price == 2500
-                assert classic_tee.stock_count == 100
-                assert classic_tee.min_margin == 0.15
-                assert classic_tee.image_url == "/prod_1.jpeg"
+                assert seeded is not None
+                assert seeded.sku == first["sku"]
+                assert seeded.name == first["name"]
+                assert seeded.base_price == first["price_cents"]
+                assert seeded.stock_count == first["stock_count"]
+                assert seeded.min_margin == first["min_margin"]
+                assert seeded.image_url == first["image_url"]
 
     def test_seed_data_image_urls_match_catalog(self, temp_db_url: str) -> None:
         """Happy path: All products have image URLs from shared catalog."""
@@ -267,16 +268,17 @@ class TestCompetitorPriceRelationship:
 
             engine = get_engine()
             with Session(engine) as session:
+                product_id = PRODUCTS[0]["id"]
                 competitor_prices = session.exec(
                     select(CompetitorPrice).where(
-                        CompetitorPrice.product_id == "prod_1"
+                        CompetitorPrice.product_id == product_id
                     )
                 ).all()
 
                 assert len(competitor_prices) >= 2
 
                 for cp in competitor_prices:
-                    assert cp.product_id == "prod_1"
+                    assert cp.product_id == product_id
                     assert cp.price > 0
                     assert cp.retailer_name != ""
 
@@ -316,7 +318,7 @@ class TestCustomerAndBrowseHistorySeeding:
             engine = get_engine()
             with Session(engine) as session:
                 entries = session.exec(select(BrowseHistory)).all()
-                assert len(entries) == 10  # 10 browse history entries seeded
+                assert len(entries) == min(10, len(PRODUCTS))
 
     def test_browse_history_linked_to_customer(self, temp_db_url: str) -> None:
         """Happy path: Browse history entries are linked to the demo customer."""
@@ -333,7 +335,7 @@ class TestCustomerAndBrowseHistorySeeding:
                     select(BrowseHistory).where(BrowseHistory.customer_id == "cust_1")
                 ).all()
 
-                assert len(entries) == 10
+                assert len(entries) == min(10, len(PRODUCTS))
                 for entry in entries:
                     assert entry.customer_id == "cust_1"
 
@@ -351,10 +353,8 @@ class TestCustomerAndBrowseHistorySeeding:
                 entries = session.exec(select(BrowseHistory)).all()
 
                 categories = {entry.category for entry in entries}
-                # Should have multiple categories
-                assert len(categories) >= 3
-                assert "tops" in categories
-                assert "bottoms" in categories
+                catalog_categories = {product["category"] for product in PRODUCTS[:10]}
+                assert categories == catalog_categories
 
     def test_browse_history_price_range_computable(self, temp_db_url: str) -> None:
         """Happy path: Price range can be computed from browse history."""
@@ -377,12 +377,8 @@ class TestCustomerAndBrowseHistorySeeding:
                 min_price = min(prices)
                 max_price = max(prices)
 
-                # Verify the range is reasonable (2000-5500 cents based on seed data)
-                assert min_price >= 2000
-                assert max_price <= 6000
-                # Price range is the tuple (min, max)
-                price_range = [min_price, max_price]
-                assert price_range[0] < price_range[1]
+                assert min_price > 0
+                assert max_price >= min_price
 
     def test_browse_history_has_search_terms(self, temp_db_url: str) -> None:
         """Happy path: Browse history includes search terms."""
@@ -399,5 +395,4 @@ class TestCustomerAndBrowseHistorySeeding:
 
                 search_terms = [e.search_term for e in entries if e.search_term]
                 assert len(search_terms) > 0
-                assert "casual wear" in search_terms
-                assert "summer clothes" in search_terms
+                assert PRODUCTS[0]["name"] in search_terms

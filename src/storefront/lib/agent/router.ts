@@ -21,11 +21,11 @@ const ORDER_REF = /\border_[A-Za-z0-9_-]{1,64}/;
 const EMAIL = /[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}/;
 
 const CATEGORY_WORDS: Record<CategoryId, RegExp> = {
-  tops: /\b(tops?|tees?|t-shirts?|shirts?|polos?|sweaters?|hoodies?)\b/,
-  bottoms: /\b(bottoms?|jeans|pants|trousers|shorts|chinos|joggers)\b/,
-  outerwear: /\b(outerwear|jackets?|coats?|parkas?)\b/,
-  footwear: /\b(footwear|shoes?|sneakers?|boots?|trainers?)\b/,
-  accessories: /\b(accessor(y|ies)|hats?|caps?|belts?|scarf|scarves|socks)\b/,
+  "live-entertainment": /\b(concerts?|shows?|comedy|theatre|theater|live)\b/,
+  family: /\b(family|kids?|children|with kids)\b/,
+  sports: /\b(sports?|basketball|football|match|game)\b/,
+  attractions: /\b(attractions?|theme parks?|parks?)\b/,
+  tours: /\b(tours?|sightseeing|cruise)\b/,
 };
 
 export function extractOrderReference(text: string): { orderId?: string; email?: string } {

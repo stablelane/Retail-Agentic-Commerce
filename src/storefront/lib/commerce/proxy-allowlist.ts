@@ -17,14 +17,19 @@ export type ProxyMatch =
   | { ok: true; path: string; query: URLSearchParams }
   | { ok: false; status: 404 | 405; allow?: ProxyMethod[] };
 
-export const PRODUCT_ID = /^prod_[a-z0-9_]{1,64}$/;
+export const PRODUCT_ID =
+  /^(?:prod_[a-z0-9_]{1,64}|evt_[a-z0-9-]{1,60}(?:_\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2})?)?)$/;
 export const CHECKOUT_SESSION_ID = /^checkout_[A-Za-z0-9_-]{1,64}$/;
 export const ORDER_ID = /^order_[A-Za-z0-9_-]{1,64}$/;
 
 const MAX_QUERY_VALUE_LENGTH = 256;
 
 export const MERCHANT_PROXY_RULES: readonly ProxyRule[] = [
-  { method: "GET", path: ["products"], query: ["category", "limit", "offset"] },
+  {
+    method: "GET",
+    path: ["products"],
+    query: ["category", "limit", "offset", "date", "from", "to"],
+  },
   { method: "GET", path: ["products", PRODUCT_ID] },
   { method: "POST", path: ["checkout_sessions"] },
   { method: "GET", path: ["checkout_sessions", CHECKOUT_SESSION_ID] },

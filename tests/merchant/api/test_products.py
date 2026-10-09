@@ -29,8 +29,8 @@ class TestListProducts:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["total"] == 17
-        assert len(data["products"]) == 17
+        assert data["total"] == len(PRODUCTS)
+        assert len(data["products"]) == len(PRODUCTS)
         assert data["category"] is None
 
     def test_list_is_in_catalog_order(self, client: TestClient) -> None:
@@ -38,13 +38,9 @@ class TestListProducts:
 
         assert [p["id"] for p in data["products"]] == [p["id"] for p in PRODUCTS]
 
-    @pytest.mark.parametrize(
-        ("category", "expected"),
-        [("tops", 4), ("bottoms", 4), ("footwear", 3), ("nope", 0)],
-    )
-    def test_list_filters_by_category(
-        self, client: TestClient, category: str, expected: int
-    ) -> None:
+    def test_list_filters_by_category(self, client: TestClient) -> None:
+        category = PRODUCTS[0]["category"]
+        expected = sum(1 for product in PRODUCTS if product["category"] == category)
         response = client.get("/products", params={"category": category})
 
         assert response.status_code == 200
@@ -54,6 +50,30 @@ class TestListProducts:
         assert data["category"] == category
         assert all(p["category"] == category for p in data["products"])
 
+        empty = client.get("/products", params={"category": "nope"}).json()
+        assert empty["total"] == 0
+        assert empty["products"] == []
+
+    def test_date_filter_returns_events_on_that_day(self, client: TestClient) -> None:
+        day = PRODUCTS[0]["sessions"][0]["starts_at"][:10]
+        response = client.get("/products", params={"date": day})
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total"] >= 1
+        assert all(
+            any(session["starts_at"].startswith(day) for session in product["sessions"])
+            for product in data["products"]
+        )
+
+        missing = client.get("/products", params={"date": "2026-01-01"}).json()
+        assert missing["total"] == 0
+
+    def test_date_filter_rejects_invalid_day(self, client: TestClient) -> None:
+        response = client.get("/products", params={"date": "not-a-date"})
+
+        assert response.status_code == 422
+
     def test_list_supports_limit_and_offset(self, client: TestClient) -> None:
         full = [p["id"] for p in client.get("/products").json()["products"]]
 
@@ -61,14 +81,14 @@ class TestListProducts:
 
         assert response.status_code == 200
         data = response.json()
-        assert data["total"] == 17
+        assert data["total"] == len(PRODUCTS)
         assert [p["id"] for p in data["products"]] == full[3:8]
 
     def test_list_offset_past_end_returns_empty(self, client: TestClient) -> None:
-        data = client.get("/products", params={"offset": 50}).json()
+        data = client.get("/products", params={"offset": len(PRODUCTS)}).json()
 
         assert data["products"] == []
-        assert data["total"] == 17
+        assert data["total"] == len(PRODUCTS)
 
     @pytest.mark.parametrize("params", [{"limit": 0}, {"limit": 101}, {"offset": -1}])
     def test_list_rejects_invalid_pagination(
@@ -83,31 +103,35 @@ class TestGetProduct:
     """Test suite for GET /products/{product_id}."""
 
     def test_detail_includes_enrichment(self, client: TestClient) -> None:
-        response = client.get("/products/prod_3")
+        product = PRODUCTS[0]
+        response = client.get(f"/products/{product['id']}")
 
         assert response.status_code == 200
         data = response.json()
-        assert data["compare_at_price"] == 4000
-        assert data["category"] == "tops"
-        assert data["subcategory"] == "t-shirts"
+        assert data["category"] == product["category"]
+        assert data["subcategory"] == product["subcategory"]
         assert data["description"]
-        assert "graphic" in data["attributes"]
+        assert data["attributes"] == product["attributes"]
+        assert "sessions" in data
+        assert data["venue"] == (product.get("venue") or None)
 
     def test_detail_keeps_existing_fields(self, client: TestClient) -> None:
-        data = client.get("/products/prod_3").json()
+        product = PRODUCTS[0]
+        data = client.get(f"/products/{product['id']}").json()
 
-        assert data["id"] == "prod_3"
-        assert data["sku"] == "TS-003"
-        assert data["name"] == "Graphic Tee"
-        assert isinstance(data["base_price"], int)
+        assert data["id"] == product["id"]
+        assert data["sku"] == product["sku"]
+        assert data["name"] == product["name"]
+        assert data["base_price"] == product["price_cents"]
         assert isinstance(data["stock_count"], int)
         assert isinstance(data["min_margin"], float)
-        assert data["image_url"] == "/prod_3.jpeg"
+        assert data["image_url"] == product["image_url"]
 
     def test_detail_without_sale_has_null_compare_at_price(
         self, client: TestClient
     ) -> None:
-        data = client.get("/products/prod_1").json()
+        product = next(item for item in PRODUCTS if item.get("compare_at_price_cents") is None)
+        data = client.get(f"/products/{product['id']}").json()
 
         assert data["compare_at_price"] is None
 

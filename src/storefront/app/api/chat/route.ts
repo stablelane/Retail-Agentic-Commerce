@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 
 import { runChatTurn, type ChatTurnDeps } from "@/lib/agent/agent";
-import { createLlmClient } from "@/lib/agent/client";
+import { createChatLlm } from "@/lib/agent/client";
 import { createExecutor } from "@/lib/agent/executor";
 import { clientKey, createRateLimiter } from "@/lib/agent/rate-limit";
 import { parseChatRequest } from "@/lib/agent/request";
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const config = getLlmConfig();
   const deps: ChatTurnDeps = {
-    llm: createLlmClient(config),
+    llm: createChatLlm(config, log),
     executor: createExecutor(),
     maxToolSteps: config.maxToolSteps,
     brandName: BRAND_NAME,

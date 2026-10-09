@@ -22,9 +22,7 @@ from src.merchant.services.post_purchase import ShippingStatus
 
 STEPS: list[ShippingStatus] = [
     ShippingStatus.ORDER_CONFIRMED,
-    ShippingStatus.ORDER_SHIPPED,
-    ShippingStatus.OUT_FOR_DELIVERY,
-    ShippingStatus.DELIVERED,
+    ShippingStatus.TICKETS_ISSUED,
 ]
 
 

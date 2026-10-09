@@ -8,12 +8,7 @@ import { FormField, INPUT_CLASS } from "@/components/store/FormField";
 import { PaymentForm, type CardFormValues } from "@/components/store/PaymentForm";
 import { ShippingSelector } from "@/components/store/ShippingSelector";
 import { TotalsBlock } from "@/components/store/TotalsBlock";
-import {
-  AcpRequestError,
-  findTotal,
-  type AcpAddressInput,
-  type AcpBuyerInput,
-} from "@/lib/commerce/acp";
+import { AcpRequestError, findTotal, type AcpBuyerInput } from "@/lib/commerce/acp";
 import { cartStore, cartSubtotal, useCart } from "@/lib/commerce/cart-store";
 import {
   CheckoutError,
@@ -45,14 +40,6 @@ interface CheckoutFormValues extends CardFormValues {
 type FieldName = keyof CheckoutFormValues;
 type FieldErrors = Partial<Record<FieldName, string | undefined>>;
 
-const COUNTRIES = [
-  { code: "US", label: "United States" },
-  { code: "CA", label: "Canada" },
-  { code: "GB", label: "United Kingdom" },
-  { code: "FR", label: "France" },
-  { code: "ES", label: "Spain" },
-] as const;
-
 const DEMO_PREFILL = process.env.NEXT_PUBLIC_DEMO_PREFILL !== "false";
 
 const INITIAL_VALUES: CheckoutFormValues = {
@@ -76,13 +63,6 @@ const FIELD_ORDER: readonly FieldName[] = [
   "firstName",
   "lastName",
   "email",
-  "name",
-  "lineOne",
-  "lineTwo",
-  "city",
-  "state",
-  "postalCode",
-  "country",
   "cardName",
   "cardNumber",
   "cardExpiry",
@@ -96,8 +76,7 @@ const STEP_LABEL: Record<CheckoutStep, string> = {
 };
 
 type Validated =
-  | { ok: true; buyer: AcpBuyerInput; address: AcpAddressInput; card: CardDetails }
-  | { ok: false; errors: FieldErrors };
+  { ok: true; buyer: AcpBuyerInput; card: CardDetails } | { ok: false; errors: FieldErrors };
 
 function passesLuhn(digits: string): boolean {
   let sum = 0;
@@ -124,15 +103,6 @@ function validate(values: CheckoutFormValues, now: Date): Validated {
   requireText("firstName", "Enter your first name.", 256);
   if (text("lastName").length > 256) errors.lastName = "Use 256 characters or fewer.";
   if (!isEmail(text("email"))) errors.email = "Enter a valid email address.";
-  requireText("name", "Enter the recipient's name.", 256);
-  requireText("lineOne", "Enter a street address.", 60);
-  if (text("lineTwo").length > 60) errors.lineTwo = "Use 60 characters or fewer.";
-  requireText("city", "Enter a city.", 60);
-  requireText("state", "Enter a state or province.", 60);
-  requireText("postalCode", "Enter a postal code.", 20);
-  if (!COUNTRIES.some((country) => country.code === values.country)) {
-    errors.country = "Choose a country.";
-  }
 
   requireText("cardName", "Enter the name on the card.", 256);
   const number = normalizeCardNumber(values.cardNumber);
@@ -151,22 +121,12 @@ function validate(values: CheckoutFormValues, now: Date): Validated {
   if (Object.keys(errors).length > 0 || !expiry) return { ok: false, errors };
 
   const lastName = text("lastName");
-  const lineTwo = text("lineTwo");
   return {
     ok: true,
     buyer: {
       first_name: text("firstName"),
       ...(lastName ? { last_name: lastName } : {}),
       email: text("email"),
-    },
-    address: {
-      name: text("name"),
-      line_one: text("lineOne"),
-      ...(lineTwo ? { line_two: lineTwo } : {}),
-      city: text("city"),
-      state: text("state"),
-      country: values.country,
-      postal_code: text("postalCode"),
     },
     card: { number, ...expiry },
   };
@@ -268,7 +228,6 @@ export function CheckoutForm() {
         placeOrder({
           session: current,
           buyer: result.buyer,
-          address: result.address,
           card: result.card,
           language,
           onStep: setStep,
@@ -323,72 +282,9 @@ export function CheckoutForm() {
           />
         </fieldset>
 
-        <fieldset disabled={pending} className="flex flex-col gap-4">
-          <legend className="mb-4 text-title font-semibold">Shipping address</legend>
-          <FormField {...field("name")} label="Full name" autoComplete="name" maxLength={256} />
-          <FormField
-            {...field("lineOne")}
-            label="Address"
-            autoComplete="address-line1"
-            maxLength={60}
-          />
-          <FormField
-            {...field("lineTwo")}
-            label="Apartment, suite, etc."
-            optional
-            autoComplete="address-line2"
-            maxLength={60}
-          />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              {...field("city")}
-              label="City"
-              autoComplete="address-level2"
-              maxLength={60}
-            />
-            <FormField
-              {...field("state")}
-              label="State / province"
-              autoComplete="address-level1"
-              maxLength={60}
-            />
-            <FormField
-              {...field("postalCode")}
-              label="Postal code"
-              autoComplete="postal-code"
-              maxLength={20}
-            />
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="checkout-country" className="text-small font-semibold">
-                Country
-              </label>
-              <select
-                id="checkout-country"
-                value={values.country}
-                onChange={(event) => setField("country", event.target.value)}
-                autoComplete="country"
-                aria-invalid={errors.country ? true : undefined}
-                aria-describedby={errors.country ? "checkout-country-error" : undefined}
-                className={INPUT_CLASS}
-              >
-                {COUNTRIES.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.label}
-                  </option>
-                ))}
-              </select>
-              {errors.country ? (
-                <p id="checkout-country-error" className="text-micro text-primary">
-                  {errors.country}
-                </p>
-              ) : null}
-            </div>
-          </div>
-        </fieldset>
-
         <section aria-labelledby="checkout-delivery-heading" className="flex flex-col gap-2">
           <h2 id="checkout-delivery-heading" className="text-title font-semibold">
-            Delivery option
+            Tickets
           </h2>
           {session ? (
             <ShippingSelector

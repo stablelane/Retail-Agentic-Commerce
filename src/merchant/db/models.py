@@ -134,6 +134,7 @@ class Product(SQLModel, table=True):
     stock_count: int
     min_margin: float
     image_url: str
+    venue: str = Field(default="")
     lifecycle: str = Field(default="mature")
     demand_velocity: str = Field(default="flat")
 
@@ -142,6 +143,17 @@ class Product(SQLModel, table=True):
         sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
     browse_views: list["BrowseHistory"] = Relationship(back_populates="product")
+
+
+class EventSession(SQLModel, table=True):
+    """One bookable performance. Line items reference this id, not the product id."""
+
+    __tablename__: ClassVar[str] = "event_session"  # type: ignore[assignment]
+
+    id: str = Field(primary_key=True)
+    product_id: str = Field(foreign_key="product.id", index=True)
+    starts_at: datetime = Field(index=True)
+    seats_left: int
 
 
 class CompetitorPrice(SQLModel, table=True):
@@ -173,7 +185,7 @@ class CheckoutSession(SQLModel, table=True):
         id: Unique session identifier (e.g., "checkout_abc123")
         protocol: Protocol origin ("acp" or "ucp")
         status: Current checkout status
-        currency: ISO 4217 currency code (default: USD)
+        currency: ISO 4217 currency code (default: AED)
         locale: BCP 47 language tag (default: en-US)
         line_items_json: JSON string of line items array
         buyer_json: JSON string of buyer information
@@ -195,7 +207,7 @@ class CheckoutSession(SQLModel, table=True):
     id: str = Field(primary_key=True)
     protocol: str = Field(default="acp")
     status: CheckoutStatus = Field(default=CheckoutStatus.NOT_READY_FOR_PAYMENT)
-    currency: str = Field(default="USD")
+    currency: str = Field(default="AED")
     locale: str = Field(default="en-US")
 
     line_items_json: str = Field(default="[]")

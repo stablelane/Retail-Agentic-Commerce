@@ -266,7 +266,7 @@ describe("chat overlay", () => {
     );
     renderChat();
     fireEvent.click(launcher());
-    fireEvent.click(screen.getByRole("button", { name: "Help me choose" }));
+    fireEvent.click(screen.getByRole("button", { name: "Plan my weekend" }));
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent("We couldn't reach the assistant");

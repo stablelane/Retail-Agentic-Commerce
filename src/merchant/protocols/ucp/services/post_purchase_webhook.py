@@ -193,7 +193,7 @@ async def trigger_post_purchase_flow_ucp(
 
     request: ShippingMessageRequest = {
         "brand_persona": {
-            "company_name": "NVShop",
+            "company_name": get_settings().brand_name,
             "tone": "friendly",
             "preferred_language": lang.value,
         },

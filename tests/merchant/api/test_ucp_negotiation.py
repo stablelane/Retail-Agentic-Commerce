@@ -45,6 +45,7 @@ from src.merchant.protocols.ucp.services.negotiation import (
     filter_capabilities_for_checkout,
 )
 from src.merchant.services.idempotency import reset_idempotency_store
+from tests.merchant.catalog_ids import ITEM_ID
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -410,7 +411,7 @@ class TestA2ANegotiationFailure:
 
         request = _make_a2a_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
 
@@ -445,7 +446,7 @@ class TestA2ANegotiationFailure:
 
         request = _make_a2a_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
 
@@ -476,7 +477,7 @@ class TestA2ANegotiationFailure:
 
         request = _make_a2a_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
 
@@ -516,7 +517,7 @@ class TestSeverityMapping:
 
         request = _make_a2a_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
 
@@ -557,7 +558,7 @@ class TestPaymentHandlersInResponse:
 
         request = _make_a2a_request(
             "create_checkout",
-            {"line_items": [{"item": {"id": "prod_1"}, "quantity": 1}]},
+            {"line_items": [{"item": {"id": ITEM_ID}, "quantity": 1}]},
         )
         response = auth_client.post("/a2a", json=request, headers=a2a_headers)
 
