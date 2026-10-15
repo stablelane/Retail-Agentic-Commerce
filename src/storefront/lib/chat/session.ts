@@ -64,6 +64,8 @@ const BLOCK_TYPES: readonly UIBlockType[] = [
   "order_status",
   "account_summary",
   "notification",
+  "upi_mandate",
+  "upi_payment",
 ];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -88,6 +90,10 @@ export function isRenderableBlock(value: unknown): value is UIBlock {
       return typeof value.name === "string";
     case "notification":
       return typeof value.message === "string" && typeof value.orderId === "string";
+    case "upi_mandate":
+      return typeof value.mandateId === "string";
+    case "upi_payment":
+      return typeof value.status === "string";
   }
 }
 
@@ -234,6 +240,10 @@ function describeBlock(block: UIBlock): string | null {
       return "Asked for an order number and email";
     case "order_status":
       return `Order ${block.orderId} status: ${block.status}`;
+    case "upi_mandate":
+      return `UPI mandate ${block.mandateId}: ${block.status}`;
+    case "upi_payment":
+      return `UPI payment ${block.status}${block.orderId ? `, order ${block.orderId}` : ""}`;
     default:
       return null;
   }

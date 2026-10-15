@@ -37,6 +37,7 @@ This project implements ACP/UCP flows with strict architecture contracts. Do not
 | Feature-specific behavior | `docs/features/index.md` and `docs/features/feature-XX-*.md` |
 | Storefront, chat agent, order tracking | `docs/features/feature-18-matter-storefront.md` |
 | Dubai events catalogue and itinerary booking | `docs/features/feature-19-dubai-events.md` |
+| UPI chat payments (Pine Labs P3P) | `docs/features/feature-20-upi-chat-payments.md` |
 | Docker deployment, common operations | `deploy/docker-deployment.md` |
 | Local development, `install.sh`/`stop.sh` | `deploy/local-development.md` |
 
@@ -144,6 +145,7 @@ When working in these components, read the local scoped guide after this root fi
 
 Backend:
 - API routes (shared): `src/merchant/api/routes/`
+- P3P pay route (Feature 20): `src/merchant/api/routes/p3p.py` (`/p3p/checkout_sessions/{id}/pay`); PSP UPI wallet: `src/payment/api/routes/upi.py` (`/upi/*`), `src/payment/services/pinelabs.py`
 - Protocol routes: `src/merchant/protocols/acp/api/routes/`, `src/merchant/protocols/ucp/api/routes/`
 - Business logic (shared): `src/merchant/domain/checkout/`, `src/merchant/services/`
 - Models: `src/merchant/db/models.py`

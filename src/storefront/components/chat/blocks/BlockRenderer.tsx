@@ -7,6 +7,8 @@ import { NotificationBlock } from "@/components/chat/blocks/NotificationBlock";
 import { OrderFormBlock } from "@/components/chat/blocks/OrderFormBlock";
 import { OrderStatusBlock } from "@/components/chat/blocks/OrderStatusBlock";
 import { ProductCarouselBlock } from "@/components/chat/blocks/ProductCarouselBlock";
+import { UpiMandateBlock } from "@/components/chat/blocks/UpiMandateBlock";
+import { UpiPaymentBlock } from "@/components/chat/blocks/UpiPaymentBlock";
 import type { UIBlock } from "@/lib/agent/types";
 import { isRenderableBlock } from "@/lib/chat/session";
 
@@ -29,5 +31,9 @@ export function BlockRenderer({ block }: { block: unknown }) {
       return <AccountSummaryBlock block={typed} />;
     case "notification":
       return <NotificationBlock block={typed} />;
+    case "upi_mandate":
+      return <UpiMandateBlock block={typed} />;
+    case "upi_payment":
+      return <UpiPaymentBlock block={typed} />;
   }
 }

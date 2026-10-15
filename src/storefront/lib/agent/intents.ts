@@ -113,6 +113,8 @@ export const FOLLOW_UP_SUGGESTIONS: Record<ToolName, readonly string[]> = {
   update_cart: BAG_FOLLOW_UPS,
   get_cart: BAG_FOLLOW_UPS,
   start_checkout: ["View my bag", "Track my order"],
+  setup_upi_mandate: ["Pay with UPI", "View my bag"],
+  pay_with_upi: ["Track my order", "Help me choose"],
   track_order: ["View my bag", "Help me choose"],
   get_account: ["Track my order", "Help me choose"],
 };

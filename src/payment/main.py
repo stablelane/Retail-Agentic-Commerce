@@ -23,6 +23,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.payment.api.routes.payments import router as payments_router
+from src.payment.api.routes.upi import router as upi_router
 from src.payment.config import get_payment_settings
 from src.payment.db.database import init_payment_tables
 
@@ -73,6 +74,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(payments_router)
+app.include_router(upi_router)
 
 
 @app.get("/health", tags=["health"])

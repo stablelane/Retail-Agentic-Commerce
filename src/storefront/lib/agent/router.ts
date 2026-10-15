@@ -74,7 +74,16 @@ export function routeMessage(message: string, context: RouterContext): RoutedTur
   if (/\b(bag|cart|basket)\b/.test(text)) {
     return { name: "get_cart", args: {}, text: "Here's what's in your bag." };
   }
-  if (/\b(checkout|check out|pay|buy)\b/.test(text)) {
+  if (
+    /\b(mandate|reserve ?pay|set ?up upi)\b/.test(text) ||
+    (/\bupi\b/.test(text) && !/\b(pay|buy)\b/.test(text))
+  ) {
+    return { name: "setup_upi_mandate", args: {}, text: "Setting up UPI ReservePay." };
+  }
+  if (/\b(pay|buy)\b/.test(text)) {
+    return { name: "pay_with_upi", args: {}, text: "Paying from your UPI mandate." };
+  }
+  if (/\b(checkout|check out)\b/.test(text)) {
     return { name: "start_checkout", args: {}, text: "You're ready to check out." };
   }
   if (/\b(points|account|loyalty|rewards?)\b/.test(text)) {

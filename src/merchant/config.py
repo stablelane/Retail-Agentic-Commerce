@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     # Merchant API Security (for client authentication)
     merchant_api_key: str = ""
 
+    # Pine Labs P3P sandbox (payee side of the UPI pay route, feature 20)
+    pinelabs_client_id: str = ""
+    pinelabs_client_secret: str = ""
+    pinelabs_merchant_id: str = ""
+
     # UCP Discovery Configuration
     ucp_version: str = "2026-01-23"
     ucp_base_url: str | None = (

@@ -111,3 +111,57 @@ class IdempotencyRecord(SQLModel, table=True):
     response_status: int
     response_body_json: str
     created_at: datetime = Field(default_factory=_utc_now)
+
+
+class UpiDebitStatus(StrEnum):
+    """UPI debit ledger status values."""
+
+    RESERVED = "reserved"
+    CAPTURED = "captured"
+    PENDING = "pending"
+
+
+class UpiMandate(SQLModel, table=True):
+    """Pine Labs UPI ReservePay mandate held by the wallet.
+
+    Attributes:
+        id: Pine Labs mandate id
+        mobile: Customer mobile number (the customer reference)
+        amount: Amount blocked on the customer's UPI account, in paise
+        status: Pine Labs payment_status (ACTIVE once approved)
+        deep_link: UPI app approval link, if Pine Labs returned one
+        expires_at: Local expiry (created + validity days)
+        created_at: Mandate creation timestamp
+    """
+
+    __tablename__: ClassVar[str] = "upi_mandate"  # type: ignore[assignment]
+
+    id: str = Field(primary_key=True)
+    mobile: str = Field(index=True)
+    amount: int
+    status: str
+    deep_link: str | None = Field(default=None)
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=_utc_now)
+
+
+class UpiDebit(SQLModel, table=True):
+    """Wallet spend ledger; failed debits are deleted, so every row counts as spent.
+
+    Attributes:
+        id: Checkout session id (one debit per session)
+        mandate_id: Mandate the debit draws on
+        mobile: Customer mobile number
+        amount: Debit amount in paise
+        status: reserved (before capture), captured, or pending
+        created_at: Reservation timestamp
+    """
+
+    __tablename__: ClassVar[str] = "upi_debit"  # type: ignore[assignment]
+
+    id: str = Field(primary_key=True)
+    mandate_id: str = Field(index=True)
+    mobile: str = Field(index=True)
+    amount: int
+    status: UpiDebitStatus = Field(default=UpiDebitStatus.RESERVED)
+    created_at: datetime = Field(default_factory=_utc_now)

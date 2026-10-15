@@ -249,3 +249,37 @@ class ErrorResponse(BaseModel):
     code: ErrorCodeEnum = Field(..., description="Error code")
     message: str = Field(..., description="Human-readable message")
     param: str | None = Field(default=None, description="Related parameter path")
+
+
+# =============================================================================
+# UPI wallet (feature 20)
+# =============================================================================
+
+Mobile = Annotated[str, Field(pattern=r"^[6-9]\d{9}$", description="Indian mobile")]
+
+
+class CreateUpiMandateRequest(BaseModel):
+    """Block an amount on the customer's UPI account (ReservePay)."""
+
+    mobile: Mobile
+    amount: int = Field(..., gt=0, le=10_000_000, description="Paise to block")
+    validity_days: int | None = Field(default=None, ge=1, le=365)
+
+
+class UpiMandateResponse(BaseModel):
+    """Mandate as the wallet sees it."""
+
+    id: str
+    mobile: str
+    amount: int = Field(..., description="Paise blocked on the mandate")
+    amount_available: int = Field(..., description="Paise not yet drawn by this wallet")
+    status: str = Field(..., description="Pine Labs status; ACTIVE once approved")
+    deep_link: str | None
+    expires_at: datetime
+
+
+class UpiPayRequest(BaseModel):
+    """Pay a merchant checkout session from the customer's mandate."""
+
+    checkout_session_id: str = Field(..., pattern=r"^checkout_[A-Za-z0-9_-]{1,80}$")
+    mobile: Mobile

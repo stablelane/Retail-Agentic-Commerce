@@ -284,6 +284,69 @@ describe("account and notification blocks", () => {
   });
 });
 
+describe("UPI blocks", () => {
+  const MANDATE: UIBlock = {
+    type: "upi_mandate",
+    mandateId: "mdt_1",
+    mobile: "9876543210",
+    amountBlocked: 200_000,
+    amountAvailable: 200_000,
+    status: "ACTIVE",
+    deepLink: null,
+    expiresAt: null,
+  };
+
+  it("mandate shows the blocked amount and status", () => {
+    renderBlock(MANDATE);
+    const section = screen.getByRole("region", { name: "UPI mandate" });
+    expect(within(section).getByRole("status")).toHaveTextContent("Active");
+    expect(section).toHaveTextContent("₹2,000");
+    expect(section).toHaveTextContent("9876543210");
+  });
+
+  it("pending mandate offers a safe deep link", () => {
+    renderBlock({ ...MANDATE, status: "CREATED", deepLink: "https://pay.example/m" });
+    expect(screen.getByRole("status")).toHaveTextContent("Waiting for approval");
+    expect(screen.getByRole("link", { name: "Open UPI app" })).toHaveAttribute(
+      "href",
+      "https://pay.example/m"
+    );
+  });
+
+  const PAID: UIBlock = {
+    type: "upi_payment",
+    status: "paid",
+    orderId: "order_upi1",
+    email: "john@example.com",
+    total: 3099,
+    receipt: "rcpt_1",
+    reason: null,
+    spentToday: 3099,
+  };
+
+  it("paid links to the order with the email", () => {
+    renderBlock(PAID);
+    const section = screen.getByRole("region", { name: "UPI payment" });
+    expect(section).toHaveTextContent("Paid ₹30.99 via UPI");
+    expect(within(section).getByRole("link", { name: "View order" })).toHaveAttribute(
+      "href",
+      "/orders/order_upi1?email=john%40example.com"
+    );
+  });
+
+  it.each([
+    ["pending", "Payment is processing"],
+    ["refused", "Payment refused by your spending limits"],
+    ["failed", "Payment failed"],
+  ])("%s renders its message", (status, text) => {
+    renderBlock({ ...PAID, status, orderId: null, total: null, reason: "why" });
+    const section = screen.getByRole("region", { name: "UPI payment" });
+    expect(section).toHaveTextContent(text);
+    expect(section).toHaveTextContent("why");
+    expect(within(section).queryByRole("link", { name: "View order" })).toBeNull();
+  });
+});
+
 describe("BlockRenderer", () => {
   it.each([[{ type: "hologram" }], [null], ["text"], [{ type: "product_carousel" }]])(
     "renders nothing for %j",

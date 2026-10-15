@@ -19,6 +19,7 @@ import type { ToolArgs, ToolInvocation } from "@/lib/agent/tools";
 import type {
   CartSummaryBlock,
   CartUpdateItem,
+  UpiPaymentBlock,
   ChatCartLine,
   ChatEventMap,
   ProductCarouselBlock,
@@ -40,6 +41,7 @@ import {
   type Product,
 } from "@/lib/commerce/merchant";
 import { PRODUCT_ID } from "@/lib/commerce/proxy-allowlist";
+import { PspApiError, createMandate, getActiveMandate, payWithUpi } from "@/lib/commerce/upi";
 import { MOCK_USER } from "@/lib/commerce/user";
 
 export interface ExecutorDeps {
@@ -48,6 +50,11 @@ export interface ExecutorDeps {
   getOrder: typeof getOrder;
   getCheckoutSession: typeof getCheckoutSession;
   callMcpTool: typeof callMcpTool;
+  upi: {
+    createMandate: typeof createMandate;
+    getActiveMandate: typeof getActiveMandate;
+    payWithUpi: typeof payWithUpi;
+  };
 }
 
 interface Bookable {
@@ -96,7 +103,10 @@ const DEFAULT_DEPS: ExecutorDeps = {
   getOrder,
   getCheckoutSession,
   callMcpTool,
+  upi: { createMandate, getActiveMandate, payWithUpi },
 };
+
+const DEFAULT_MANDATE_PAISE = 200_000;
 
 /** Per-turn state shared by every tool call in one `/api/chat` request. */
 export interface ExecutorContext {
@@ -734,6 +744,78 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
     };
   }
 
+  async function setupUpiMandate(
+    args: ToolArgs<"setup_upi_mandate">,
+    ctx: ExecutorContext
+  ): Promise<ToolOutcome> {
+    const mobile = args.mobile ?? MOCK_USER.mobile;
+    const totals = await sessionTotals(ctx);
+    const total = totals ? findTotal(totals, "total") : null;
+    const amount = args.amount_cents ?? Math.max(total ?? 0, DEFAULT_MANDATE_PAISE);
+    const mandate = await deps.upi.createMandate(mobile, amount);
+    return {
+      ok: true,
+      result: {
+        mandate_id: mandate.id,
+        status: mandate.status,
+        amount_blocked_paise: mandate.amount,
+      },
+      blocks: [
+        {
+          type: "upi_mandate",
+          mandateId: mandate.id,
+          mobile: mandate.mobile,
+          amountBlocked: mandate.amount,
+          amountAvailable: mandate.amount_available,
+          status: mandate.status,
+          deepLink: mandate.deep_link,
+          expiresAt: mandate.expires_at,
+        },
+      ],
+    };
+  }
+
+  async function payUpi(
+    args: ToolArgs<"pay_with_upi">,
+    ctx: ExecutorContext
+  ): Promise<ToolOutcome> {
+    const mobile = args.mobile ?? MOCK_USER.mobile;
+    if (ctx.cart.items.length === 0) return failure({ error: "empty_bag" });
+    if (ctx.cartChanged || !ctx.cart.sessionId) {
+      return failure({
+        error: "cart_not_synced",
+        message: "the bag just changed, ask the shopper to say pay again",
+      });
+    }
+    const session = await deps.getCheckoutSession(ctx.cart.sessionId);
+    if (session?.status !== "ready_for_payment") {
+      return failure({ error: "session_not_ready", status: session?.status ?? "missing" });
+    }
+    if (!(await deps.upi.getActiveMandate(mobile))) return failure({ error: "mandate_required" });
+
+    const paid = await deps.upi.payWithUpi(ctx.cart.sessionId, mobile);
+    const result = {
+      status: paid.status,
+      orderId: paid.status === "paid" ? paid.order_id : null,
+      total: paid.status === "paid" ? paid.total : null,
+      receipt: paid.status === "paid" ? paid.receipt : null,
+      reason:
+        paid.status === "refused"
+          ? paid.reason
+          : paid.status === "failed"
+            ? `Payment provider error (${paid.code}).`
+            : null,
+      spentToday: paid.status === "paid" ? paid.spent_today : null,
+    };
+    const block: UpiPaymentBlock = { type: "upi_payment", email: MOCK_USER.email, ...result };
+    return {
+      ok: paid.status === "paid" || paid.status === "pending",
+      result,
+      blocks: [block],
+      ...(paid.status === "paid" ? { cartUpdate: { items: [], sessionId: null } } : {}),
+    };
+  }
+
   function orderStatusOutcome(order: OrderStatusResponse): ToolOutcome {
     const total = findTotal(order.totals, "total") ?? 0;
     const items = order.line_items.map((line) => ({
@@ -817,6 +899,10 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
         return cartOutcome(ctx, {}, false);
       case "start_checkout":
         return startCheckout(ctx);
+      case "setup_upi_mandate":
+        return setupUpiMandate(invocation.args, ctx);
+      case "pay_with_upi":
+        return payUpi(invocation.args, ctx);
       case "track_order":
         return trackOrder(invocation.args);
       case "get_account":
@@ -836,6 +922,9 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
       return await dispatch(parsed.invocation, ctx);
     } catch (error) {
       if (error instanceof MerchantApiError) return merchantUnavailable();
+      if (error instanceof PspApiError) {
+        return failure({ error: error.code === "psp_error" ? "upi_unavailable" : error.code });
+      }
       return failure(
         { error: "tool_failed" },
         { code: "tool_failed", message: "Something went wrong. Please try again." }

@@ -114,6 +114,15 @@ Replace the apparel catalogue with Visit Dubai events for 1 Oct–31 Dec 2026. T
     - Catalog date chips, session picker, bag grouped by day; chat tools take `session_id` and date ranges
     - Theme, layout and components stay as in Feature 18
 
+### Phase 9: Pay in Chat (Feature 20)
+Finish the purchase inside the chat overlay with a UPI ReservePay mandate on the Pine Labs P3P sandbox.
+
+20. **Feature 20**: UPI Chat Payments (Pine Labs P3P)
+    - Full P3P handshake: merchant 402 challenge → PSP wallet guard (per-payment cap, daily budget, mandate balance) mints a token → merchant captures and returns `Payment-Receipt`
+    - Merchant `GET /p3p/checkout_sessions/{id}/pay`; PSP `/upi/mandates` and `/upi/pay`
+    - Chat tools `setup_upi_mandate` and `pay_with_upi`, blocks `upi_mandate` and `upi_payment`; card checkout stays as fallback
+    - No currency conversion: the AED amount is charged as the same integer in INR
+
 ---
 
 ## Non-Functional Requirements (Apply to All Features)

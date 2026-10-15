@@ -41,6 +41,17 @@ class PaymentSettings(BaseSettings):
     # PSP API Security
     psp_api_key: str = ""
 
+    # UPI wallet (payer side of feature 20, Pine Labs P3P sandbox)
+    pinelabs_client_id: str = ""
+    pinelabs_client_secret: str = ""
+    pinelabs_merchant_id: str = ""
+    merchant_api_url: str = "http://localhost:8000"
+    merchant_api_key: str = ""
+    # Paise; the same integers as the AED fils prices (no conversion)
+    upi_max_per_txn: int = 500_000
+    upi_daily_budget: int = 1_000_000
+    upi_mandate_validity_days: int = 30
+
 
 @lru_cache
 def get_payment_settings() -> PaymentSettings:

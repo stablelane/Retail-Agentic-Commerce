@@ -5,6 +5,13 @@ export function formatCents(cents: number): string {
   return aed.format(cents / 100);
 }
 
+const inr = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" });
+
+/** Format integer paise as INR, e.g. 35000 → "₹350.00". UPI amounts reuse the fils integers. */
+export function formatPaise(paise: number): string {
+  return inr.format(paise / 100);
+}
+
 /**
  * Whole-number percent saved versus the compare-at price, e.g. (3200, 4000) → 20.
  * Returns null when the product is not on sale.

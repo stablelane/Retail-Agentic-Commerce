@@ -119,6 +119,8 @@ graph TD
 
 **Catalogue (Feature 19)**: `src/data/product_catalog.py` is generated from `src/data/visitdubai_2026q4.json` and holds Dubai events for 1 Oct–31 Dec 2026. Each event is one product; each performance is an `EventSession`. Checkout line items use the session id, seats decrement on completion, fulfillment is a zero-cost digital e-ticket, and prices are AED fils in the existing cent fields. See `docs/features/feature-19-dubai-events.md`.
 
+**UPI Chat Payments (Feature 20)**: the PSP doubles as the shopper's UPI wallet. It holds a Pine Labs ReservePay mandate and calls the merchant's `GET /p3p/checkout_sessions/{id}/pay`, which answers 402 with a P3P challenge; the wallet's guard enforces spending caps before minting a token, and the merchant captures through Pine Labs and completes the session. Amounts are the AED integers labelled INR. See `docs/features/feature-20-upi-chat-payments.md`.
+
 **3. Dual Protocol Architecture**
 
 The system implements **both ACP and UCP protocols** to demonstrate how merchants can support multiple commerce standards simultaneously.

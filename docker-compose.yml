@@ -65,6 +65,10 @@ services:
       - BRAND_NAME=${BRAND_NAME:-Visit Dubai}
       - ORDER_TRACKING_BASE_URL=${ORDER_TRACKING_BASE_URL:-http://localhost:3002/orders}
       - ORDER_STATUS_STEP_SECONDS=${ORDER_STATUS_STEP_SECONDS:-120}
+      # Feature 20: Pine Labs P3P sandbox (UPI ReservePay)
+      - PINELABS_CLIENT_ID=${PINELABS_CLIENT_ID:-}
+      - PINELABS_CLIENT_SECRET=${PINELABS_CLIENT_SECRET:-}
+      - PINELABS_MERCHANT_ID=${PINELABS_MERCHANT_ID:-}
     volumes:
       - acp-data:/data
     networks:
@@ -83,6 +87,14 @@ services:
     environment:
       - DATABASE_URL=sqlite:////data/agentic_commerce.db
       - PSP_API_KEY=${PSP_API_KEY:-psp-api-key-12345}
+      # Feature 20: Pine Labs P3P sandbox (UPI ReservePay)
+      - PINELABS_CLIENT_ID=${PINELABS_CLIENT_ID:-}
+      - PINELABS_CLIENT_SECRET=${PINELABS_CLIENT_SECRET:-}
+      - PINELABS_MERCHANT_ID=${PINELABS_MERCHANT_ID:-}
+      - MERCHANT_API_URL=http://merchant:8000
+      - MERCHANT_API_KEY=${MERCHANT_API_KEY:-merchant-api-key-12345}
+      - UPI_MAX_PER_TXN=${UPI_MAX_PER_TXN:-500000}
+      - UPI_DAILY_BUDGET=${UPI_DAILY_BUDGET:-1000000}
     volumes:
       - acp-data:/data
     networks:

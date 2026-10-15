@@ -6,6 +6,7 @@ import { z } from "zod";
 import { MAX_EVENTS_PER_DAY, MAX_PLAN_DAYS } from "@/lib/agent/itinerary";
 import { CATEGORIES } from "@/lib/commerce/catalog";
 import { ORDER_ID, PRODUCT_ID } from "@/lib/commerce/proxy-allowlist";
+import { MOBILE } from "@/lib/commerce/upi";
 
 export const TOOL_NAMES = [
   "search_products",
@@ -17,6 +18,8 @@ export const TOOL_NAMES = [
   "update_cart",
   "get_cart",
   "start_checkout",
+  "setup_upi_mandate",
+  "pay_with_upi",
   "track_order",
   "get_account",
 ] as const;
@@ -41,6 +44,8 @@ export const TOOL_LABELS: Record<ToolName, string> = {
   update_cart: "Updating your bag…",
   get_cart: "Checking your bag…",
   start_checkout: "Preparing checkout…",
+  setup_upi_mandate: "Setting up UPI…",
+  pay_with_upi: "Paying with UPI…",
   track_order: "Checking your order…",
   get_account: "Loading your account…",
 };
@@ -55,6 +60,7 @@ const title = z.string().trim().min(1).max(80);
 const subtitle = z.string().trim().min(1).max(120);
 const category = z.enum(CATEGORY_IDS);
 const limit = z.number().int().min(1).max(MAX_TOOL_LIMIT);
+const mobile = z.string().trim().regex(MOBILE);
 
 export const TOOL_ARG_SCHEMAS = {
   search_products: z
@@ -114,6 +120,13 @@ export const TOOL_ARG_SCHEMAS = {
     .strict(),
   get_cart: z.object({}).strict(),
   start_checkout: z.object({}).strict(),
+  setup_upi_mandate: z
+    .object({
+      amount_cents: z.number().int().min(500).max(10_000_000).optional(),
+      mobile: mobile.optional(),
+    })
+    .strict(),
+  pay_with_upi: z.object({ mobile: mobile.optional() }).strict(),
   track_order: z
     .object({
       order_id: z.string().regex(ORDER_ID).optional(),
@@ -305,7 +318,36 @@ export const TOOL_DEFINITIONS: ChatCompletionTool[] = [
     ["product_id", "quantity"]
   ),
   fn("get_cart", "Show the customer's bag with prices."),
-  fn("start_checkout", "Hand the customer off to the secure checkout page."),
+  fn("start_checkout", "Hand the customer off to the secure card checkout page."),
+  fn(
+    "setup_upi_mandate",
+    "Block an amount on the shopper's UPI account (Pine Labs ReservePay) so later purchases can be paid in chat.",
+    {
+      amount_cents: {
+        type: "integer",
+        minimum: 500,
+        maximum: 10_000_000,
+        description:
+          "Amount to block, same integer units as prices. Default: the bag total or 200000.",
+      },
+      mobile: {
+        type: "string",
+        pattern: MOBILE.source,
+        description: "10-digit Indian mobile; defaults to the signed-in customer's",
+      },
+    }
+  ),
+  fn(
+    "pay_with_upi",
+    "Pay the bag from the shopper's UPI ReservePay mandate. Call only after the shopper confirms. Returns mandate_required when no mandate exists.",
+    {
+      mobile: {
+        type: "string",
+        pattern: MOBILE.source,
+        description: "10-digit Indian mobile; defaults to the signed-in customer's",
+      },
+    }
+  ),
   fn(
     "track_order",
     "Look up an order's shipping status. Omit order_id when unknown so the UI shows a lookup form.",

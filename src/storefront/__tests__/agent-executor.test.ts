@@ -83,6 +83,16 @@ const ORDER: OrderStatusResponse = {
   estimated_delivery: "2026-10-12T00:00:00Z",
 };
 
+const MANDATE = {
+  id: "mdt_1",
+  mobile: "9876543210",
+  amount: 200_000,
+  amount_available: 200_000,
+  status: "ACTIVE",
+  deep_link: null,
+  expires_at: null,
+};
+
 function makeDeps(overrides: Partial<ExecutorDeps> = {}) {
   const deps = {
     listProducts: vi.fn<ExecutorDeps["listProducts"]>(async () => ({
@@ -100,6 +110,23 @@ function makeDeps(overrides: Partial<ExecutorDeps> = {}) {
     callMcpTool: vi.fn<ExecutorDeps["callMcpTool"]>(async () => {
       throw new McpUnavailableError("down");
     }),
+    upi: {
+      createMandate: vi.fn<ExecutorDeps["upi"]["createMandate"]>(async (mobile, amount) => ({
+        ...MANDATE,
+        mobile,
+        amount,
+        amount_available: amount,
+      })),
+      getActiveMandate: vi.fn<ExecutorDeps["upi"]["getActiveMandate"]>(async () => null),
+      payWithUpi: vi.fn<ExecutorDeps["upi"]["payWithUpi"]>(async () => ({
+        status: "paid",
+        order_id: "order_upi1",
+        receipt: "rcpt_1",
+        total: 3099,
+        currency: "INR",
+        spent_today: 3099,
+      })),
+    },
     ...overrides,
   };
   return deps;
@@ -502,6 +529,63 @@ describe("cart tools", () => {
     expect(ready.blocks).toEqual([
       { type: "checkout_panel", sessionId: null, total: null, itemCount: 2 },
     ]);
+  });
+});
+
+describe("UPI payments", () => {
+  const ready = vi.fn(async () => ({
+    status: "ready_for_payment",
+    totals: [{ type: "total", display_text: "Total", amount: 3099 }],
+  })) as unknown as ExecutorDeps["getCheckoutSession"];
+
+  it("setup_upi_mandate blocks at least the default amount", async () => {
+    const deps = makeDeps();
+    const outcome = await createExecutor(deps).execute("setup_upi_mandate", {}, ctx());
+    expect(deps.upi.createMandate).toHaveBeenCalledWith("9876543210", 200_000);
+    expect(outcome.blocks[0]).toMatchObject({
+      type: "upi_mandate",
+      mandateId: "mdt_1",
+      amountBlocked: 200_000,
+    });
+  });
+
+  it("pay_with_upi refuses a bag changed in the same turn", async () => {
+    const deps = makeDeps({ getCheckoutSession: ready });
+    const executor = createExecutor(deps);
+    const context = ctx([], "checkout_abc");
+    await executor.execute("add_to_cart", { product_id: "prod_1" }, context);
+    const outcome = await executor.execute("pay_with_upi", {}, context);
+    expect(outcome.result).toMatchObject({ error: "cart_not_synced" });
+    expect(deps.upi.payWithUpi).not.toHaveBeenCalled();
+  });
+
+  it("pay_with_upi needs an active mandate", async () => {
+    const deps = makeDeps({ getCheckoutSession: ready });
+    const outcome = await createExecutor(deps).execute(
+      "pay_with_upi",
+      {},
+      ctx([{ id: "prod_1", quantity: 1 }], "checkout_abc")
+    );
+    expect(outcome).toMatchObject({ ok: false, result: { error: "mandate_required" } });
+  });
+
+  it("pay_with_upi pays, renders the receipt and empties the bag", async () => {
+    const deps = makeDeps({ getCheckoutSession: ready });
+    vi.mocked(deps.upi.getActiveMandate).mockResolvedValue(MANDATE);
+    const outcome = await createExecutor(deps).execute(
+      "pay_with_upi",
+      {},
+      ctx([{ id: "prod_1", quantity: 1 }], "checkout_abc")
+    );
+    expect(deps.upi.payWithUpi).toHaveBeenCalledWith("checkout_abc", "9876543210");
+    expect(outcome.ok).toBe(true);
+    expect(outcome.blocks[0]).toMatchObject({
+      type: "upi_payment",
+      status: "paid",
+      orderId: "order_upi1",
+      total: 3099,
+    });
+    expect(outcome.cartUpdate).toEqual({ items: [], sessionId: null });
   });
 });
 

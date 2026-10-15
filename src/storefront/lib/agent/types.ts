@@ -152,6 +152,29 @@ export interface NotificationBlock {
   receivedAt: string;
 }
 
+/** Amounts are paise: the same integers as the AED fils prices, charged as INR (feature 20). */
+export interface UpiMandateBlock {
+  type: "upi_mandate";
+  mandateId: string;
+  mobile: string;
+  amountBlocked: number;
+  amountAvailable: number;
+  status: string;
+  deepLink: string | null;
+  expiresAt: string | null;
+}
+
+export interface UpiPaymentBlock {
+  type: "upi_payment";
+  status: "paid" | "pending" | "refused" | "failed";
+  orderId: string | null;
+  email: string;
+  total: number | null;
+  receipt: string | null;
+  reason: string | null;
+  spentToday: number | null;
+}
+
 export type UIBlock =
   | ProductCarouselBlock
   | CartSummaryBlock
@@ -159,7 +182,9 @@ export type UIBlock =
   | OrderFormBlock
   | OrderStatusBlock
   | AccountSummaryBlock
-  | NotificationBlock;
+  | NotificationBlock
+  | UpiMandateBlock
+  | UpiPaymentBlock;
 
 export type UIBlockType = UIBlock["type"];
 

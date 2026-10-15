@@ -106,6 +106,8 @@ describe("routeMessage (keyword fallback)", () => {
     ["Show me my bag", "get_cart"],
     ["what's in my cart", "get_cart"],
     ["I want to checkout", "start_checkout"],
+    ["pay now", "pay_with_upi"],
+    ["set up upi", "setup_upi_mandate"],
     ["How many points do I have?", "get_account"],
     ["My loyalty status", "get_account"],
     ["Show me some concerts", "search_products"],

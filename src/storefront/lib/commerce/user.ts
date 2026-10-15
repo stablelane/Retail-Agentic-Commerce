@@ -3,6 +3,8 @@ export const MOCK_USER = {
   id: "user_demo123",
   name: "John Doe",
   email: "john@example.com",
+  /** UPI ReservePay identity; any 10-digit Indian mobile works in the Pine Labs sandbox. */
+  mobile: "9876543210",
   loyaltyPoints: 1250,
   tier: "Gold",
   memberSince: "2024-03-15",

@@ -41,6 +41,8 @@ export const MERCHANT_PROXY_RULES: readonly ProxyRule[] = [
 
 export const PSP_PROXY_RULES: readonly ProxyRule[] = [
   { method: "POST", path: ["agentic_commerce", "delegate_payment"] },
+  // Mandate status polling from the chat block (feature 20).
+  { method: "GET", path: ["upi", "mandates", /^[A-Za-z0-9_-]{1,80}$/] },
 ];
 
 function segmentsMatch(
