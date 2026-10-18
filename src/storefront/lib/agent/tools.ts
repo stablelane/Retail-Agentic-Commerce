@@ -3,7 +3,7 @@ import "server-only";
 import type { ChatCompletionTool } from "openai/resources/chat/completions";
 import { z } from "zod";
 
-import { MAX_EVENTS_PER_DAY, MAX_PLAN_DAYS } from "@/lib/agent/itinerary";
+import { MAX_EVENTS_PER_DAY, MAX_PLAN_DAYS, MAX_SEARCH_DAYS } from "@/lib/agent/itinerary";
 import { CATEGORIES } from "@/lib/commerce/catalog";
 import { ORDER_ID, PRODUCT_ID } from "@/lib/commerce/proxy-allowlist";
 
@@ -86,6 +86,7 @@ export const TOOL_ARG_SCHEMAS = {
     .object({
       date_from: isoDate,
       date_to: isoDate,
+      trip_days: z.number().int().min(1).max(MAX_PLAN_DAYS).optional(),
       party_size: z.number().int().min(1).max(MAX_LINE_QUANTITY).optional(),
       max_per_day: z.number().int().min(1).max(MAX_EVENTS_PER_DAY).optional(),
       categories: z.array(category).min(1).max(CATEGORY_IDS.length).optional(),
@@ -248,10 +249,23 @@ export const TOOL_DEFINITIONS: ChatCompletionTool[] = [
   ),
   fn(
     "plan_itinerary",
-    `Build the fullest bookable itinerary for a trip: as many different events as fit, each with enough seats for the party, no overlaps and travel time between venues. Returns day-by-day session ids. Max ${MAX_PLAN_DAYS} days.`,
+    `Build the fullest bookable itinerary for a trip: as many different events as fit, each with enough seats for the party, no overlaps and travel time between venues. Returns day-by-day session ids. With exact trip dates, plans those days (max ${MAX_PLAN_DAYS}). When the customer has not fixed their dates, pass the whole period they are open to (max ${MAX_SEARCH_DAYS} days) plus trip_days: it plans every possible trip of that length, returns the one with the most events as trip_dates, and lists the runners-up as alternatives.`,
     {
-      date_from: { type: "string", description: "First trip day, ISO date, Asia/Dubai" },
-      date_to: { type: "string", description: "Last trip day, ISO date, inclusive" },
+      date_from: {
+        type: "string",
+        description: "First trip day, or start of the period to search; ISO date, Asia/Dubai",
+      },
+      date_to: {
+        type: "string",
+        description: "Last trip day, or end of the period to search; ISO date, inclusive",
+      },
+      trip_days: {
+        type: "integer",
+        minimum: 1,
+        maximum: MAX_PLAN_DAYS,
+        description:
+          "Trip length in days. Set it when the dates are flexible so the tool picks the best days inside date_from–date_to; omit for exact trip dates.",
+      },
       party_size: {
         type: "integer",
         minimum: 1,

@@ -4,6 +4,7 @@ import {
   matchCatalog,
   type ExecutorDeps,
 } from "@/lib/agent/executor";
+import { rankTripWindows } from "@/lib/agent/itinerary";
 import { parseToolCall } from "@/lib/agent/tools";
 import { McpUnavailableError } from "@/lib/commerce/mcp";
 import { MerchantApiError, type OrderStatusResponse, type Product } from "@/lib/commerce/merchant";
@@ -614,6 +615,122 @@ describe("plan_itinerary", () => {
         title: "x",
       }).ok
     ).toBe(false);
+  });
+
+  it("picks the trip window with the most events when trip_days is set", async () => {
+    const outcome = await createExecutor(plannerDeps()).execute(
+      "plan_itinerary",
+      {
+        date_from: "2026-12-03",
+        date_to: "2026-12-05",
+        trip_days: 2,
+        party_size: 2,
+        title: "Best dates",
+      },
+      ctx()
+    );
+    expect(outcome.result).toMatchObject({
+      trip_dates: { from: "2026-12-03", to: "2026-12-04" },
+      searched: { from: "2026-12-03", to: "2026-12-05", trip_days: 2 },
+      event_count: 4,
+      total_cents: (10000 + 2500 + 35000 + 2500) * 2,
+      alternatives: [
+        { date_from: "2026-12-04", date_to: "2026-12-05", event_count: 1, total_cents: 5000 },
+      ],
+    });
+    expect((outcome.result as { free_days: string[] }).free_days).toEqual([]);
+  });
+
+  it("searches up to the whole calendar but plans exact dates as before", async () => {
+    const executor = createExecutor(plannerDeps());
+    const calendar = await executor.execute(
+      "plan_itinerary",
+      { date_from: "2026-10-01", date_to: "2026-12-31", trip_days: 7, title: "Best week" },
+      ctx()
+    );
+    expect(calendar.result).toMatchObject({ event_count: 5 });
+    expect(
+      (
+        await executor.execute(
+          "plan_itinerary",
+          { date_from: "2026-10-01", date_to: "2027-01-01", trip_days: 7, title: "Too wide" },
+          ctx()
+        )
+      ).result
+    ).toMatchObject({ error: "range_too_long", max_days: 92 });
+    const exact = await executor.execute(
+      "plan_itinerary",
+      { date_from: "2026-12-03", date_to: "2026-12-04", trip_days: 5, title: "Exact" },
+      ctx()
+    );
+    expect(exact.result).not.toHaveProperty("trip_dates");
+    expect(exact.result).toMatchObject({ event_count: 5 });
+  });
+
+  it("ranks windows by events, then price, then date", () => {
+    const cheap = product({
+      id: "evt_cheap",
+      name: "Cheap",
+      base_price: 1000,
+      sessions: [session("cheap", "2026-12-10T19:00")],
+    });
+    const pricey = product({
+      id: "evt_pricey",
+      name: "Pricey",
+      base_price: 9000,
+      sessions: [session("pricey", "2026-12-01T19:00")],
+    });
+    const repeat = product({
+      id: "evt_repeat",
+      name: "Repeat",
+      base_price: 1000,
+      sessions: [session("repeat", "2026-12-20T19:00"), session("repeat", "2026-12-25T19:00")],
+    });
+    const ranked = rankTripWindows([pricey, cheap, repeat], {
+      rangeFrom: "2026-12-01",
+      rangeTo: "2026-12-31",
+      tripDays: 1,
+      partySize: 1,
+      maxPerDay: 4,
+    });
+    expect(ranked.slice(0, 4).map((window) => [window.dateFrom, window.eventCount])).toEqual([
+      ["2026-12-10", 1],
+      ["2026-12-20", 1],
+      ["2026-12-25", 1],
+      ["2026-12-01", 1],
+    ]);
+  });
+
+  it("pages through the merchant listing for wide searches", async () => {
+    const filler = Array.from({ length: 120 }, (_, index) =>
+      product({ id: `evt_filler_${index}`, name: `Filler ${index}`, sessions: [] })
+    );
+    const late = product({
+      id: "evt_late",
+      name: "Late Listing",
+      sessions: [session("late", "2026-11-20T19:00")],
+    });
+    const all = [...filler, late];
+    const listProducts = vi.fn<ExecutorDeps["listProducts"]>(async (params = {}) => {
+      const offset = params.offset ?? 0;
+      return {
+        products: all.slice(offset, offset + (params.limit ?? 100)),
+        total: all.length,
+        category: null,
+      };
+    });
+    const outcome = await createExecutor(makeDeps({ listProducts })).execute(
+      "plan_itinerary",
+      { date_from: "2026-11-01", date_to: "2026-11-30", trip_days: 3, title: "November" },
+      ctx()
+    );
+    expect(listProducts).toHaveBeenCalledWith(
+      expect.objectContaining({ offset: 100, from: "2026-11-01" })
+    );
+    expect(outcome.result).toMatchObject({
+      trip_dates: { from: "2026-11-18", to: "2026-11-20" },
+      event_count: 1,
+    });
   });
 
   it("add_to_cart books a whole plan in one call and reports failures", async () => {

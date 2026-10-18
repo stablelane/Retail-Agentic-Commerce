@@ -37,6 +37,8 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("Respond in French");
     expect(prompt).toContain("Never invent events");
     expect(prompt).toContain("never ask permission to show events");
+    expect(prompt).toContain("never choose the dates yourself");
+    expect(prompt).toContain("trip_days set to the trip length");
   });
 
   it("describes an empty bag", () => {

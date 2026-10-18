@@ -4,10 +4,13 @@ import {
   EVENT_MINUTES,
   MAX_EVENTS_PER_DAY,
   MAX_PLAN_DAYS,
+  MAX_SEARCH_DAYS,
   SAME_VENUE_GAP_MINUTES,
   TRAVEL_GAP_MINUTES,
   eachDay,
-  planItinerary as buildPlan,
+  planWindow,
+  rankTripWindows,
+  type TripWindow,
 } from "@/lib/agent/itinerary";
 import {
   parseToolCall,
@@ -129,6 +132,9 @@ export function createExecutorContext(
 
 const CATALOG_MATCH_SUBTITLE = "Showing catalog matches";
 const MAX_RECOMMENDATIONS = 3;
+const MAX_TRIP_ALTERNATIVES = 2;
+const PRODUCT_PAGE_SIZE = 100;
+const MAX_PRODUCT_PAGES = 10;
 const STOPWORDS = new Set([
   "the",
   "and",
@@ -309,6 +315,21 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
       });
     }
     return ctx.catalog;
+  }
+
+  async function listEventsBetween(from: string, to: string): Promise<Product[]> {
+    const products: Product[] = [];
+    for (let page = 0; page < MAX_PRODUCT_PAGES; page++) {
+      const list = await deps.listProducts({
+        limit: PRODUCT_PAGE_SIZE,
+        offset: products.length,
+        from,
+        to,
+      });
+      products.push(...list.products);
+      if (list.products.length < PRODUCT_PAGE_SIZE || products.length >= list.total) break;
+    }
+    return products;
   }
 
   async function hydrateCart(ctx: ExecutorContext): Promise<CartUpdateItem[]> {
@@ -602,37 +623,59 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
     args: ToolArgs<"plan_itinerary">,
     ctx: ExecutorContext
   ): Promise<ToolOutcome> {
-    if (eachDay(args.date_from, args.date_to).length > MAX_PLAN_DAYS) {
-      return failure({ error: "range_too_long", max_days: MAX_PLAN_DAYS });
-    }
+    const rangeDays = eachDay(args.date_from, args.date_to).length;
+    const tripDays = args.trip_days && args.trip_days < rangeDays ? args.trip_days : undefined;
+    const maxDays = tripDays ? MAX_SEARCH_DAYS : MAX_PLAN_DAYS;
+    if (rangeDays > maxDays) return failure({ error: "range_too_long", max_days: maxDays });
+
     const catalog = await loadCatalog(ctx);
     let source: Product[] = [...catalog.values()];
     try {
-      source = (await deps.listProducts({ limit: 100, from: args.date_from, to: args.date_to }))
-        .products;
+      source = await listEventsBetween(args.date_from, args.date_to);
     } catch (error) {
       if (error instanceof MerchantApiError) return merchantUnavailable();
     }
     const partySize = args.party_size ?? 1;
-    const maxPerDay = args.max_per_day ?? MAX_EVENTS_PER_DAY;
-    const plan = buildPlan(source, {
-      dateFrom: args.date_from,
-      dateTo: args.date_to,
+    const options = {
       partySize,
-      maxPerDay,
+      maxPerDay: args.max_per_day ?? MAX_EVENTS_PER_DAY,
       ...(args.categories ? { categories: args.categories } : {}),
-    });
-    const events = plan.days.flatMap((day) => day.events);
-    if (events.length === 0) return noEventsOutcome(catalog);
+    };
+    const ranked: TripWindow[] = tripDays
+      ? rankTripWindows(source, {
+          ...options,
+          rangeFrom: args.date_from,
+          rangeTo: args.date_to,
+          tripDays,
+        })
+      : [planWindow(source, { ...options, dateFrom: args.date_from, dateTo: args.date_to })];
+    const [best, ...rest] = ranked;
+    if (!best || best.eventCount === 0) return noEventsOutcome(catalog);
 
-    const perPerson = events.reduce((sum, event) => sum + event.product.base_price, 0);
+    const events = best.plan.days.flatMap((day) => day.events);
+    const alternatives = rest
+      .filter((window) => window.eventCount > 0)
+      .slice(0, MAX_TRIP_ALTERNATIVES)
+      .map((window) => ({
+        date_from: window.dateFrom,
+        date_to: window.dateTo,
+        event_count: window.eventCount,
+        total_cents: window.totalCents * partySize,
+      }));
     return {
       ok: true,
       result: {
+        ...(tripDays
+          ? {
+              trip_dates: { from: best.dateFrom, to: best.dateTo },
+              searched: { from: args.date_from, to: args.date_to, trip_days: tripDays },
+              alternatives,
+            }
+          : {}),
         party_size: partySize,
-        event_count: events.length,
-        total_cents: perPerson * partySize,
-        days: plan.days.map((day) => ({
+        event_count: best.eventCount,
+        total_cents: best.totalCents * partySize,
+        days: best.plan.days.map((day) => ({
           date: day.date,
           events: day.events.map((event) => ({
             session_id: event.sessionId,
@@ -642,7 +685,7 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
             price_cents: event.product.base_price,
           })),
         })),
-        free_days: plan.freeDays,
+        free_days: best.plan.freeDays,
         assumptions: `Each event about ${EVENT_MINUTES / 60} h; ${SAME_VENUE_GAP_MINUTES} min between shows at the same venue, ${TRAVEL_GAP_MINUTES} min travel between venues. Free days have no bookable events.`,
       },
       blocks: [

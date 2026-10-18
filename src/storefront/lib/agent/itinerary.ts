@@ -5,6 +5,8 @@ export const EVENT_MINUTES = 180;
 export const SAME_VENUE_GAP_MINUTES = 30;
 export const TRAVEL_GAP_MINUTES = 60;
 export const MAX_PLAN_DAYS = 14;
+/** Widest period searched for the best trip dates: the whole Oct–Dec calendar. */
+export const MAX_SEARCH_DAYS = 92;
 export const MAX_EVENTS_PER_DAY = 4;
 
 const MINUTE = 60_000;
@@ -28,6 +30,21 @@ export interface PlanOptions {
   partySize: number;
   maxPerDay: number;
   categories?: readonly string[];
+}
+
+export interface TripWindow {
+  dateFrom: string;
+  dateTo: string;
+  plan: ItineraryPlan;
+  eventCount: number;
+  /** Per person, in fils. */
+  totalCents: number;
+}
+
+export interface WindowSearchOptions extends Omit<PlanOptions, "dateFrom" | "dateTo"> {
+  rangeFrom: string;
+  rangeTo: string;
+  tripDays: number;
 }
 
 /** Inclusive list of ISO dates; empty when the range is reversed. */
@@ -100,4 +117,41 @@ export function planItinerary(products: Iterable<Product>, options: PlanOptions)
       .filter((day) => day.events.length > 0),
     freeDays: days.filter((date) => (chosen.get(date)?.length ?? 0) === 0),
   };
+}
+
+export function planWindow(products: Iterable<Product>, options: PlanOptions): TripWindow {
+  const plan = planItinerary(products, options);
+  const events = plan.days.flatMap((day) => day.events);
+  return {
+    dateFrom: options.dateFrom,
+    dateTo: options.dateTo,
+    plan,
+    eventCount: events.length,
+    totalCents: events.reduce((sum, event) => sum + event.product.base_price, 0),
+  };
+}
+
+/** Plan every `tripDays`-long window in the range; most events first, then cheaper, then earlier. */
+export function rankTripWindows(
+  products: Iterable<Product>,
+  options: WindowSearchOptions
+): TripWindow[] {
+  const { rangeFrom, rangeTo, tripDays, ...planOptions } = options;
+  const pool = [...products];
+  const days = eachDay(rangeFrom, rangeTo);
+  return days
+    .slice(0, Math.max(0, days.length - tripDays + 1))
+    .map((dateFrom, index) =>
+      planWindow(pool, {
+        ...planOptions,
+        dateFrom,
+        dateTo: days[index + tripDays - 1] ?? dateFrom,
+      })
+    )
+    .sort(
+      (a, b) =>
+        b.eventCount - a.eventCount ||
+        a.totalCents - b.totalCents ||
+        a.dateFrom.localeCompare(b.dateFrom)
+    );
 }
