@@ -15,11 +15,18 @@ import { isCrossOrigin } from "@/lib/http";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const RATE_LIMIT = 30;
-const RATE_WINDOW_MS = 60_000;
+const MINUTE_MS = 60_000;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
 const HEARTBEAT_MS = 15_000;
+const MAX_CONCURRENT_TURNS = 5;
 
-const limiter = createRateLimiter(RATE_LIMIT, RATE_WINDOW_MS);
+const perClientMinute = createRateLimiter(10, MINUTE_MS);
+const perClientDay = createRateLimiter(100, DAY_MS);
+// Per-client limits scale with the number of IPs; these cap total LLM spend.
+const globalHour = createRateLimiter(200, HOUR_MS);
+const globalDay = createRateLimiter(1000, DAY_MS);
+let activeTurns = 0;
 
 function errorResponse(
   status: number,
@@ -44,9 +51,15 @@ export async function POST(request: NextRequest): Promise<Response> {
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
     return errorResponse(415, "unsupported_media_type", "Expected application/json");
   }
-  if (!limiter.take(clientKey(request.headers))) {
+  const client = clientKey(request.headers);
+  if (!perClientMinute.take(client)) {
     return errorResponse(429, "rate_limited", "Too many messages. Try again in a minute.", {
-      "retry-after": String(RATE_WINDOW_MS / 1000),
+      "retry-after": String(MINUTE_MS / 1000),
+    });
+  }
+  if (!perClientDay.take(client)) {
+    return errorResponse(429, "rate_limited", "Daily message limit reached. Try again tomorrow.", {
+      "retry-after": String(HOUR_MS / 1000),
     });
   }
   if (Number(request.headers.get("content-length") ?? 0) > CHAT_LIMITS.maxBodyBytes) {
@@ -69,6 +82,20 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
   const parsed = parseChatRequest(body);
   if (!parsed.ok) return errorResponse(400, "bad_request", parsed.error);
+
+  if (activeTurns >= MAX_CONCURRENT_TURNS) {
+    return errorResponse(503, "rate_limited", "The assistant is busy. Try again in a moment.", {
+      "retry-after": "5",
+    });
+  }
+  if (!globalHour.take("all") || !globalDay.take("all")) {
+    return errorResponse(
+      429,
+      "rate_limited",
+      "The assistant has reached its usage limit. Try again later.",
+      { "retry-after": String(HOUR_MS / 1000) }
+    );
+  }
 
   const config = getLlmConfig();
   const deps: ChatTurnDeps = {
@@ -101,6 +128,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       };
       const heartbeat = setInterval(() => write(encodeSseComment()), HEARTBEAT_MS);
 
+      activeTurns += 1;
       try {
         await runChatTurn(parsed.request, emit, deps, abort.signal);
       } catch {
@@ -110,6 +138,7 @@ export async function POST(request: NextRequest): Promise<Response> {
           data: { code: "internal_error", message: "Something went wrong. Please try again." },
         });
       } finally {
+        activeTurns -= 1;
         clearInterval(heartbeat);
         if (!abort.signal.aborted) emit({ event: "done", data: { steps: 0, fallback: true } });
         if (!closed) {

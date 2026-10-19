@@ -337,4 +337,44 @@ describe("POST /api/chat", () => {
     const response = await POST(request({ ...body("hi"), pad: "x".repeat(70 * 1024) }));
     expect(response.status).toBe(413);
   });
+
+  it("limits each client to 10 messages a minute", async () => {
+    vi.stubEnv("NVIDIA_API_KEY", "");
+    const client = { "x-forwarded-for": "192.0.2.7" };
+    for (let i = 0; i < 10; i++) {
+      const response = await POST(request(body("What's on sale?"), client));
+      expect(response.status).toBe(200);
+      await readEvents(response);
+    }
+    const limited = await POST(request(body("What's on sale?"), client));
+    expect(limited.status).toBe(429);
+    expect(await limited.json()).toMatchObject({ error: { code: "rate_limited" } });
+    expect((await POST(request(body("What's on sale?")))).status).toBe(200);
+  });
+
+  it("runs at most 5 chat turns at once", async () => {
+    let release = () => {};
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    fetchMock.mockImplementation(async (input) => {
+      if (String(input instanceof Request ? input.url : input) !== NIM_URL) {
+        throw new Error("unexpected fetch");
+      }
+      await gate;
+      return textStream("Hello!");
+    });
+
+    const running = await Promise.all(Array.from({ length: 5 }, () => POST(request(body("Hi")))));
+    expect(running.map((response) => response.status)).toEqual([200, 200, 200, 200, 200]);
+    const busy = await POST(request(body("Hi")));
+    expect(busy.status).toBe(503);
+    expect(await busy.json()).toMatchObject({ error: { code: "rate_limited" } });
+
+    release();
+    await Promise.all(running.map(readEvents));
+    const after = await POST(request(body("Hi")));
+    expect(after.status).toBe(200);
+    await readEvents(after);
+  });
 });
