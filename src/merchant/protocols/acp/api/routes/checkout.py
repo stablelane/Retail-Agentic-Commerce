@@ -23,6 +23,7 @@ from src.merchant.db.database import get_session
 from src.merchant.domain.checkout.service import (
     InsufficientSeatsError,
     InvalidStateTransitionError,
+    PaymentVerificationError,
     ProductNotFoundError,
     SessionNotFoundError,
     cancel_checkout_session,
@@ -97,6 +98,16 @@ def _handle_service_error(error: Exception) -> HTTPException:
             detail=ErrorResponse(
                 type=ErrorTypeEnum.METHOD_NOT_ALLOWED,
                 code=ErrorResponseCodeEnum.INVALID_STATUS_TRANSITION,
+                message=error.message,
+            ).model_dump(),
+        )
+
+    if isinstance(error, PaymentVerificationError):
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                type=ErrorTypeEnum.INVALID_REQUEST,
+                code=ErrorResponseCodeEnum.INVALID_PAYMENT,
                 message=error.message,
             ).model_dump(),
         )
@@ -317,6 +328,7 @@ def complete_checkout(
         InsufficientSeatsError,
         SessionNotFoundError,
         InvalidStateTransitionError,
+        PaymentVerificationError,
     ) as e:
         raise _handle_service_error(e) from e
 

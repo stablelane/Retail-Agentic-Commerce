@@ -65,6 +65,8 @@ services:
       - BRAND_NAME=${BRAND_NAME:-Visit Dubai}
       - ORDER_TRACKING_BASE_URL=${ORDER_TRACKING_BASE_URL:-http://localhost:3002/orders}
       - ORDER_STATUS_STEP_SECONDS=${ORDER_STATUS_STEP_SECONDS:-120}
+      # Stripe: verifies and captures PaymentIntents from the storefront chat
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
     volumes:
       - acp-data:/data
     networks:
@@ -156,6 +158,9 @@ services:
       - PSP_API_KEY=${PSP_API_KEY:-psp-api-key-12345}
       # Must match merchant's WEBHOOK_SECRET for signature verification
       - WEBHOOK_SECRET=${WEBHOOK_SECRET:-whsec_demo_secret}
+      # Stripe Payment Element in chat (publishable key is served at runtime, not inlined)
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY:-}
       # Chat LLM: Azure OpenAI Responses API when key + base URL are set, else NIM
       - AZURE_OPENAI_BASE_URL=${AZURE_OPENAI_BASE_URL:-}
       - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY:-}

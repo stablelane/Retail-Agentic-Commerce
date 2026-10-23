@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { useBlockActions } from "@/components/chat/blocks/BlockActions";
+import { StripePaymentPanel } from "@/components/chat/blocks/StripePaymentPanel";
 import type { CheckoutPanelBlock as CheckoutPanelBlockData } from "@/lib/agent/types";
 import { formatCents } from "@/lib/money";
 
@@ -14,6 +15,23 @@ export function CheckoutPanelBlock({ block }: { block: CheckoutPanelBlockData })
     return (
       <section aria-label="Checkout" className="rounded-card bg-surface p-4 text-caption">
         <p>Your bag is empty — add something first and I&apos;ll take you to checkout.</p>
+      </section>
+    );
+  }
+
+  if (block.embeddedPayment) {
+    return (
+      <section
+        aria-label="Checkout"
+        className="flex flex-col gap-3 rounded-card bg-surface p-4 text-caption"
+      >
+        <p>
+          <span className="font-semibold">
+            {count} {count === 1 ? "item" : "items"}
+          </span>
+          {block.total != null ? <> · {formatCents(block.total)}</> : null}
+        </p>
+        <StripePaymentPanel total={block.total} />
       </section>
     );
   }

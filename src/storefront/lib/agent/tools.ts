@@ -319,7 +319,7 @@ export const TOOL_DEFINITIONS: ChatCompletionTool[] = [
     ["product_id", "quantity"]
   ),
   fn("get_cart", "Show the customer's bag with prices."),
-  fn("start_checkout", "Hand the customer off to the secure checkout page."),
+  fn("start_checkout", "Show the secure payment card (or a link to the checkout page)."),
   fn(
     "track_order",
     "Look up an order's shipping status. Omit order_id when unknown so the UI shows a lookup form.",

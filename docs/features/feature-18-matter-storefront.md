@@ -64,7 +64,7 @@ Feature 18 adds a third client: a real storefront whose primary interaction is a
 ### Out of scope (non-goals)
 
 - UCP / A2A transport.
-- Real payment processing (PSP remains the simulated vault).
+- Real payment processing on the `/checkout` page (PSP remains the simulated vault). In-chat card payment uses Stripe when configured; see §4.4.1.
 - Real authentication, user registration, password reset.
 - Loyalty points redemption at checkout (display only, as in Feature 16).
 - Server-side chat history persistence (conversation lives in browser memory for the session).
@@ -449,6 +449,34 @@ sequenceDiagram
     F->>F: save order id to localStorage, clear cart/session, redirect /orders/{id}
 ```
 
+### 4.4.1 In-chat payment (Stripe Payment Element)
+
+When `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` are set on the storefront (and `STRIPE_SECRET_KEY` on the merchant), `start_checkout` emits `checkout_panel` with `embeddedPayment: true` and the card is collected inline by Stripe's Payment Element. Without both keys the panel keeps linking to `/checkout`. Card data never touches `/api/chat`, the model, or the storefront server.
+
+```mermaid
+sequenceDiagram
+    participant C as Chat checkout_panel
+    participant S as /api/stripe/payment-intent
+    participant PM as /api/proxy/merchant
+    participant A as Merchant :8000
+    participant ST as Stripe
+
+    C->>PM: POST /checkout_sessions/{id} {buyer}
+    A-->>C: ready_for_payment
+    C->>S: POST {checkoutSessionId} + Idempotency-Key
+    S->>A: GET /checkout_sessions/{id} (authoritative total)
+    S->>ST: create PaymentIntent {amount, currency, capture_method: manual, allowed_payment_method_types: [card], metadata.checkout_session_id}
+    S-->>C: {clientSecret, publishableKey}
+    C->>ST: confirmPayment (Payment Element, 3DS in modal) → requires_capture
+    C->>PM: POST /checkout_sessions/{id}/complete {payment_data{token: pi_…, provider: "stripe"}}
+    A->>ST: retrieve PaymentIntent; verify status, amount, currency, session metadata
+    A->>A: decrement seats, create order
+    A->>ST: capture (or cancel the hold on failure)
+    A-->>C: completed, order{id}
+```
+
+The merchant only verifies tokens that start with `pi_`; other tokens (`vt_…` from the simulated PSP) keep their existing behaviour. Verification or capture failures return `400 invalid_payment`.
+
 ### 4.5 Track order
 
 ```mermaid
@@ -524,7 +552,7 @@ Defined as OpenAI `tools[]` function schemas (JSON Schema). Arguments are valida
 | `add_to_cart` | `product_id: string`, `quantity?: int (default 1)` | Merchant `GET /products/{id}` to validate + price | `cart_update`, `block cart_summary` |
 | `update_cart` | `product_id: string`, `quantity: int (0 removes)` | none | `cart_update`, `block cart_summary` |
 | `get_cart` | — | none (uses request cart; prices hydrated from `GET /products`) | `block cart_summary` |
-| `start_checkout` | — | none | `block checkout_panel` (browser opens `/checkout`) |
+| `start_checkout` | — | none | `block checkout_panel` (inline Stripe payment when configured, else browser opens `/checkout`) |
 | `track_order` | `order_id?: string`, `email?: string` | Merchant `GET /orders/{id}?email=` (email defaults to mock user) | `block order_status`, or `block order_form` if `order_id` missing / 404 |
 | `get_account` | — | none (mock user) | `block account_summary` |
 

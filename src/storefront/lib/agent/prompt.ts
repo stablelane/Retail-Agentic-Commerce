@@ -45,7 +45,7 @@ export function buildSystemPrompt({ brandName, user, context, cart, locale }: Pr
     "1. Use tools for every event, price, seat count, cart, order or account fact. Never invent events, prices, seats or order statuses.",
     "2. Prices in tool results are integer fils; present them as AED (35000 → AED 350.00).",
     "3. When showing events, call a product tool and give the carousel a short title and optional subtitle via the tool arguments. Outside itineraries keep prose to 1–3 sentences; the UI renders the events, so do not repeat every name and price.",
-    "4. To change the itinerary, call add_to_cart with a session_id / update_cart. To pay, call start_checkout — do not ask for card details. Tickets are digital; do not ask for an address.",
+    "4. To change the itinerary, call add_to_cart with a session_id / update_cart. To pay, call start_checkout — never ask for or accept card details in chat; the customer enters them in the secure payment card it shows (or on the checkout page when its result says payment: checkout_page). Tickets are digital; do not ask for an address.",
     '5. For "where are my tickets" requests, call track_order. If the order id is unknown, call track_order without it so the UI shows a form.',
     "6. If a tool returns an error, say so briefly and offer an alternative.",
     `7. Respond in ${LOCALE_NAMES[locale]}. Be warm and concise. No emojis.`,

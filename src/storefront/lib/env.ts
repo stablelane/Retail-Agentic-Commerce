@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const ROOT_ENV_KEY =
-  /^(MERCHANT_API_(URL|KEY)|PSP_API_(URL|KEY)|MCP_SERVER_URL|WEBHOOK_SECRET|NVIDIA_API_KEY|NIM_LLM_[A-Z_]+|AZURE_OPENAI_[A-Z_]+|CHAT_[A-Z_]+)$/;
+  /^(MERCHANT_API_(URL|KEY)|PSP_API_(URL|KEY)|MCP_SERVER_URL|WEBHOOK_SECRET|STRIPE_(SECRET|PUBLISHABLE)_KEY|NVIDIA_API_KEY|NIM_LLM_[A-Z_]+|AZURE_OPENAI_[A-Z_]+|CHAT_[A-Z_]+)$/;
 
 /**
  * Local runs: fill missing or empty storefront settings from the repo-root .env so a plain
@@ -59,6 +59,18 @@ export function getMcpServerUrl(): string {
 /** HMAC secret shared with the merchant's webhook sender; when unset every delivery is rejected. */
 export function getWebhookSecret(): string | undefined {
   return nonEmpty(process.env.WEBHOOK_SECRET);
+}
+
+export interface StripeConfig {
+  secretKey: string;
+  publishableKey: string;
+}
+
+/** Both keys are required; otherwise chat checkout falls back to the /checkout page. */
+export function getStripeConfig(): StripeConfig | null {
+  const secretKey = nonEmpty(process.env.STRIPE_SECRET_KEY);
+  const publishableKey = nonEmpty(process.env.STRIPE_PUBLISHABLE_KEY);
+  return secretKey && publishableKey ? { secretKey, publishableKey } : null;
 }
 
 export type LlmProvider = "nim" | "responses";

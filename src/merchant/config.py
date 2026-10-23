@@ -54,6 +54,9 @@ class Settings(BaseSettings):
     # Merchant API Security (for client authentication)
     merchant_api_key: str = ""
 
+    # Stripe (sandbox or live secret key); empty disables PaymentIntent verification
+    stripe_secret_key: str = ""
+
     # UCP Discovery Configuration
     ucp_version: str = "2026-01-23"
     ucp_base_url: str | None = (

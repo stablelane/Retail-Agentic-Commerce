@@ -17,6 +17,7 @@
 
 import json
 import logging
+import re
 from datetime import UTC, datetime
 from typing import Any, cast
 from zoneinfo import ZoneInfo
@@ -50,11 +51,14 @@ from src.merchant.domain.checkout.models import (
     CheckoutSessionResponse,
     CreateCheckoutRequest,
     PaymentDataInput,
+    PaymentProviderEnum,
     UpdateCheckoutRequest,
 )
+from src.merchant.services import stripe_payments
 
 logger = logging.getLogger(__name__)
 DUBAI = ZoneInfo("Asia/Dubai")
+STRIPE_PAYMENT_INTENT_ID = re.compile(r"^pi_[A-Za-z0-9]+$")
 
 
 def resolve_line_item(db: Session, item_id: str) -> tuple[Product, EventSession | None]:
@@ -152,6 +156,13 @@ class InvalidStateTransitionError(CheckoutServiceError):
             message=f"Cannot {action} session with status '{current_status}'",
             code="invalid_status_transition",
         )
+
+
+class PaymentVerificationError(CheckoutServiceError):
+    """Raised when a payment cannot be verified or captured."""
+
+    def __init__(self, message: str):
+        super().__init__(message=message, code="invalid_payment")
 
 
 # =============================================================================
@@ -578,10 +589,56 @@ async def update_checkout_session_from_data(
     return await update_checkout_session(db, session_id, request)
 
 
+def _stripe_payment_intent_id(payment_data: PaymentDataInput) -> str | None:
+    if payment_data.provider != PaymentProviderEnum.STRIPE:
+        return None
+    if not payment_data.token.startswith("pi_"):
+        return None
+    if not STRIPE_PAYMENT_INTENT_ID.fullmatch(payment_data.token):
+        raise PaymentVerificationError("Invalid payment token")
+    return payment_data.token
+
+
+def _verify_stripe_authorization(
+    session: CheckoutSession, payment_intent_id: str
+) -> None:
+    """Ensure the PaymentIntent holds exactly this session's total."""
+    if not stripe_payments.is_stripe_configured():
+        raise PaymentVerificationError("Stripe payments are not configured")
+
+    try:
+        intent = stripe_payments.retrieve_payment_intent(payment_intent_id)
+    except stripe_payments.StripePaymentError as e:
+        raise PaymentVerificationError(str(e)) from e
+
+    totals_data = json.loads(session.totals_json)
+    total = next((t["amount"] for t in totals_data if t["type"] == "total"), None)
+    problem: str | None = None
+    if intent.metadata.get("checkout_session_id") != session.id:
+        problem = "Payment does not belong to this checkout session"
+    elif intent.status != "requires_capture":
+        problem = f"Payment is not authorized (status '{intent.status}')"
+    elif intent.amount != total or intent.currency.lower() != session.currency.lower():
+        problem = "Payment amount does not match the order total"
+
+    if problem is not None:
+        logger.warning(
+            f"Stripe verification failed | session={session.id} | "
+            f"pi={payment_intent_id} | {problem}"
+        )
+        # Only release holds we own; a foreign intent must not be touched.
+        if (
+            intent.status == "requires_capture"
+            and intent.metadata.get("checkout_session_id") == session.id
+        ):
+            stripe_payments.cancel_payment_intent(payment_intent_id)
+        raise PaymentVerificationError(problem)
+
+
 def complete_checkout_session(
     db: Session,
     session_id: str,
-    payment_data: PaymentDataInput,  # noqa: ARG001  # Reserved for payment validation
+    payment_data: PaymentDataInput,
     buyer: BuyerInput | None = None,
 ) -> CheckoutSessionResponse:
     """Complete a checkout session with payment.
@@ -598,8 +655,10 @@ def complete_checkout_session(
     Raises:
         SessionNotFoundError: If session is not found.
         InvalidStateTransitionError: If session cannot be completed.
+        PaymentVerificationError: If a Stripe payment cannot be verified/captured.
     """
     logger.info(f"Completing checkout session {session_id}")
+    payment_intent_id = _stripe_payment_intent_id(payment_data)
 
     session = db.exec(
         select(CheckoutSession).where(CheckoutSession.id == session_id)
@@ -627,6 +686,9 @@ def complete_checkout_session(
         logger.warning(f"Session {session_id} not ready for payment")
         raise InvalidStateTransitionError(session.status.value, "complete")
 
+    if payment_intent_id is not None:
+        _verify_stripe_authorization(session, payment_intent_id)
+
     # ponytail: no row lock; SQLite single-writer is enough for the demo,
     # use SELECT … FOR UPDATE on Postgres
     for line in json.loads(session.line_items_json):
@@ -636,6 +698,9 @@ def complete_checkout_session(
         if event is None:
             continue
         if quantity > event.seats_left:
+            db.rollback()
+            if payment_intent_id is not None:
+                stripe_payments.cancel_payment_intent(payment_intent_id)
             raise InsufficientSeatsError(item_id, quantity, event.seats_left)
         event.seats_left -= quantity
         db.add(event)
@@ -647,6 +712,13 @@ def complete_checkout_session(
         "checkout_session_id": session_id,
         "permalink_url": f"{DEFAULT_SHOP_URL}/orders/{order_id}",
     }
+    if payment_intent_id is not None:
+        try:
+            stripe_payments.capture_payment_intent(payment_intent_id)
+        except stripe_payments.StripePaymentError as e:
+            db.rollback()
+            raise PaymentVerificationError(str(e)) from e
+        order_data["payment_intent_id"] = payment_intent_id
     session.order_json = json.dumps(order_data)
 
     # Update status

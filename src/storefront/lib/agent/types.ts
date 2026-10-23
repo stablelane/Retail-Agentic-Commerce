@@ -110,6 +110,8 @@ export interface CheckoutPanelBlock {
   sessionId: string | null;
   total: number | null;
   itemCount: number;
+  /** Pay inline with the Stripe Payment Element instead of linking to /checkout. */
+  embeddedPayment?: boolean;
 }
 
 export interface OrderFormBlock {

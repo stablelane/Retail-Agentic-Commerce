@@ -42,17 +42,20 @@ export interface PlacedOrder {
   session: CheckoutSession;
 }
 
-/** ACP checkout: update session → PSP delegate_payment → complete session. */
-export async function placeOrder({
+export interface PrepareSessionParams {
+  session: CheckoutSession;
+  buyer: AcpBuyerInput;
+  address?: AcpAddressInput | undefined;
+  fetchImpl?: FetchLike | undefined;
+}
+
+/** Push buyer/fulfillment and require `ready_for_payment` with a positive merchant total. */
+export async function prepareSessionForPayment({
   session,
   buyer,
   address,
-  card,
-  language,
-  onStep,
   fetchImpl,
-}: PlaceOrderParams): Promise<PlacedOrder> {
-  onStep?.("updating");
+}: PrepareSessionParams): Promise<{ ready: CheckoutSession; amount: number }> {
   const fulfillmentOptionId = preferredFulfillmentOptionId(session);
   const ready = await proxyRequest<CheckoutSession>("merchant", sessionPath(session.id), {
     method: "POST",
@@ -73,6 +76,64 @@ export async function placeOrder({
   if (amount === null || amount <= 0) {
     throw new CheckoutError("We couldn't calculate your order total. Please try again.");
   }
+  return { ready, amount };
+}
+
+export interface CompleteSessionParams {
+  sessionId: string;
+  buyer: AcpBuyerInput;
+  token: string;
+  provider: string;
+  language: Language;
+  address?: AcpAddressInput | undefined;
+  fetchImpl?: FetchLike | undefined;
+}
+
+export async function completeSession({
+  sessionId,
+  buyer,
+  token,
+  provider,
+  language,
+  address,
+  fetchImpl,
+}: CompleteSessionParams): Promise<PlacedOrder> {
+  const completed = await proxyRequest<CheckoutSession>(
+    "merchant",
+    sessionPath(sessionId, "complete"),
+    {
+      method: "POST",
+      body: {
+        buyer,
+        payment_data: {
+          token,
+          provider,
+          ...(address ? { billing_address: address } : {}),
+        },
+        preferred_language: language,
+      },
+      fetchImpl,
+    }
+  );
+
+  if (completed.status !== "completed" || !completed.order) {
+    throw new CheckoutError("We couldn't confirm your order. Please try again.");
+  }
+  return { orderId: completed.order.id, session: completed };
+}
+
+/** ACP checkout: update session → PSP delegate_payment → complete session. */
+export async function placeOrder({
+  session,
+  buyer,
+  address,
+  card,
+  language,
+  onStep,
+  fetchImpl,
+}: PlaceOrderParams): Promise<PlacedOrder> {
+  onStep?.("updating");
+  const { ready, amount } = await prepareSessionForPayment({ session, buyer, address, fetchImpl });
 
   onStep?.("authorizing");
   const token = await delegatePayment(
@@ -87,26 +148,13 @@ export async function placeOrder({
   );
 
   onStep?.("completing");
-  const completed = await proxyRequest<CheckoutSession>(
-    "merchant",
-    sessionPath(ready.id, "complete"),
-    {
-      method: "POST",
-      body: {
-        buyer,
-        payment_data: {
-          token,
-          provider: ready.payment_provider?.provider ?? "stripe",
-          ...(address ? { billing_address: address } : {}),
-        },
-        preferred_language: language,
-      },
-      fetchImpl,
-    }
-  );
-
-  if (completed.status !== "completed" || !completed.order) {
-    throw new CheckoutError("We couldn't confirm your order. Please try again.");
-  }
-  return { orderId: completed.order.id, session: completed };
+  return completeSession({
+    sessionId: ready.id,
+    buyer,
+    token,
+    provider: ready.payment_provider?.provider ?? "stripe",
+    language,
+    address,
+    fetchImpl,
+  });
 }

@@ -79,7 +79,10 @@ export function isRenderableBlock(value: unknown): value is UIBlock {
     case "cart_summary":
       return Array.isArray(value.items) && value.items.every(isRecord);
     case "checkout_panel":
-      return typeof value.itemCount === "number";
+      return (
+        typeof value.itemCount === "number" &&
+        (value.embeddedPayment === undefined || typeof value.embeddedPayment === "boolean")
+      );
     case "order_form":
       return isRecord(value.prefill);
     case "order_status":

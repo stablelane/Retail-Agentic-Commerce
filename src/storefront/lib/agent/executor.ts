@@ -44,6 +44,7 @@ import {
 } from "@/lib/commerce/merchant";
 import { PRODUCT_ID } from "@/lib/commerce/proxy-allowlist";
 import { MOCK_USER } from "@/lib/commerce/user";
+import { getStripeConfig } from "@/lib/env";
 
 export interface ExecutorDeps {
   listProducts: typeof listProducts;
@@ -51,6 +52,7 @@ export interface ExecutorDeps {
   getOrder: typeof getOrder;
   getCheckoutSession: typeof getCheckoutSession;
   callMcpTool: typeof callMcpTool;
+  stripeEnabled?: () => boolean;
 }
 
 interface Bookable {
@@ -766,14 +768,24 @@ export function createExecutor(deps: ExecutorDeps = DEFAULT_DEPS) {
     if (itemCount === 0) return failure({ error: "empty_bag" });
     const totals = await sessionTotals(ctx);
     const total = totals ? findTotal(totals, "total") : null;
+    const embedded = (deps.stripeEnabled ?? (() => getStripeConfig() !== null))();
     return {
       ok: true,
       result: {
         checkout: "ready",
         item_count: itemCount,
+        payment: embedded ? "in_chat" : "checkout_page",
         ...(total !== null ? { total_cents: total } : {}),
       },
-      blocks: [{ type: "checkout_panel", sessionId: ctx.cart.sessionId, total, itemCount }],
+      blocks: [
+        {
+          type: "checkout_panel",
+          sessionId: ctx.cart.sessionId,
+          total,
+          itemCount,
+          ...(embedded ? { embeddedPayment: true } : {}),
+        },
+      ],
     };
   }
 

@@ -504,6 +504,17 @@ describe("cart tools", () => {
       { type: "checkout_panel", sessionId: null, total: null, itemCount: 2 },
     ]);
   });
+
+  it("start_checkout offers in-chat payment when Stripe is configured", async () => {
+    const executor = createExecutor(makeDeps({ stripeEnabled: () => true }));
+    const ready = await executor.execute(
+      "start_checkout",
+      {},
+      ctx([{ id: "prod_1", quantity: 1 }])
+    );
+    expect(ready.result).toMatchObject({ payment: "in_chat" });
+    expect(ready.blocks[0]).toMatchObject({ type: "checkout_panel", embeddedPayment: true });
+  });
 });
 
 describe("plan_itinerary", () => {
